@@ -1,18 +1,26 @@
-
 <?php
 
+use App\Http\Controllers\UsuarioController;
+use App\Livewire\CheckInOut;
+use App\Livewire\Clientes;
+use App\Livewire\Configuracion;
+use App\Livewire\Dashboard;
+use App\Livewire\Empleados;
+use App\Livewire\Gastos;
+use App\Livewire\Habitaciones;
+use App\Livewire\Limpieza;
+use App\Livewire\Pagos;
+use App\Livewire\Reportes;
+use App\Livewire\Reservaciones;
+use App\Livewire\RolesPermisos;
+use App\Livewire\Servicios;
+use App\Livewire\Temporadas;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
-use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\RolPermisoController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -44,11 +52,19 @@ Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])
     ->middleware('permission:usuarios.editar')
     ->name('usuarios.update');
 
-Route::get('/roles-permisos', [RolPermisoController::class, 'index'])
-    ->middleware('permission:roles_permisos.ver')
-    ->name('roles-permisos.index');
-
-Route::put('/roles-permisos', [RolPermisoController::class, 'update'])
-    ->middleware('permission:roles_permisos.editar')
-    ->name('roles-permisos.update');
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/reservaciones', Reservaciones::class)->name('reservaciones');
+    Route::get('/habitaciones', Habitaciones::class)->name('habitaciones');
+    Route::get('/clientes', Clientes::class)->name('clientes');
+    Route::get('/checkin-checkout', CheckInOut::class)->name('checkin-checkout');
+    Route::get('/limpieza', Limpieza::class)->name('limpieza');
+    Route::get('/pagos', Pagos::class)->name('pagos');
+    Route::get('/servicios', Servicios::class)->name('servicios');
+    Route::get('/gastos', Gastos::class)->name('gastos');
+    Route::get('/empleados', Empleados::class)->name('empleados');
+    Route::get('/temporadas', Temporadas::class)->name('temporadas');
+    Route::get('/reportes', Reportes::class)->name('reportes');
+    Route::get('/roles-permisos', RolesPermisos::class)->name('roles-permisos');
+    Route::get('/configuracion', Configuracion::class)->name('configuracion');
+});

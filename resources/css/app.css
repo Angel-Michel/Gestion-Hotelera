@@ -11,6 +11,16 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    /* ==========================================================
+       Paleta Novastay — Gestión Hotelera (tema oscuro)
+       ========================================================== */
+    --color-novastay-fondo: #101B3D;
+    --color-novastay-borde: #26345F;
+    --color-novastay-hover: #1D2B52;
+    --color-novastay-activo: #263A70;
+    --color-novastay-dorado: #C9A227;
+    --color-novastay-beige: #E9DCC3;
+
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;

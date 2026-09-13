@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('cargos_habitacion', function (Blueprint $table) {
             $table->id('id_cargos_habitacion');
 
-            $table->foreignId('id_reserva')
-                ->constrained('reservas', 'id_reserva')
+            $table->foreignId('reserva_id')
+                ->constrained('reservas')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 

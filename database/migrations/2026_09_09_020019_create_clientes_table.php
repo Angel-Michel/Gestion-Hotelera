@@ -12,18 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('clientes', function (Blueprint $table) {
-            $table->id('id_cliente');
+            $table->id();
             $table->string('nombre', 100);
-            $table->string('apellidos', 100);
-            $table->string('correo_electronico', 255)->nullable();
+            $table->string('apellido', 100);
+            $table->string('email', 255)->nullable();
             $table->string('telefono', 20)->nullable();
+            $table->enum('tipo_identificacion', ['INE', 'Pasaporte'])->nullable();
             $table->string('numero_identificacion', 50)->nullable();
-            $table->string('rfc', 13)->nullable();
-            $table->string('regimen_fiscal', 100)->nullable();
-            $table->string('uso_cfdi', 100)->nullable();
-            $table->string('codigo_postal', 10)->nullable();
-            $table->timestamp('creado_en')->nullable();
-            $table->timestamp('actualizado_en')->nullable();
+            $table->timestamps();
         });
     }
 

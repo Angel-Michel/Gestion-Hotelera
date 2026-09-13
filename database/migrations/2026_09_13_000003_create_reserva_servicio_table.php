@@ -6,30 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('pagos', function (Blueprint $table) {
+        Schema::create('reserva_servicio', function (Blueprint $table) {
             $table->id();
             $table->foreignId('reserva_id')
                 ->constrained('reservas')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->decimal('monto', 10, 2);
-            $table->enum('metodo_pago', ['Efectivo', 'Tarjeta', 'Transferencia']);
-            $table->timestamp('fecha_pago')->nullable();
-            $table->text('notas')->nullable();
+            $table->foreignId('servicio_id')
+                ->constrained('servicios')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+            $table->unsignedInteger('cantidad')->default(1);
+            $table->decimal('subtotal', 10, 2);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('pagos');
+        Schema::dropIfExists('reserva_servicio');
     }
 };

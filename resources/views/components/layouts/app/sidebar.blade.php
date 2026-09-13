@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
     <head>
-
         @include('partials.head')
 
         <style>
@@ -11,15 +9,15 @@
                ESTILO DEL MENÚ LATERAL
                ========================================================== */
 
-            /* Fondo general del sidebar */
+            /* Fondo general del sidebar (paleta Novastay) */
             [data-flux-sidebar] {
-                background-color: #101B3D !important;
-                border-color: #26345F !important;
+                background-color: var(--color-novastay-fondo, #101B3D) !important;
+                border-color: var(--color-novastay-borde, #26345F) !important;
             }
 
             /* Fondo del cuerpo cuando se encuentra dentro del sidebar */
             [data-flux-sidebar] * {
-                border-color: #26345F;
+                border-color: var(--color-novastay-borde, #26345F);
             }
 
             /* Título "Gestión Hotelera" */
@@ -40,7 +38,7 @@
 
             /* Efecto al pasar el mouse */
             [data-flux-sidebar] a:hover {
-                background-color: #1D2B52 !important;
+                background-color: var(--color-novastay-hover, #1D2B52) !important;
                 color: #FFFFFF !important;
             }
 
@@ -52,7 +50,7 @@
 
             /* Módulo actualmente seleccionado */
             [data-flux-sidebar] a[aria-current="page"] {
-                background-color: #263A70 !important;
+                background-color: var(--color-novastay-activo, #263A70) !important;
                 color: #FFFFFF !important;
             }
 
@@ -106,14 +104,21 @@
 
             /* Fondo del menú desplegable */
             [data-flux-menu] {
-                border-color: #26345F !important;
+                border-color: var(--color-novastay-borde, #26345F) !important;
+            }
+
+            /* Ícono del módulo Roles y permisos (tono dorado) */
+            [data-flux-sidebar] a.text-amber-500 svg {
+                color: var(--color-novastay-dorado, #C9A227) !important;
+                stroke: var(--color-novastay-dorado, #C9A227) !important;
             }
         </style>
-
     </head>
 
     <body class="min-h-screen bg-white dark:bg-zinc-800">
-
+        {{-- ==========================================================
+             MENÚ LATERAL
+             ========================================================== --}}
         <flux:sidebar
             sticky
             stashable
@@ -132,12 +137,10 @@
                 class="mr-5 flex items-center space-x-2"
                 wire:navigate
             >
-
                 <x-app-logo
                     class="size-8"
                     href="#"
                 />
-
             </a>
 
             {{-- ==========================================================
@@ -164,7 +167,9 @@
                     {{-- Reservaciones --}}
                     <flux:navlist.item
                         icon="calendar-days"
-                        href="#"
+                        :href="route('reservaciones')"
+                        :current="request()->routeIs('reservaciones')"
+                        wire:navigate
                     >
                         Reservaciones
                     </flux:navlist.item>
@@ -172,7 +177,9 @@
                     {{-- Habitaciones --}}
                     <flux:navlist.item
                         icon="building-office-2"
-                        href="#"
+                        :href="route('habitaciones')"
+                        :current="request()->routeIs('habitaciones')"
+                        wire:navigate
                     >
                         Habitaciones
                     </flux:navlist.item>
@@ -180,7 +187,9 @@
                     {{-- Clientes --}}
                     <flux:navlist.item
                         icon="users"
-                        href="#"
+                        :href="route('clientes')"
+                        :current="request()->routeIs('clientes')"
+                        wire:navigate
                     >
                         Clientes
                     </flux:navlist.item>
@@ -188,7 +197,9 @@
                     {{-- Check-in / Check-out --}}
                     <flux:navlist.item
                         icon="arrow-right-start-on-rectangle"
-                        href="#"
+                        :href="route('checkin-checkout')"
+                        :current="request()->routeIs('checkin-checkout')"
+                        wire:navigate
                     >
                         Check-in / Check-out
                     </flux:navlist.item>
@@ -196,7 +207,9 @@
                     {{-- Limpieza --}}
                     <flux:navlist.item
                         icon="sparkles"
-                        href="#"
+                        :href="route('limpieza')"
+                        :current="request()->routeIs('limpieza')"
+                        wire:navigate
                     >
                         Limpieza
                     </flux:navlist.item>
@@ -204,7 +217,9 @@
                     {{-- Pagos --}}
                     <flux:navlist.item
                         icon="credit-card"
-                        href="#"
+                        :href="route('pagos')"
+                        :current="request()->routeIs('pagos')"
+                        wire:navigate
                     >
                         Pagos
                     </flux:navlist.item>
@@ -212,7 +227,9 @@
                     {{-- Servicios --}}
                     <flux:navlist.item
                         icon="wrench-screwdriver"
-                        href="#"
+                        :href="route('servicios')"
+                        :current="request()->routeIs('servicios')"
+                        wire:navigate
                     >
                         Servicios
                     </flux:navlist.item>
@@ -220,7 +237,9 @@
                     {{-- Gastos --}}
                     <flux:navlist.item
                         icon="banknotes"
-                        href="#"
+                        :href="route('gastos')"
+                        :current="request()->routeIs('gastos')"
+                        wire:navigate
                     >
                         Gastos
                     </flux:navlist.item>
@@ -228,7 +247,9 @@
                     {{-- Empleados --}}
                     <flux:navlist.item
                         icon="identification"
-                        href="#"
+                        :href="route('empleados')"
+                        :current="request()->routeIs('empleados')"
+                        wire:navigate
                     >
                         Empleados
                     </flux:navlist.item>
@@ -236,7 +257,9 @@
                     {{-- Temporadas --}}
                     <flux:navlist.item
                         icon="sun"
-                        href="#"
+                        :href="route('temporadas')"
+                        :current="request()->routeIs('temporadas')"
+                        wire:navigate
                     >
                         Temporadas
                     </flux:navlist.item>
@@ -244,43 +267,30 @@
                     {{-- Reportes --}}
                     <flux:navlist.item
                         icon="chart-bar"
-                        href="#"
+                        :href="route('reportes')"
+                        :current="request()->routeIs('reportes')"
+                        wire:navigate
                     >
                         Reportes
                     </flux:navlist.item>
 
-                    {{-- Usuarios --}}
-                    @can('usuarios.ver')
-
-                        <flux:navlist.item
-                            icon="user-group"
-                            :href="route('usuarios.index')"
-                            :current="request()->routeIs('usuarios.*')"
-                            wire:navigate
-                        >
-                            Usuarios
-                        </flux:navlist.item>
-
-                    @endcan
-
                     {{-- Roles y permisos --}}
-                    @can('roles_permisos.ver')
-
-                        <flux:navlist.item
-                            icon="shield-check"
-                            :href="route('roles-permisos.index')"
-                            :current="request()->routeIs('roles-permisos.*')"
-                            wire:navigate
-                        >
-                            Roles y permisos
-                        </flux:navlist.item>
-
-                    @endcan
+                    <flux:navlist.item
+                        icon="shield-check"
+                        class="text-amber-500"
+                        :href="route('roles-permisos')"
+                        :current="request()->routeIs('roles-permisos*')"
+                        wire:navigate
+                    >
+                        Roles y permisos
+                    </flux:navlist.item>
 
                     {{-- Configuración --}}
                     <flux:navlist.item
                         icon="cog-6-tooth"
-                        href="#"
+                        :href="route('configuracion')"
+                        :current="request()->routeIs('configuracion')"
+                        wire:navigate
                     >
                         Configuración
                     </flux:navlist.item>

@@ -11,7 +11,7 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run(): void
     {
-        //Permisos granulares
+        // Permisos granulares
 
         $permissions = [
             // Dashboard

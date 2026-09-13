@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Livewire;
+
+use App\Models\Reserva;
+use Illuminate\View\View;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+
+#[Layout('components.layouts.app')]
+class CheckInOut extends Component
+{
+    public ?string $mensajeExito = null;
+
+    public function render(): View
+    {
+        return view('livewire.check-in-out', [
+            'porAtender' => Reserva::with(['cliente', 'habitaciones'])
+                ->whereIn('estado', ['Pendiente', 'Confirmada'])
+                ->orderBy('check_in')
+                ->get(),
+            'historial' => Reserva::with(['cliente', 'habitaciones'])
+                ->whereIn('estado', ['Finalizada', 'Cancelada'])
+                ->latest()
+                ->limit(10)
+                ->get(),
+        ]);
+    }
+
+    public function checkIn(int $id): void
+    {
+        $reserva = Reserva::with('habitaciones')->findOrFail($id);
+        $reserva->update(['estado' => 'Confirmada']);
+
+        foreach ($reserva->habitaciones as $habitacion) {
+            $habitacion->update(['estado' => 'Ocupada']);
+        }
+
+        $this->mensajeExito = 'Check-in registrado correctamente.';
+    }
+
+    public function checkOut(int $id): void
+    {
+        $reserva = Reserva::with('habitaciones')->findOrFail($id);
+        $reserva->update(['estado' => 'Finalizada']);
+
+        foreach ($reserva->habitaciones as $habitacion) {
+            $habitacion->update(['estado' => 'Limpieza']);
+        }
+
+        $this->mensajeExito = 'Check-out registrado correctamente. Las habitaciones pasaron a limpieza.';
+    }
+
+    public function cancelar(int $id): void
+    {
+        $reserva = Reserva::with('habitaciones')->findOrFail($id);
+        $reserva->update(['estado' => 'Cancelada']);
+
+        foreach ($reserva->habitaciones as $habitacion) {
+            $habitacion->update(['estado' => 'Disponible']);
+        }
+
+        $this->mensajeExito = 'Reservación cancelada correctamente.';
+    }
+}

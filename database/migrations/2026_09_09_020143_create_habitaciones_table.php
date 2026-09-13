@@ -12,19 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('habitaciones', function (Blueprint $table) {
-            $table->id('id_habitacion');
-
-            $table->foreignId('id_tipo_habitacion')
-                ->constrained('tipos_habitacion', 'id_tipo_habitacion')
+            $table->id();
+            $table->string('numero_habitacion', 10)->unique();
+            $table->foreignId('tipo_habitacion_id')
+                ->constrained('tipos_habitacion')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
-
-            $table->string('numero_habitacion', 10);
-            $table->string('piso', 10)->nullable();
-            $table->string('estatus', 20);
-
-            $table->timestamp('creado_en')->nullable();
-            $table->timestamp('actualizado_en')->nullable();
+            $table->enum('estado', ['Disponible', 'Ocupada', 'Mantenimiento', 'Limpieza'])->default('Disponible');
+            $table->unsignedInteger('piso')->default(1);
+            $table->timestamps();
         });
     }
 

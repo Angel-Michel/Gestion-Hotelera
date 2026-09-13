@@ -9,18 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('temporadas', function (Blueprint $table) {
-            $table->id('id_temporada');
-
+            $table->id();
             $table->string('nombre', 100);
-
             $table->date('fecha_inicio');
-
             $table->date('fecha_fin');
-
             $table->decimal('multiplicador_precio', 5, 2)->default(1.00);
-
-            $table->timestamp('creado_en')->nullable();
-            $table->timestamp('actualizado_en')->nullable();
+            $table->timestamps();
         });
     }
 
