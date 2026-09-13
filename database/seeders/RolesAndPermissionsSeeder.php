@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -10,8 +11,7 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run(): void
     {
-    
-         //Permisos granulares
+        //Permisos granulares
 
         $permissions = [
             // Dashboard
@@ -115,33 +115,33 @@ class RolesAndPermissionsSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        $superadmin = Role::firstOrCreate([
-            'name' => 'SUPERADMIN',
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'super-admin',
             'guard_name' => 'web',
         ]);
 
         $gerente = Role::firstOrCreate([
-            'name' => 'GERENTE',
+            'name' => 'gerente',
             'guard_name' => 'web',
         ]);
 
         $recepcionista = Role::firstOrCreate([
-            'name' => 'RECEPCIONISTA',
+            'name' => 'recepcionista',
             'guard_name' => 'web',
         ]);
 
         $limpieza = Role::firstOrCreate([
-            'name' => 'LIMPIEZA',
+            'name' => 'limpieza',
             'guard_name' => 'web',
         ]);
 
         /*
         |--------------------------------------------------------------------------
-        | Permisos del SUPERADMIN
+        | Permisos del SUPER ADMIN
         |--------------------------------------------------------------------------
         */
 
-        $superadmin->syncPermissions($permissions);
+        $superAdmin->syncPermissions($permissions);
 
         /*
         |--------------------------------------------------------------------------
@@ -270,5 +270,25 @@ class RolesAndPermissionsSeeder extends Seeder
             'limpieza.ver',
             'limpieza.editar',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Usuario inicial Super Admin
+        |--------------------------------------------------------------------------
+        */
+
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@hotel.com'],
+            [
+                'name' => 'Super Admin',
+                'email' => 'admin@hotel.com',
+                'password' => 'password',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        if (! $admin->hasRole('super-admin')) {
+            $admin->assignRole('super-admin');
+        }
     }
 }

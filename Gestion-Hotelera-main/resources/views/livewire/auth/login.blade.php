@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -25,6 +26,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function login(): void
     {
         $this->validate();
+
+        $usuario = User::where('email', $this->email)->first();
+
+        if ($usuario && ! $usuario->activo) {
+            throw ValidationException::withMessages([
+                'email' => 'Tu cuenta está desactivada. Contacta con el administrador.',
+            ]);
+        }
 
         $this->ensureIsNotRateLimited();
 

@@ -52,3 +52,7 @@ Route::put('/roles-permisos', [RolPermisoController::class, 'update'])
     ->middleware('permission:roles_permisos.editar')
     ->name('roles-permisos.update');
 
+Route::get('/admin/users', \App\Livewire\Usuarios\Index::class)
+    ->middleware(['auth', 'permission:usuarios.ver'])
+    ->name('admin.users.index');
+

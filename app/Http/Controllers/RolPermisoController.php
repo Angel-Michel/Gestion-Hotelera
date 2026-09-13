@@ -11,17 +11,17 @@ class RolPermisoController extends Controller
     public function index()
     {
         $roles = Role::whereIn('name', [
-            'SUPERADMIN',
-            'GERENTE',
-            'RECEPCIONISTA',
-            'LIMPIEZA',
+            'super-admin',
+            'gerente',
+            'recepcionista',
+            'limpieza',
         ])
         ->orderByRaw("
             CASE name
-                WHEN 'SUPERADMIN' THEN 1
-                WHEN 'GERENTE' THEN 2
-                WHEN 'RECEPCIONISTA' THEN 3
-                WHEN 'LIMPIEZA' THEN 4
+                WHEN 'super-admin' THEN 1
+                WHEN 'gerente' THEN 2
+                WHEN 'recepcionista' THEN 3
+                WHEN 'limpieza' THEN 4
                 ELSE 5
             END
         ")
@@ -69,10 +69,10 @@ class RolPermisoController extends Controller
         ];
 
         $rolesPermitidos = [
-            'SUPERADMIN',
-            'GERENTE',
-            'RECEPCIONISTA',
-            'LIMPIEZA',
+            'super-admin',
+            'gerente',
+            'recepcionista',
+            'limpieza',
         ];
 
         $permisos = $request->input('permisos', []);

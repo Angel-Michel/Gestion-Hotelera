@@ -263,6 +263,20 @@
 
                     @endcan
 
+                    {{-- Gestión de usuarios (Estado Activo/Inactivo) --}}
+                    @can('usuarios.ver')
+
+                        <flux:navlist.item
+                            icon="switch-horizontal"
+                            :href="route('admin.users.index')"
+                            :current="request()->routeIs('admin.users.*')"
+                            wire:navigate
+                        >
+                            Gestión de usuarios
+                        </flux:navlist.item>
+
+                    @endcan
+
                     {{-- Roles y permisos --}}
                     @can('roles_permisos.ver')
 
