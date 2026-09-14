@@ -33,7 +33,7 @@
                         <flux:table.cell>{{ $reserva->check_out->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell>{{ $reserva->habitaciones->pluck('numero_habitacion')->join(', ') ?: '—' }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $reserva->estado }}</flux:badge>
+                            <x-estado-badge :estado="$reserva->estado" />
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
@@ -84,7 +84,7 @@
                         <flux:table.cell>{{ $reserva->check_in->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell>{{ $reserva->check_out->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="zinc" size="sm">{{ $reserva->estado }}</flux:badge>
+                            <x-estado-badge :estado="$reserva->estado" />
                         </flux:table.cell>
                     </flux:table.row>
                 @empty

@@ -62,9 +62,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pagos', Pagos::class)->name('pagos');
     Route::get('/servicios', Servicios::class)->name('servicios');
     Route::get('/gastos', Gastos::class)->name('gastos');
-    Route::get('/empleados', Empleados::class)->name('empleados');
     Route::get('/temporadas', Temporadas::class)->name('temporadas');
     Route::get('/reportes', Reportes::class)->name('reportes');
-    Route::get('/roles-permisos', RolesPermisos::class)->name('roles-permisos');
     Route::get('/configuracion', Configuracion::class)->name('configuracion');
+});
+
+Route::middleware(['auth', 'role:super-admin'])->group(function () {
+    Route::get('/roles-permisos', RolesPermisos::class)->name('roles-permisos');
+    Route::get('/empleados', Empleados::class)->name('empleados');
 });

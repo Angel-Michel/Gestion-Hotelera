@@ -34,7 +34,7 @@
                     <flux:table.row :key="$gasto->id">
                         <flux:table.cell variant="strong">{{ $gasto->concepto }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $gasto->categoria }}</flux:badge>
+                            <flux:badge color="blue" size="sm">{{ $gasto->categoria }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell>${{ number_format($gasto->monto, 2) }}</flux:table.cell>
                         <flux:table.cell>{{ $gasto->fecha_gasto->format('d/m/Y') }}</flux:table.cell>
@@ -90,7 +90,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Categoría</flux:label>
-                    <select wire:model="categoria" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="categoria" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona…</option>
                         @foreach ($categorias as $categoria)
                             <option value="{{ $categoria }}">{{ $categoria }}</option>

@@ -98,7 +98,7 @@
 
                 <flux:field>
                     <flux:label>Tipo de identificación</flux:label>
-                    <select wire:model="tipo_identificacion" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="tipo_identificacion" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Sin especificar…</option>
                         <option value="INE">INE</option>
                         <option value="Pasaporte">Pasaporte</option>

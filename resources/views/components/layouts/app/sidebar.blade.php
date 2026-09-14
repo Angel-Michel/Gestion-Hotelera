@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
     <head>
         @include('partials.head')
@@ -36,28 +36,28 @@
                 stroke: #FFFFFF !important;
             }
 
-            /* Efecto al pasar el mouse */
+            /* Efecto al pasar el mouse: transparencia azul clara */
             [data-flux-sidebar] a:hover {
-                background-color: var(--color-novastay-hover, #1D2B52) !important;
-                color: #FFFFFF !important;
+                background-color: rgb(147 197 253 / 0.14) !important;
+                color: #DBEAFE !important;
             }
 
             /* Íconos al pasar el mouse */
             [data-flux-sidebar] a:hover svg {
-                color: #FFFFFF !important;
-                stroke: #FFFFFF !important;
+                color: #BFDBFE !important;
+                stroke: #BFDBFE !important;
             }
 
             /* Módulo actualmente seleccionado */
             [data-flux-sidebar] a[aria-current="page"] {
-                background-color: var(--color-novastay-activo, #263A70) !important;
+                background-color: rgb(59 130 246 / 0.28) !important;
                 color: #FFFFFF !important;
             }
 
             /* Ícono del módulo seleccionado */
             [data-flux-sidebar] a[aria-current="page"] svg {
-                color: #FFFFFF !important;
-                stroke: #FFFFFF !important;
+                color: #BFDBFE !important;
+                stroke: #BFDBFE !important;
             }
 
             /* ==========================================================
@@ -107,15 +107,15 @@
                 border-color: var(--color-novastay-borde, #26345F) !important;
             }
 
-            /* Ícono del módulo Roles y permisos (tono dorado) */
-            [data-flux-sidebar] a.text-amber-500 svg {
+            /* Ícono dorado del módulo de seguridad */
+            [data-flux-sidebar] a.text-blue-500 svg {
                 color: var(--color-novastay-dorado, #C9A227) !important;
                 stroke: var(--color-novastay-dorado, #C9A227) !important;
             }
         </style>
     </head>
 
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
+    <body class="min-h-screen bg-[#F8FAFC] dark:bg-zinc-800">
         {{-- ==========================================================
              MENÚ LATERAL
              ========================================================== --}}
@@ -131,16 +131,20 @@
                 icon="x-mark"
             />
 
-            {{-- Logo --}}
+            {{-- Logotipo Novastay --}}
             <a
                 href="{{ route('dashboard') }}"
-                class="mr-5 flex items-center space-x-2"
+                class="mr-5 flex items-center space-x-3"
                 wire:navigate
             >
                 <x-app-logo
                     class="size-8"
                     href="#"
                 />
+
+                <span class="text-lg font-semibold tracking-[0.22em] text-white uppercase">
+                    Novastay
+                </span>
             </a>
 
             {{-- ==========================================================
@@ -155,145 +159,173 @@
                 >
 
                     {{-- Dashboard --}}
-                    <flux:navlist.item
-                        icon="home"
-                        :href="route('dashboard')"
-                        :current="request()->routeIs('dashboard')"
-                        wire:navigate
-                    >
-                        Dashboard
-                    </flux:navlist.item>
+                    @can('dashboard.ver')
+                        <flux:navlist.item
+                            icon="home"
+                            :href="route('dashboard')"
+                            :current="request()->routeIs('dashboard')"
+                            wire:navigate
+                        >
+                            Dashboard
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Reservaciones --}}
-                    <flux:navlist.item
-                        icon="calendar-days"
-                        :href="route('reservaciones')"
-                        :current="request()->routeIs('reservaciones')"
-                        wire:navigate
-                    >
-                        Reservaciones
-                    </flux:navlist.item>
+                    @can('reservaciones.ver')
+                        <flux:navlist.item
+                            icon="calendar-days"
+                            :href="route('reservaciones')"
+                            :current="request()->routeIs('reservaciones')"
+                            wire:navigate
+                        >
+                            Reservaciones
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Habitaciones --}}
-                    <flux:navlist.item
-                        icon="building-office-2"
-                        :href="route('habitaciones')"
-                        :current="request()->routeIs('habitaciones')"
-                        wire:navigate
-                    >
-                        Habitaciones
-                    </flux:navlist.item>
+                    @can('habitaciones.ver')
+                        <flux:navlist.item
+                            icon="building-office-2"
+                            :href="route('habitaciones')"
+                            :current="request()->routeIs('habitaciones')"
+                            wire:navigate
+                        >
+                            Habitaciones
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Clientes --}}
-                    <flux:navlist.item
-                        icon="users"
-                        :href="route('clientes')"
-                        :current="request()->routeIs('clientes')"
-                        wire:navigate
-                    >
-                        Clientes
-                    </flux:navlist.item>
+                    @can('clientes.ver')
+                        <flux:navlist.item
+                            icon="users"
+                            :href="route('clientes')"
+                            :current="request()->routeIs('clientes')"
+                            wire:navigate
+                        >
+                            Clientes
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Check-in / Check-out --}}
-                    <flux:navlist.item
-                        icon="arrow-right-start-on-rectangle"
-                        :href="route('checkin-checkout')"
-                        :current="request()->routeIs('checkin-checkout')"
-                        wire:navigate
-                    >
-                        Check-in / Check-out
-                    </flux:navlist.item>
+                    @can('checkin_checkout.ver')
+                        <flux:navlist.item
+                            icon="arrow-right-start-on-rectangle"
+                            :href="route('checkin-checkout')"
+                            :current="request()->routeIs('checkin-checkout')"
+                            wire:navigate
+                        >
+                            Check-in / Check-out
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Limpieza --}}
-                    <flux:navlist.item
-                        icon="sparkles"
-                        :href="route('limpieza')"
-                        :current="request()->routeIs('limpieza')"
-                        wire:navigate
-                    >
-                        Limpieza
-                    </flux:navlist.item>
+                    @can('limpieza.ver')
+                        <flux:navlist.item
+                            icon="sparkles"
+                            :href="route('limpieza')"
+                            :current="request()->routeIs('limpieza')"
+                            wire:navigate
+                        >
+                            Limpieza
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Pagos --}}
-                    <flux:navlist.item
-                        icon="credit-card"
-                        :href="route('pagos')"
-                        :current="request()->routeIs('pagos')"
-                        wire:navigate
-                    >
-                        Pagos
-                    </flux:navlist.item>
+                    @can('pagos.ver')
+                        <flux:navlist.item
+                            icon="credit-card"
+                            :href="route('pagos')"
+                            :current="request()->routeIs('pagos')"
+                            wire:navigate
+                        >
+                            Pagos
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Servicios --}}
-                    <flux:navlist.item
-                        icon="wrench-screwdriver"
-                        :href="route('servicios')"
-                        :current="request()->routeIs('servicios')"
-                        wire:navigate
-                    >
-                        Servicios
-                    </flux:navlist.item>
+                    @can('servicios.ver')
+                        <flux:navlist.item
+                            icon="wrench-screwdriver"
+                            :href="route('servicios')"
+                            :current="request()->routeIs('servicios')"
+                            wire:navigate
+                        >
+                            Servicios
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Gastos --}}
-                    <flux:navlist.item
-                        icon="banknotes"
-                        :href="route('gastos')"
-                        :current="request()->routeIs('gastos')"
-                        wire:navigate
-                    >
-                        Gastos
-                    </flux:navlist.item>
+                    @can('gastos.ver')
+                        <flux:navlist.item
+                            icon="banknotes"
+                            :href="route('gastos')"
+                            :current="request()->routeIs('gastos')"
+                            wire:navigate
+                        >
+                            Gastos
+                        </flux:navlist.item>
+                    @endcan
 
-                    {{-- Empleados --}}
-                    <flux:navlist.item
-                        icon="identification"
-                        :href="route('empleados')"
-                        :current="request()->routeIs('empleados')"
-                        wire:navigate
-                    >
-                        Empleados
-                    </flux:navlist.item>
+                    {{-- Empleados (solo Super Administrador) --}}
+                    @role('super-admin')
+                        <flux:navlist.item
+                            icon="identification"
+                            :href="route('empleados')"
+                            :current="request()->routeIs('empleados')"
+                            wire:navigate
+                        >
+                            Empleados
+                        </flux:navlist.item>
+                    @endrole
 
                     {{-- Temporadas --}}
-                    <flux:navlist.item
-                        icon="sun"
-                        :href="route('temporadas')"
-                        :current="request()->routeIs('temporadas')"
-                        wire:navigate
-                    >
-                        Temporadas
-                    </flux:navlist.item>
+                    @can('temporadas.ver')
+                        <flux:navlist.item
+                            icon="sun"
+                            :href="route('temporadas')"
+                            :current="request()->routeIs('temporadas')"
+                            wire:navigate
+                        >
+                            Temporadas
+                        </flux:navlist.item>
+                    @endcan
 
                     {{-- Reportes --}}
-                    <flux:navlist.item
-                        icon="chart-bar"
-                        :href="route('reportes')"
-                        :current="request()->routeIs('reportes')"
-                        wire:navigate
-                    >
-                        Reportes
-                    </flux:navlist.item>
+                    @can('reportes.ver')
+                        <flux:navlist.item
+                            icon="chart-bar"
+                            :href="route('reportes')"
+                            :current="request()->routeIs('reportes')"
+                            wire:navigate
+                        >
+                            Reportes
+                        </flux:navlist.item>
+                    @endcan
 
-                    {{-- Roles y permisos --}}
-                    <flux:navlist.item
-                        icon="shield-check"
-                        class="text-amber-500"
-                        :href="route('roles-permisos')"
-                        :current="request()->routeIs('roles-permisos*')"
-                        wire:navigate
-                    >
-                        Roles y permisos
-                    </flux:navlist.item>
+                    {{-- Roles y permisos (solo Super Administrador) --}}
+                    @role('super-admin')
+                        <flux:navlist.item
+                            icon="shield-check"
+                            class="text-blue-500"
+                            :href="route('roles-permisos')"
+                            :current="request()->routeIs('roles-permisos*')"
+                            wire:navigate
+                        >
+                            Roles y permisos
+                        </flux:navlist.item>
+                    @endrole
 
                     {{-- Configuración --}}
-                    <flux:navlist.item
-                        icon="cog-6-tooth"
-                        :href="route('configuracion')"
-                        :current="request()->routeIs('configuracion')"
-                        wire:navigate
-                    >
-                        Configuración
-                    </flux:navlist.item>
+                    @can('configuracion.ver')
+                        <flux:navlist.item
+                            icon="cog-6-tooth"
+                            :href="route('configuracion')"
+                            :current="request()->routeIs('configuracion')"
+                            wire:navigate
+                        >
+                            Configuración
+                        </flux:navlist.item>
+                    @endcan
 
                 </flux:navlist.group>
 

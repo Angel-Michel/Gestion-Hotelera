@@ -35,7 +35,7 @@
                         <flux:table.cell variant="strong">Hab. {{ $tarea->habitacion?->numero_habitacion ?? '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $tarea->usuario?->name ?? '—' }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $tarea->estado }}</flux:badge>
+                            <x-estado-badge :estado="$tarea->estado" />
                         </flux:table.cell>
                         <flux:table.cell>{{ $tarea->notas ?? '—' }}</flux:table.cell>
                         <flux:table.cell align="end">
@@ -72,7 +72,7 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <flux:field>
                     <flux:label>Habitación</flux:label>
-                    <select wire:model="habitacion_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="habitacion_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona…</option>
                         @foreach ($habitaciones as $habitacion)
                             <option value="{{ $habitacion->id }}">Hab. {{ $habitacion->numero_habitacion }} ({{ $habitacion->estado }})</option>
@@ -83,7 +83,7 @@
 
                 <flux:field>
                     <flux:label>Responsable</flux:label>
-                    <select wire:model="user_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="user_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona…</option>
                         @foreach ($usuarios as $usuario)
                             <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
@@ -94,7 +94,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Estado</flux:label>
-                    <select wire:model="estado" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="estado" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         @foreach ($estados as $estado)
                             <option value="{{ $estado }}">{{ $estado }}</option>
                         @endforeach
@@ -104,7 +104,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Notas</flux:label>
-                    <textarea wire:model="notas" rows="3" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"></textarea>
+                    <textarea wire:model="notas" rows="3" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"></textarea>
                     <flux:error name="notas" />
                 </flux:field>
             </div>

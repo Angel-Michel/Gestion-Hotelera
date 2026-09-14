@@ -41,7 +41,7 @@
                             {{ $reserva->habitaciones->pluck('numero_habitacion')->join(', ') ?: '—' }}
                         </flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $reserva->estado }}</flux:badge>
+                            <x-estado-badge :estado="$reserva->estado" />
                         </flux:table.cell>
                         <flux:table.cell>${{ number_format($reserva->monto_total, 2) }}</flux:table.cell>
                         <flux:table.cell align="end">
@@ -78,7 +78,7 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <flux:field class="sm:col-span-2">
                     <flux:label>Cliente</flux:label>
-                    <select wire:model="cliente_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="cliente_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona un cliente…</option>
                         @foreach ($clientes as $cliente)
                             <option value="{{ $cliente->id }}">{{ $cliente->nombreCompleto() }}</option>
@@ -101,7 +101,7 @@
 
                 <flux:field>
                     <flux:label>Estado</flux:label>
-                    <select wire:model="estado" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="estado" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         @foreach ($estados as $estado)
                             <option value="{{ $estado }}">{{ $estado }}</option>
                         @endforeach
@@ -120,7 +120,7 @@
                     <div class="grid max-h-48 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-3">
                         @foreach ($habitaciones as $habitacion)
                             <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                                <input type="checkbox" value="{{ $habitacion->id }}" wire:model="habitacion_ids" class="size-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                                <input type="checkbox" value="{{ $habitacion->id }}" wire:model="habitacion_ids" class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                                 Hab. {{ $habitacion->numero_habitacion }} ({{ $habitacion->estado }})
                             </label>
                         @endforeach

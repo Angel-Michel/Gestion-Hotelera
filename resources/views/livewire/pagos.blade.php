@@ -38,7 +38,7 @@
                         </flux:table.cell>
                         <flux:table.cell>${{ number_format($pago->monto, 2) }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $pago->metodo_pago }}</flux:badge>
+                            <flux:badge color="blue" size="sm">{{ $pago->metodo_pago }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell>{{ $pago->fecha_pago?->format('d/m/Y H:i') ?? '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $pago->notas ?? '—' }}</flux:table.cell>
@@ -76,7 +76,7 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <flux:field class="sm:col-span-2">
                     <flux:label>Reservación</flux:label>
-                    <select wire:model="reserva_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="reserva_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona…</option>
                         @foreach ($reservas as $reserva)
                             <option value="{{ $reserva->id }}">#{{ $reserva->id }} · {{ $reserva->cliente?->nombreCompleto() }} (${{ number_format($reserva->monto_total, 2) }})</option>
@@ -93,7 +93,7 @@
 
                 <flux:field>
                     <flux:label>Método de pago</flux:label>
-                    <select wire:model="metodo_pago" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="metodo_pago" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         @foreach ($metodos as $metodo)
                             <option value="{{ $metodo }}">{{ $metodo }}</option>
                         @endforeach
@@ -109,7 +109,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Notas</flux:label>
-                    <textarea wire:model="notas" rows="3" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"></textarea>
+                    <textarea wire:model="notas" rows="3" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white"></textarea>
                     <flux:error name="notas" />
                 </flux:field>
             </div>

@@ -152,67 +152,26 @@ class RolesAndPermissionsSeeder extends Seeder
         $gerente->syncPermissions([
             'dashboard.ver',
 
+            // Reservaciones
             'reservaciones.ver',
             'reservaciones.crear',
             'reservaciones.editar',
             'reservaciones.eliminar',
 
-            'habitaciones.ver',
-            'habitaciones.crear',
-            'habitaciones.editar',
-            'habitaciones.eliminar',
+            // Reportes
+            'reportes.ver',
 
-            'clientes.ver',
-            'clientes.crear',
-            'clientes.editar',
-            'clientes.eliminar',
-
-            'checkin_checkout.ver',
-            'checkin_checkout.crear',
-            'checkin_checkout.editar',
-
-            'limpieza.ver',
-            'limpieza.crear',
-            'limpieza.editar',
-            'limpieza.eliminar',
-
+            // Pagos
             'pagos.ver',
             'pagos.crear',
             'pagos.editar',
             'pagos.eliminar',
 
-            'servicios.ver',
-            'servicios.crear',
-            'servicios.editar',
-            'servicios.eliminar',
-
+            // Gastos
             'gastos.ver',
             'gastos.crear',
             'gastos.editar',
             'gastos.eliminar',
-
-            'empleados.ver',
-            'empleados.crear',
-            'empleados.editar',
-            'empleados.eliminar',
-
-            'temporadas.ver',
-            'temporadas.crear',
-            'temporadas.editar',
-            'temporadas.eliminar',
-
-            'reportes.ver',
-
-            'usuarios.ver',
-            'usuarios.crear',
-            'usuarios.editar',
-
-            'roles_permisos.ver',
-            'roles_permisos.crear',
-            'roles_permisos.editar',
-
-            'configuracion.ver',
-            'configuracion.editar',
         ]);
 
         /*
@@ -224,36 +183,25 @@ class RolesAndPermissionsSeeder extends Seeder
         $recepcionista->syncPermissions([
             'dashboard.ver',
 
+            // Reservaciones
             'reservaciones.ver',
             'reservaciones.crear',
             'reservaciones.editar',
 
-            'habitaciones.ver',
-            'habitaciones.editar',
-
-            'clientes.ver',
-            'clientes.crear',
-            'clientes.editar',
-
+            // Check-in / Check-out
             'checkin_checkout.ver',
             'checkin_checkout.crear',
             'checkin_checkout.editar',
 
+            // Clientes
+            'clientes.ver',
+            'clientes.crear',
+            'clientes.editar',
+
+            // Limpieza
             'limpieza.ver',
-
-            'pagos.ver',
-            'pagos.crear',
-            'pagos.editar',
-
-            'servicios.ver',
-            'servicios.crear',
-            'servicios.editar',
-
-            'empleados.ver',
-
-            'temporadas.ver',
-
-            'reportes.ver',
+            'limpieza.crear',
+            'limpieza.editar',
         ]);
 
         /*

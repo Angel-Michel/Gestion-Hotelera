@@ -41,7 +41,7 @@
                 </flux:text>
             </div>
 
-            <flux:badge color="amber" size="sm">Cambios guardados al instante</flux:badge>
+            <flux:badge color="blue" size="sm">Cambios guardados al instante</flux:badge>
         </div>
 
         <flux:table>
@@ -57,7 +57,7 @@
                     <flux:table.row :key="$rol->id">
                         <flux:table.cell variant="strong">
                             <span class="inline-flex items-center gap-2">
-                                <flux:icon.shield-check class="size-4 text-amber-500" />
+                                <flux:icon.shield-check class="size-4 text-blue-500" />
                                 {{ $rol->name }}
                             </span>
                         </flux:table.cell>
@@ -69,7 +69,7 @@
                                 </flux:badge>
 
                                 @foreach ($rol->permissions->take(3) as $permiso)
-                                    <flux:badge color="amber" size="sm">
+                                    <flux:badge color="blue" size="sm">
                                         {{ Str::after($permiso->name, '.') }}
                                     </flux:badge>
                                 @endforeach
@@ -83,7 +83,7 @@
                         </flux:table.cell>
 
                         <flux:table.cell align="center">
-                            <flux:badge color="green" size="sm">
+                            <flux:badge color="emerald" size="sm">
                                 {{ $rol->users_count }}
                             </flux:badge>
                         </flux:table.cell>
@@ -127,7 +127,7 @@
                 </flux:text>
             </div>
 
-            <flux:badge color="amber" size="sm">Cambios guardados al instante</flux:badge>
+            <flux:badge color="blue" size="sm">Cambios guardados al instante</flux:badge>
         </div>
 
         <div class="overflow-x-auto">
@@ -138,7 +138,7 @@
                     @foreach ($this->roles as $rol)
                         <flux:table.column align="center">
                             <div class="flex flex-col items-center gap-1">
-                                <flux:badge color="amber" size="sm">{{ $rol->name }}</flux:badge>
+                                <flux:badge color="blue" size="sm">{{ $rol->name }}</flux:badge>
                                 <span class="text-xs font-normal text-zinc-400">
                                     {{ $rol->users_count }} usuario(s) · {{ $rol->permissions_count }} permiso(s)
                                 </span>
@@ -149,7 +149,7 @@
                                     </span>
                                 @else
                                     <label class="inline-flex cursor-pointer items-center gap-1 text-xs text-zinc-500" title="Marcar o desmarcar todos los permisos de este rol">
-                                        <input type="checkbox" wire:click="alternarTodosDeRol({{ $rol->id }})" @checked($this->rolTieneTodosLosPermisos($rol)) class="size-3.5 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                                        <input type="checkbox" wire:click="alternarTodosDeRol({{ $rol->id }})" @checked($this->rolTieneTodosLosPermisos($rol)) class="size-3.5 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                                         <span class="font-semibold uppercase">Todos</span>
                                     </label>
                                 @endif
@@ -163,7 +163,7 @@
                         <flux:table.row>
                             <flux:table.cell variant="strong">
                                 <span class="inline-flex items-center gap-2">
-                                    <span class="size-1.5 rounded-full bg-amber-500"></span>
+                                    <span class="size-1.5 rounded-full bg-blue-500"></span>
                                     {{ $this->etiquetaModulo($modulo) }}
                                 </span>
                             </flux:table.cell>
@@ -175,7 +175,7 @@
                                             <flux:icon.lock-closed class="size-3.5" />
                                         </span>
                                     @else
-                                        <input type="checkbox" wire:click="alternarModulo({{ $rol->id }}, '{{ $modulo }}')" @checked($this->rolTieneTodosDelModulo($rol, $modulo)) title="Marcar o desmarcar todo el módulo {{ $this->etiquetaModulo($modulo) }} para {{ $rol->name }}" class="size-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                                        <input type="checkbox" wire:click="alternarModulo({{ $rol->id }}, '{{ $modulo }}')" @checked($this->rolTieneTodosDelModulo($rol, $modulo)) title="Marcar o desmarcar todo el módulo {{ $this->etiquetaModulo($modulo) }} para {{ $rol->name }}" class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                                     @endif
                                 </flux:table.cell>
                             @endforeach
@@ -194,7 +194,7 @@
                                                 {{ $this->rolTienePermiso($rol, $permiso->id) ? '●' : '·' }}
                                             </span>
                                         @else
-                                            <input type="checkbox" wire:click="actualizarPermisos({{ $rol->id }}, {{ $permiso->id }})" @checked($this->rolTienePermiso($rol, $permiso->id)) title="{{ $this->etiquetaModulo($modulo) }} · {{ $this->etiquetaAccion(Str::after($permiso->name, '.')) }} · {{ $rol->name }}" class="size-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                                            <input type="checkbox" wire:click="actualizarPermisos({{ $rol->id }}, {{ $permiso->id }})" @checked($this->rolTienePermiso($rol, $permiso->id)) title="{{ $this->etiquetaModulo($modulo) }} · {{ $this->etiquetaAccion(Str::after($permiso->name, '.')) }} · {{ $rol->name }}" class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                                         @endif
                                     </flux:table.cell>
                                 @endforeach
@@ -244,7 +244,7 @@
                         </p>
 
                         <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                            <input type="checkbox" wire:model="seleccionarTodos" class="size-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                            <input type="checkbox" wire:model="seleccionarTodos" class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                             Seleccionar todos
                         </label>
                     </div>
@@ -252,14 +252,14 @@
                     <div class="grid max-h-80 gap-5 overflow-y-auto pr-1 sm:grid-cols-2">
                         @foreach ($this->permisosPorModulo as $modulo => $permisos)
                             <div>
-                                <p class="mb-2 border-b border-zinc-800/10 pb-1 text-xs font-semibold uppercase tracking-wide text-amber-600 dark:border-white/20 dark:text-amber-400">
+                                <p class="mb-2 border-b border-zinc-800/10 pb-1 text-xs font-semibold uppercase tracking-wide text-blue-600 dark:border-white/20 dark:text-blue-400">
                                     {{ $this->etiquetaModulo($modulo) }}
                                 </p>
 
                                 <div class="space-y-1.5">
                                     @foreach ($permisos as $permiso)
                                         <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                                            <input type="checkbox" value="{{ $permiso->id }}" wire:model="permisosSeleccionados" class="size-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                                            <input type="checkbox" value="{{ $permiso->id }}" wire:model="permisosSeleccionados" class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                                             {{ $permiso->name }}
                                         </label>
                                     @endforeach
@@ -323,7 +323,7 @@
 
         <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
             ¿Estás seguro de que deseas eliminar el rol
-            <span class="font-semibold text-amber-600 dark:text-amber-400">{{ $nombreRolAEliminar }}</span>?
+            <span class="font-semibold text-blue-600 dark:text-blue-400">{{ $nombreRolAEliminar }}</span>?
             Se retirará el acceso a los usuarios asignados a este rol.
         </p>
 
