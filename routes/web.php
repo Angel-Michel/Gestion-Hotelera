@@ -20,7 +20,7 @@ use Livewire\Volt\Volt;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('inicio');
+})->name('home');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
