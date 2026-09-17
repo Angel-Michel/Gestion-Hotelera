@@ -18,9 +18,16 @@ use App\Livewire\Temporadas;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
+use App\Http\Controllers\RoomSearchController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::get('/buscar-habitaciones', [RoomSearchController::class, 'index'])->name('rooms.search');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
