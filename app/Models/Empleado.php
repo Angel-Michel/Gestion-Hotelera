@@ -19,10 +19,11 @@ class Empleado extends Model
         'id_usuario',
         'nombre',
         'apellidos',
+        'correo_electronico',
         'telefono',
         'puesto',
         'salario',
-        'horario',
+        'turno',
         'esta_activo',
     ];
 

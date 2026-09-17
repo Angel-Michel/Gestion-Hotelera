@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoomSearchController;
 use App\Http\Controllers\UsuarioController;
 use App\Livewire\CheckInOut;
 use App\Livewire\Clientes;
@@ -7,18 +8,18 @@ use App\Livewire\Configuracion;
 use App\Livewire\Dashboard;
 use App\Livewire\Empleados;
 use App\Livewire\Gastos;
+use App\Livewire\GestionRoles;
 use App\Livewire\Habitaciones;
 use App\Livewire\Limpieza;
+use App\Livewire\MatrizPermisos;
 use App\Livewire\Pagos;
 use App\Livewire\Reportes;
 use App\Livewire\Reservaciones;
-use App\Livewire\RolesPermisos;
 use App\Livewire\Servicios;
 use App\Livewire\Temporadas;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-use App\Http\Controllers\RoomSearchController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -72,9 +73,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/temporadas', Temporadas::class)->name('temporadas');
     Route::get('/reportes', Reportes::class)->name('reportes');
     Route::get('/configuracion', Configuracion::class)->name('configuracion');
+
+    Route::get('/roles', GestionRoles::class)
+        ->middleware('permission:roles_permisos.ver')
+        ->name('roles');
+
+    Route::get('/permisos', MatrizPermisos::class)
+        ->middleware('role:super-admin')
+        ->name('permisos');
 });
 
 Route::middleware(['auth', 'role:super-admin'])->group(function () {
-    Route::get('/roles-permisos', RolesPermisos::class)->name('roles-permisos');
     Route::get('/empleados', Empleados::class)->name('empleados');
 });

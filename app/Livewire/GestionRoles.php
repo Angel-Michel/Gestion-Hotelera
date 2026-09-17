@@ -11,7 +11,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 #[Layout('components.layouts.app')]
-class RolesPermisos extends Component
+class GestionRoles extends Component
 {
     public bool $mostrarModalCrear = false;
 
@@ -38,7 +38,7 @@ class RolesPermisos extends Component
 
     public function render(): View
     {
-        return view('livewire.roles-permisos');
+        return view('livewire.gestion-roles');
     }
 
     /**
@@ -47,17 +47,8 @@ class RolesPermisos extends Component
      * @return list<string>
      */
     protected function rolesProtegidos(): array
-{
-    return ['super-admin', 'superadmin', 'super admin', 'gerente', 'recepcionista', 'limpieza'];
-}
-    /**
-     * Roles cuyos permisos no pueden modificarse desde la matriz.
-     *
-     * @return list<string>
-     */
-    protected function rolesInmutables(): array
     {
-        return ['super-admin', 'superadmin', 'super admin'];
+        return ['super-admin', 'superadmin', 'super admin', 'gerente', 'recepcionista', 'limpieza'];
     }
 
     public function normalizarNombre(string $nombre): string
@@ -68,11 +59,6 @@ class RolesPermisos extends Component
     public function esRolProtegido(string $nombre): bool
     {
         return in_array($this->normalizarNombre($nombre), $this->rolesProtegidos(), true);
-    }
-
-    public function esRolInmutable(string $nombre): bool
-    {
-        return in_array($this->normalizarNombre($nombre), $this->rolesInmutables(), true);
     }
 
     public function abrirModalCrear(): void
@@ -230,94 +216,6 @@ class RolesPermisos extends Component
         $this->cerrarModalEliminar();
     }
 
-    public function actualizarPermisos(int $roleId, int $permisoId): void
-    {
-        abort_unless(auth()->user()?->can('roles_permisos.editar'), 403);
-
-        $rol = Role::findOrFail($roleId);
-        $permiso = Permission::findOrFail($permisoId);
-
-        if ($this->esRolInmutable($rol->name)) {
-            $this->mensajeError = "El rol \"{$rol->name}\" es del sistema; sus permisos no pueden modificarse.";
-            $this->reset('mensajeExito');
-
-            return;
-        }
-
-        if ($rol->hasPermissionTo($permiso->name)) {
-            $rol->revokePermissionTo($permiso->name);
-            $this->mensajeExito = "Permiso \"{$permiso->name}\" retirado del rol \"{$rol->name}\".";
-        } else {
-            $rol->givePermissionTo($permiso->name);
-            $this->mensajeExito = "Permiso \"{$permiso->name}\" asignado al rol \"{$rol->name}\".";
-        }
-
-        $this->reset('mensajeError');
-        unset($this->roles);
-    }
-
-    public function alternarModulo(int $roleId, string $modulo): void
-    {
-        abort_unless(auth()->user()?->can('roles_permisos.editar'), 403);
-
-        $rol = Role::findOrFail($roleId);
-
-        if ($this->esRolInmutable($rol->name)) {
-            $this->mensajeError = "El rol \"{$rol->name}\" es del sistema; sus permisos no pueden modificarse.";
-            $this->reset('mensajeExito');
-
-            return;
-        }
-
-        $permisosModulo = $this->permisosPorModulo->get($modulo);
-
-        if ($permisosModulo === null || $permisosModulo->isEmpty()) {
-            return;
-        }
-
-        $nombres = $permisosModulo->pluck('name');
-
-        $asignados = $nombres->filter(fn (string $nombre): bool => $rol->hasPermissionTo($nombre));
-
-        if ($asignados->count() === $nombres->count()) {
-            $rol->revokePermissionTo($asignados->all());
-            $this->mensajeExito = "Se retiraron todos los permisos de {$this->etiquetaModulo($modulo)} al rol \"{$rol->name}\".";
-        } else {
-            $rol->givePermissionTo($nombres->all());
-            $this->mensajeExito = "Se asignaron todos los permisos de {$this->etiquetaModulo($modulo)} al rol \"{$rol->name}\".";
-        }
-
-        $this->reset('mensajeError');
-        unset($this->roles);
-    }
-
-    public function alternarTodosDeRol(int $roleId): void
-    {
-        abort_unless(auth()->user()?->can('roles_permisos.editar'), 403);
-
-        $rol = Role::withCount('permissions')->findOrFail($roleId);
-
-        if ($this->esRolInmutable($rol->name)) {
-            $this->mensajeError = "El rol \"{$rol->name}\" es del sistema; sus permisos no pueden modificarse.";
-            $this->reset('mensajeExito');
-
-            return;
-        }
-
-        $totalPermisos = Permission::count();
-
-        if ($rol->permissions_count === $totalPermisos) {
-            $rol->syncPermissions([]);
-            $this->mensajeExito = "Se retiraron todos los permisos del rol \"{$rol->name}\".";
-        } else {
-            $rol->syncPermissions(Permission::pluck('name')->all());
-            $this->mensajeExito = "Se asignaron todos los permisos al rol \"{$rol->name}\".";
-        }
-
-        $this->reset('mensajeError');
-        unset($this->roles);
-    }
-
     public function updatedSeleccionarTodos(): void
     {
         $this->permisosSeleccionados = $this->seleccionarTodos ? $this->todosLosPermisosIds() : [];
@@ -340,43 +238,6 @@ class RolesPermisos extends Component
             ->pluck('id')
             ->map(fn (int $id): string => (string) $id)
             ->all();
-    }
-
-    /**
-     * @return list<int>
-     */
-    protected function idsPermisosDelRol(Role $rol): array
-    {
-        return $rol->permissions
-            ->pluck('id')
-            ->map(fn (mixed $id): int => (int) $id)
-            ->all();
-    }
-
-    public function rolTienePermiso(Role $rol, int $permisoId): bool
-    {
-        return in_array($permisoId, $this->idsPermisosDelRol($rol), true);
-    }
-
-    public function rolTieneTodosDelModulo(Role $rol, string $modulo): bool
-    {
-        $permisosModulo = $this->permisosPorModulo->get($modulo);
-
-        if ($permisosModulo === null || $permisosModulo->isEmpty()) {
-            return false;
-        }
-
-        $idsDelModulo = $permisosModulo
-            ->pluck('id')
-            ->map(fn (int $id): int => (int) $id)
-            ->all();
-
-        return count(array_intersect($this->idsPermisosDelRol($rol), $idsDelModulo)) === count($idsDelModulo);
-    }
-
-    public function rolTieneTodosLosPermisos(Role $rol): bool
-    {
-        return $rol->permissions->count() === $this->permisosPorModulo->flatten()->count();
     }
 
     public function etiquetaModulo(string $modulo): string

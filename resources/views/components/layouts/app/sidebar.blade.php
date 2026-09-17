@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -11,20 +10,20 @@
 
         {{-- ==========================================================
              MENÚ LATERAL
+             Mismo fondo oscuro (#0f172a) y acentos ámbar que el login.
              ========================================================== --}}
 
         <flux:sidebar
             sticky
             stashable
-            class="border-r border-slate-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+            class="border-r border-slate-800 bg-[#0f172a] shadow-lg shadow-slate-950/20"
         >
 
             {{-- Botón para cerrar el sidebar en dispositivos pequeños --}}
             <flux:sidebar.toggle
-                class="lg:hidden"
+                class="lg:hidden !text-slate-300 hover:!text-white"
                 icon="x-mark"
             />
-
 
             {{-- ======================================================
                  LOGOTIPO
@@ -32,36 +31,32 @@
 
             <a
                 href="{{ route('dashboard') }}"
-                class="mb-7 flex items-center gap-3 px-2"
+                class="mb-7 flex items-center gap-3 rounded-lg px-2 transition hover:bg-slate-800/70"
                 wire:navigate
             >
 
-                <x-app-logo
-                    class="size-8"
-                    href="#"
-                />
+                <div
+                    class="flex aspect-square size-9 shrink-0 items-center justify-center rounded-lg bg-amber-600 shadow-md shadow-amber-950/40"
+                >
+                    <x-app-logo-icon class="size-5 fill-current text-white" />
+                </div>
 
                 <div class="flex flex-col leading-tight">
-
-                    <span class="text-sm font-semibold tracking-wide text-slate-800 dark:text-white">
-                        Gestión Hotelera
+                    <span class="font-serif text-sm font-bold tracking-wide text-white">
+                        NovaStay
                     </span>
-
-                    <span class="text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:text-zinc-500">
-                        Administración
+                    <span class="text-[10px] font-semibold uppercase tracking-widest text-amber-500">
+                        Hotel Management
                     </span>
-
                 </div>
 
             </a>
-
 
             {{-- ======================================================
                  MENÚ PRINCIPAL
                  ====================================================== --}}
 
-            <flux:navlist variant="outline">
-
+            <flux:navlist>
 
                 {{-- ==================================================
                      PRINCIPAL
@@ -80,7 +75,7 @@
                             :href="route('dashboard')"
                             :current="request()->routeIs('dashboard')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Dashboard
                         </flux:navlist.item>
@@ -88,7 +83,6 @@
                     @endcan
 
                 </flux:navlist.group>
-
 
                 {{-- ==================================================
                      OPERACIÓN
@@ -107,13 +101,12 @@
                             :href="route('reservaciones')"
                             :current="request()->routeIs('reservaciones')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Reservaciones
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Habitaciones --}}
                     @can('habitaciones.ver')
@@ -123,13 +116,12 @@
                             :href="route('habitaciones')"
                             :current="request()->routeIs('habitaciones')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Habitaciones
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Clientes --}}
                     @can('clientes.ver')
@@ -139,13 +131,12 @@
                             :href="route('clientes')"
                             :current="request()->routeIs('clientes')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Clientes
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Check-in / Check-out --}}
                     @can('checkin_checkout.ver')
@@ -155,13 +146,12 @@
                             :href="route('checkin-checkout')"
                             :current="request()->routeIs('checkin-checkout')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Check-in / Check-out
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Limpieza --}}
                     @can('limpieza.ver')
@@ -171,13 +161,12 @@
                             :href="route('limpieza')"
                             :current="request()->routeIs('limpieza')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Limpieza
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Pagos --}}
                     @can('pagos.ver')
@@ -187,13 +176,12 @@
                             :href="route('pagos')"
                             :current="request()->routeIs('pagos')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Pagos
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Servicios --}}
                     @can('servicios.ver')
@@ -203,7 +191,7 @@
                             :href="route('servicios')"
                             :current="request()->routeIs('servicios')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Servicios
                         </flux:navlist.item>
@@ -211,7 +199,6 @@
                     @endcan
 
                 </flux:navlist.group>
-
 
                 {{-- ==================================================
                      ADMINISTRACIÓN
@@ -230,13 +217,12 @@
                             :href="route('gastos')"
                             :current="request()->routeIs('gastos')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Gastos
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Empleados --}}
                     @can('empleados.ver')
@@ -246,13 +232,12 @@
                             :href="route('empleados')"
                             :current="request()->routeIs('empleados')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Empleados
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Temporadas --}}
                     @can('temporadas.ver')
@@ -262,13 +247,12 @@
                             :href="route('temporadas')"
                             :current="request()->routeIs('temporadas')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Temporadas
                         </flux:navlist.item>
 
                     @endcan
-
 
                     {{-- Reportes --}}
                     @can('reportes.ver')
@@ -278,29 +262,42 @@
                             :href="route('reportes')"
                             :current="request()->routeIs('reportes')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Reportes
                         </flux:navlist.item>
 
                     @endcan
 
-
-                    {{-- Roles y permisos --}}
+                    {{-- Roles --}}
                     @can('roles_permisos.ver')
 
                         <flux:navlist.item
                             icon="shield-check"
-                            :href="route('roles-permisos')"
-                            :current="request()->routeIs('roles-permisos*')"
+                            :href="route('roles')"
+                            :current="request()->routeIs('roles')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
-                            Roles y permisos
+                            Roles
                         </flux:navlist.item>
 
                     @endcan
 
+                    {{-- Permisos --}}
+                    @hasrole('super-admin')
+
+                        <flux:navlist.item
+                            icon="key"
+                            :href="route('permisos')"
+                            :current="request()->routeIs('permisos')"
+                            wire:navigate
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                        >
+                            Permisos
+                        </flux:navlist.item>
+
+                    @endhasrole
 
                     {{-- Configuración --}}
                     @can('configuracion.ver')
@@ -310,7 +307,7 @@
                             :href="route('configuracion')"
                             :current="request()->routeIs('configuracion')"
                             wire:navigate
-                            class="rounded-lg"
+                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Configuración
                         </flux:navlist.item>
@@ -321,13 +318,11 @@
 
             </flux:navlist>
 
-
             {{-- ======================================================
                  ESPACIO FLEXIBLE
                  ====================================================== --}}
 
             <flux:spacer />
-
 
             {{-- ======================================================
                  PERFIL DEL USUARIO - ESCRITORIO
@@ -342,8 +337,8 @@
                     :name="auth()->user()->name"
                     :initials="auth()->user()->initials()"
                     icon-trailing="chevrons-up-down"
+                    class="hover:!bg-slate-800/70 [&>span]:!text-slate-200 [&>span]:group-hover:!text-white"
                 />
-
 
                 <flux:menu class="w-[240px]">
 
@@ -356,11 +351,10 @@
 
                                 {{-- Iniciales --}}
                                 <span
-                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200"
+                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-600/15 text-sm font-semibold text-amber-600"
                                 >
                                     {{ auth()->user()->initials() }}
                                 </span>
-
 
                                 {{-- Datos --}}
                                 <div class="min-w-0 flex-1">
@@ -373,7 +367,7 @@
                                         {{ auth()->user()->email }}
                                     </span>
 
-                                    <span class="mt-1 block truncate text-[10px] font-semibold uppercase tracking-wider text-[#B08D57]">
+                                    <span class="mt-1 block truncate text-[10px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                                         {{ auth()->user()->getRoleNames()->implode(', ') }}
                                     </span>
 
@@ -385,9 +379,7 @@
 
                     </flux:menu.radio.group>
 
-
                     <flux:menu.separator />
-
 
                     {{-- Cerrar sesión --}}
                     <form
@@ -415,21 +407,19 @@
 
         </flux:sidebar>
 
-
         {{-- ==========================================================
              MENÚ DEL USUARIO - MÓVIL
              ========================================================== --}}
 
-        <flux:header class="lg:hidden border-b border-slate-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <flux:header class="lg:hidden border-b border-slate-800 bg-[#0f172a]">
 
             <flux:sidebar.toggle
-                class="lg:hidden"
+                class="lg:hidden !text-slate-300 hover:!text-white"
                 icon="bars-2"
                 inset="left"
             />
 
             <flux:spacer />
-
 
             <flux:dropdown
                 position="top"
@@ -439,8 +429,8 @@
                 <flux:profile
                     :initials="auth()->user()->initials()"
                     icon-trailing="chevron-down"
+                    class="hover:!bg-slate-800/70"
                 />
-
 
                 <flux:menu>
 
@@ -451,11 +441,10 @@
                             <div class="flex items-center gap-2">
 
                                 <span
-                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200"
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-600/15 text-sm font-semibold text-amber-600 dark:text-amber-400"
                                 >
                                     {{ auth()->user()->initials() }}
                                 </span>
-
 
                                 <div class="min-w-0 flex-1">
 
@@ -467,7 +456,7 @@
                                         {{ auth()->user()->email }}
                                     </span>
 
-                                    <span class="mt-1 block truncate text-[10px] font-semibold uppercase tracking-wider text-[#B08D57]">
+                                    <span class="mt-1 block truncate text-[10px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                                         {{ auth()->user()->getRoleNames()->implode(', ') }}
                                     </span>
 
@@ -479,9 +468,7 @@
 
                     </flux:menu.radio.group>
 
-
                     <flux:menu.separator />
-
 
                     {{-- Cerrar sesión --}}
                     <form
@@ -508,7 +495,6 @@
             </flux:dropdown>
 
         </flux:header>
-
 
         {{-- ==========================================================
              CONTENIDO DE LA PÁGINA
