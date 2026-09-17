@@ -1,366 +1,337 @@
+
 <!DOCTYPE html>
+
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
     <head>
         @include('partials.head')
-
-        <style>
-            /* ==========================================================
-               ESTILO DEL MENÚ LATERAL
-               ========================================================== */
-
-            /* Fondo general del sidebar (paleta Novastay) */
-            [data-flux-sidebar] {
-                background-color: var(--color-novastay-fondo, #101B3D) !important;
-                border-color: var(--color-novastay-borde, #26345F) !important;
-            }
-
-            /* Fondo del cuerpo cuando se encuentra dentro del sidebar */
-            [data-flux-sidebar] * {
-                border-color: var(--color-novastay-borde, #26345F);
-            }
-
-            /* Título "Gestión Hotelera" */
-            [data-flux-sidebar] [data-flux-navlist-group-heading] {
-                color: #FFFFFF !important;
-            }
-
-            /* Texto de los módulos */
-            [data-flux-sidebar] a {
-                color: #FFFFFF !important;
-            }
-
-            /* Íconos de los módulos */
-            [data-flux-sidebar] svg {
-                color: #FFFFFF !important;
-                stroke: #FFFFFF !important;
-            }
-
-            /* Efecto al pasar el mouse: transparencia azul clara */
-            [data-flux-sidebar] a:hover {
-                background-color: rgb(147 197 253 / 0.14) !important;
-                color: #DBEAFE !important;
-            }
-
-            /* Íconos al pasar el mouse */
-            [data-flux-sidebar] a:hover svg {
-                color: #BFDBFE !important;
-                stroke: #BFDBFE !important;
-            }
-
-            /* Módulo actualmente seleccionado */
-            [data-flux-sidebar] a[aria-current="page"] {
-                background-color: rgb(59 130 246 / 0.28) !important;
-                color: #FFFFFF !important;
-            }
-
-            /* Ícono del módulo seleccionado */
-            [data-flux-sidebar] a[aria-current="page"] svg {
-                color: #BFDBFE !important;
-                stroke: #BFDBFE !important;
-            }
-
-            /* ==========================================================
-               PERFIL DEL USUARIO
-               ========================================================== */
-
-            /* Nombre y correo del usuario */
-            [data-flux-sidebar] [data-flux-profile] {
-                color: #FFFFFF !important;
-            }
-
-            /* ==========================================================
-               MENÚ INFERIOR
-               ========================================================== */
-
-            /* Repository y Documentation */
-            [data-flux-sidebar] a[href*="github.com"],
-            [data-flux-sidebar] a[href*="laravel.com"] {
-                color: #FFFFFF !important;
-            }
-
-            [data-flux-sidebar] a[href*="github.com"] svg,
-            [data-flux-sidebar] a[href*="laravel.com"] svg {
-                color: #FFFFFF !important;
-                stroke: #FFFFFF !important;
-            }
-
-            /* Hover de Repository y Documentation */
-            [data-flux-sidebar] a[href*="github.com"]:hover,
-            [data-flux-sidebar] a[href*="laravel.com"]:hover {
-                background-color: #1D2B52 !important;
-                color: #FFFFFF !important;
-            }
-
-            [data-flux-sidebar] a[href*="github.com"]:hover svg,
-            [data-flux-sidebar] a[href*="laravel.com"]:hover svg {
-                color: #FFFFFF !important;
-                stroke: #FFFFFF !important;
-            }
-
-            /* ==========================================================
-               MENÚ DEL USUARIO
-               ========================================================== */
-
-            /* Fondo del menú desplegable */
-            [data-flux-menu] {
-                border-color: var(--color-novastay-borde, #26345F) !important;
-            }
-
-            /* Ícono dorado del módulo de seguridad */
-            [data-flux-sidebar] a.text-blue-500 svg {
-                color: var(--color-novastay-dorado, #C9A227) !important;
-                stroke: var(--color-novastay-dorado, #C9A227) !important;
-            }
-        </style>
     </head>
 
-    <body class="min-h-screen bg-[#F8FAFC] dark:bg-zinc-800">
+    <body class="min-h-screen bg-slate-50 text-slate-700 dark:bg-zinc-950 dark:text-zinc-200">
+
         {{-- ==========================================================
              MENÚ LATERAL
              ========================================================== --}}
+
         <flux:sidebar
             sticky
             stashable
-            class="border-r border-[#26345F] bg-[#101B3D] dark:border-[#26345F] dark:bg-[#101B3D]"
+            class="border-r border-slate-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
         >
 
-            {{-- Botón para cerrar el menú en dispositivos pequeños --}}
+            {{-- Botón para cerrar el sidebar en dispositivos pequeños --}}
             <flux:sidebar.toggle
                 class="lg:hidden"
                 icon="x-mark"
             />
 
-            {{-- Logotipo Novastay --}}
+
+            {{-- ======================================================
+                 LOGOTIPO
+                 ====================================================== --}}
+
             <a
                 href="{{ route('dashboard') }}"
-                class="mr-5 flex items-center space-x-3"
+                class="mb-7 flex items-center gap-3 px-2"
                 wire:navigate
             >
+
                 <x-app-logo
                     class="size-8"
                     href="#"
                 />
 
-                <span class="text-lg font-semibold tracking-[0.22em] text-white uppercase">
-                    Novastay
-                </span>
+                <div class="flex flex-col leading-tight">
+
+                    <span class="text-sm font-semibold tracking-wide text-slate-800 dark:text-white">
+                        Gestión Hotelera
+                    </span>
+
+                    <span class="text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                        Administración
+                    </span>
+
+                </div>
+
             </a>
 
-            {{-- ==========================================================
-                 MENÚ PRINCIPAL - GESTIÓN HOTELERA
-                 ========================================================== --}}
+
+            {{-- ======================================================
+                 MENÚ PRINCIPAL
+                 ====================================================== --}}
 
             <flux:navlist variant="outline">
 
+
+                {{-- ==================================================
+                     PRINCIPAL
+                     ================================================== --}}
+
                 <flux:navlist.group
-                    heading="Gestión Hotelera"
+                    heading="Principal"
                     class="grid"
                 >
 
                     {{-- Dashboard --}}
                     @can('dashboard.ver')
+
                         <flux:navlist.item
                             icon="home"
                             :href="route('dashboard')"
                             :current="request()->routeIs('dashboard')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Dashboard
                         </flux:navlist.item>
+
                     @endcan
+
+                </flux:navlist.group>
+
+
+                {{-- ==================================================
+                     OPERACIÓN
+                     ================================================== --}}
+
+                <flux:navlist.group
+                    heading="Operación"
+                    class="mt-5 grid"
+                >
 
                     {{-- Reservaciones --}}
                     @can('reservaciones.ver')
+
                         <flux:navlist.item
                             icon="calendar-days"
                             :href="route('reservaciones')"
                             :current="request()->routeIs('reservaciones')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Reservaciones
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Habitaciones --}}
                     @can('habitaciones.ver')
+
                         <flux:navlist.item
                             icon="building-office-2"
                             :href="route('habitaciones')"
                             :current="request()->routeIs('habitaciones')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Habitaciones
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Clientes --}}
                     @can('clientes.ver')
+
                         <flux:navlist.item
                             icon="users"
                             :href="route('clientes')"
                             :current="request()->routeIs('clientes')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Clientes
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Check-in / Check-out --}}
                     @can('checkin_checkout.ver')
+
                         <flux:navlist.item
                             icon="arrow-right-start-on-rectangle"
                             :href="route('checkin-checkout')"
                             :current="request()->routeIs('checkin-checkout')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Check-in / Check-out
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Limpieza --}}
                     @can('limpieza.ver')
+
                         <flux:navlist.item
                             icon="sparkles"
                             :href="route('limpieza')"
                             :current="request()->routeIs('limpieza')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Limpieza
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Pagos --}}
                     @can('pagos.ver')
+
                         <flux:navlist.item
                             icon="credit-card"
                             :href="route('pagos')"
                             :current="request()->routeIs('pagos')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Pagos
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Servicios --}}
                     @can('servicios.ver')
+
                         <flux:navlist.item
                             icon="wrench-screwdriver"
                             :href="route('servicios')"
                             :current="request()->routeIs('servicios')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Servicios
                         </flux:navlist.item>
+
                     @endcan
+
+                </flux:navlist.group>
+
+
+                {{-- ==================================================
+                     ADMINISTRACIÓN
+                     ================================================== --}}
+
+                <flux:navlist.group
+                    heading="Administración"
+                    class="mt-5 grid"
+                >
 
                     {{-- Gastos --}}
                     @can('gastos.ver')
+
                         <flux:navlist.item
                             icon="banknotes"
                             :href="route('gastos')"
                             :current="request()->routeIs('gastos')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Gastos
                         </flux:navlist.item>
+
                     @endcan
 
-                    {{-- Empleados (solo Super Administrador) --}}
-                    @role('super-admin')
+
+                    {{-- Empleados --}}
+                    @can('empleados.ver')
+
                         <flux:navlist.item
                             icon="identification"
                             :href="route('empleados')"
                             :current="request()->routeIs('empleados')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Empleados
                         </flux:navlist.item>
-                    @endrole
+
+                    @endcan
+
 
                     {{-- Temporadas --}}
                     @can('temporadas.ver')
+
                         <flux:navlist.item
                             icon="sun"
                             :href="route('temporadas')"
                             :current="request()->routeIs('temporadas')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Temporadas
                         </flux:navlist.item>
+
                     @endcan
+
 
                     {{-- Reportes --}}
                     @can('reportes.ver')
+
                         <flux:navlist.item
                             icon="chart-bar"
                             :href="route('reportes')"
                             :current="request()->routeIs('reportes')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Reportes
                         </flux:navlist.item>
+
                     @endcan
 
-                    {{-- Roles y permisos (solo Super Administrador) --}}
-                    @role('super-admin')
+
+                    {{-- Roles y permisos --}}
+                    @can('roles_permisos.ver')
+
                         <flux:navlist.item
                             icon="shield-check"
-                            class="text-blue-500"
                             :href="route('roles-permisos')"
                             :current="request()->routeIs('roles-permisos*')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Roles y permisos
                         </flux:navlist.item>
-                    @endrole
+
+                    @endcan
+
 
                     {{-- Configuración --}}
                     @can('configuracion.ver')
+
                         <flux:navlist.item
                             icon="cog-6-tooth"
                             :href="route('configuracion')"
                             :current="request()->routeIs('configuracion')"
                             wire:navigate
+                            class="rounded-lg"
                         >
                             Configuración
                         </flux:navlist.item>
+
                     @endcan
 
                 </flux:navlist.group>
 
             </flux:navlist>
 
-            {{-- Espacio --}}
+
+            {{-- ======================================================
+                 ESPACIO FLEXIBLE
+                 ====================================================== --}}
+
             <flux:spacer />
 
-            {{-- ==========================================================
-                 ENLACES INFORMATIVOS
-                 ========================================================== --}}
 
-            <flux:navlist variant="outline">
-
-                <flux:navlist.item
-                    icon="folder-git-2"
-                    href="https://github.com/laravel/livewire-starter-kit"
-                    target="_blank"
-                >
-                    Repository
-                </flux:navlist.item>
-
-                <flux:navlist.item
-                    icon="book-open-text"
-                    href="https://laravel.com/docs/starter-kits"
-                    target="_blank"
-                >
-                    Documentation
-                </flux:navlist.item>
-
-            </flux:navlist>
-
-            {{-- ==========================================================
-                 MENÚ DEL USUARIO - ESCRITORIO
-                 ========================================================== --}}
+            {{-- ======================================================
+                 PERFIL DEL USUARIO - ESCRITORIO
+                 ====================================================== --}}
 
             <flux:dropdown
                 position="bottom"
@@ -373,32 +344,37 @@
                     icon-trailing="chevrons-up-down"
                 />
 
-                <flux:menu class="w-[220px]">
 
+                <flux:menu class="w-[240px]">
+
+                    {{-- Información del usuario --}}
                     <flux:menu.radio.group>
 
-                        <div class="p-0 text-sm font-normal">
+                        <div class="p-2 text-sm">
 
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                            <div class="flex items-center gap-3">
 
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-
+                                {{-- Iniciales --}}
+                                <span
+                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200"
+                                >
+                                    {{ auth()->user()->initials() }}
                                 </span>
 
-                                <div class="grid flex-1 text-left text-sm leading-tight">
 
-                                    <span class="truncate font-semibold">
+                                {{-- Datos --}}
+                                <div class="min-w-0 flex-1">
+
+                                    <span class="block truncate font-semibold text-slate-800 dark:text-white">
                                         {{ auth()->user()->name }}
                                     </span>
 
-                                    <span class="truncate text-xs">
+                                    <span class="block truncate text-xs text-slate-500 dark:text-zinc-400">
                                         {{ auth()->user()->email }}
+                                    </span>
+
+                                    <span class="mt-1 block truncate text-[10px] font-semibold uppercase tracking-wider text-[#B08D57]">
+                                        {{ auth()->user()->getRoleNames()->implode(', ') }}
                                     </span>
 
                                 </div>
@@ -409,7 +385,9 @@
 
                     </flux:menu.radio.group>
 
+
                     <flux:menu.separator />
+
 
                     {{-- Cerrar sesión --}}
                     <form
@@ -426,7 +404,7 @@
                             icon="arrow-right-start-on-rectangle"
                             class="w-full"
                         >
-                            {{ __('Log Out') }}
+                            Cerrar sesión
                         </flux:menu.item>
 
                     </form>
@@ -437,11 +415,12 @@
 
         </flux:sidebar>
 
+
         {{-- ==========================================================
              MENÚ DEL USUARIO - MÓVIL
              ========================================================== --}}
 
-        <flux:header class="lg:hidden">
+        <flux:header class="lg:hidden border-b border-slate-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
 
             <flux:sidebar.toggle
                 class="lg:hidden"
@@ -450,6 +429,7 @@
             />
 
             <flux:spacer />
+
 
             <flux:dropdown
                 position="top"
@@ -461,32 +441,34 @@
                     icon-trailing="chevron-down"
                 />
 
+
                 <flux:menu>
 
                     <flux:menu.radio.group>
 
-                        <div class="p-0 text-sm font-normal">
+                        <div class="p-2 text-sm">
 
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                            <div class="flex items-center gap-2">
 
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-
+                                <span
+                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200"
+                                >
+                                    {{ auth()->user()->initials() }}
                                 </span>
 
-                                <div class="grid flex-1 text-left text-sm leading-tight">
 
-                                    <span class="truncate font-semibold">
+                                <div class="min-w-0 flex-1">
+
+                                    <span class="block truncate font-semibold text-slate-800 dark:text-white">
                                         {{ auth()->user()->name }}
                                     </span>
 
-                                    <span class="truncate text-xs">
+                                    <span class="block truncate text-xs text-slate-500 dark:text-zinc-400">
                                         {{ auth()->user()->email }}
+                                    </span>
+
+                                    <span class="mt-1 block truncate text-[10px] font-semibold uppercase tracking-wider text-[#B08D57]">
+                                        {{ auth()->user()->getRoleNames()->implode(', ') }}
                                     </span>
 
                                 </div>
@@ -497,7 +479,9 @@
 
                     </flux:menu.radio.group>
 
+
                     <flux:menu.separator />
+
 
                     {{-- Cerrar sesión --}}
                     <form
@@ -514,7 +498,7 @@
                             icon="arrow-right-start-on-rectangle"
                             class="w-full"
                         >
-                            {{ __('Log Out') }}
+                            Cerrar sesión
                         </flux:menu.item>
 
                     </form>
@@ -525,7 +509,11 @@
 
         </flux:header>
 
-        {{-- Contenido de la página --}}
+
+        {{-- ==========================================================
+             CONTENIDO DE LA PÁGINA
+             ========================================================== --}}
+
         {{ $slot }}
 
         @fluxScripts

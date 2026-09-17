@@ -47,10 +47,9 @@ class RolesPermisos extends Component
      * @return list<string>
      */
     protected function rolesProtegidos(): array
-    {
-        return ['super-admin', 'superadmin', 'super admin', 'gerente', 'recepcionista', 'limpieza'];
-    }
-
+{
+    return ['super-admin', 'superadmin', 'super admin', 'gerente', 'recepcionista', 'limpieza'];
+}
     /**
      * Roles cuyos permisos no pueden modificarse desde la matriz.
      *
