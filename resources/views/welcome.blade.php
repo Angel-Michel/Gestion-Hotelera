@@ -19,8 +19,9 @@
 
         <div class="hidden md:flex items-center space-x-8">
             <a href="{{ route('home') }}" class="text-amber-600 font-medium hover:text-amber-700 transition">Inicio</a>
-            <a href="#habitaciones" class="text-slate-600 hover:text-slate-900 transition">Habitaciones</a>
-            <a href="#servicios" class="text-slate-600 hover:text-slate-900 transition">Servicios</a>
+            <!-- Enlace corregido hacia la ruta pública de habitaciones -->
+            <a href="{{ route('habitaciones.public') }}" class="text-slate-600 hover:text-slate-900 transition">Habitaciones</a>
+            <a href="{{ route('servicios.public') }}" class="text-slate-600 hover:text-slate-900 transition">Servicios</a>
         </div>
 
         <div class="flex items-center space-x-4">
@@ -42,7 +43,8 @@
             <p class="text-slate-300 text-lg md:text-xl mb-8">
                 Habitaciones de lujo, servicio personalizado y experiencias únicas para cada huésped.
             </p>
-            <a href="#explorar" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-3 rounded-lg transition shadow-lg">
+            <!-- Botón central conectado a la ruta de habitaciones -->
+            <a href="{{ route('habitaciones.public') }}" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-3 rounded-lg transition shadow-lg">
                 Explorar habitaciones
             </a>
         </div>

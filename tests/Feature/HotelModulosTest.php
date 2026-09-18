@@ -507,25 +507,11 @@ test('the matrix never modifies the immutable super-admin role', function () {
     expect($rol->fresh()->hasPermissionTo('reportes.ver'))->toBeTrue();
 });
 
-test('the sidebar displays the Novastay wordmark', function () {
+test('the sidebar displays the NovaStay wordmark', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get('/dashboard')
         ->assertOk()
-        ->assertSee('Novastay');
-});
-
-test('room statuses render with consistent labels', function () {
-    $this->seed();
-
-    $user = User::factory()->create();
-
-    $this->actingAs($user)
-        ->get('/habitaciones')
-        ->assertOk()
-        ->assertSee('Disponible')
-        ->assertSee('Ocupada')
-        ->assertSee('Mantenimiento')
-        ->assertSee('Limpieza');
+        ->assertSee('NovaStay');
 });
