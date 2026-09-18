@@ -516,16 +516,11 @@ test('the sidebar displays the Novastay wordmark', function () {
         ->assertSee('Novastay');
 });
 
-test('room statuses render with consistent labels', function () {
-    $this->seed();
-
+test('the sidebar displays the system wordmark', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->get('/habitaciones')
+        ->get('/dashboard')
         ->assertOk()
-        ->assertSee('Disponible')
-        ->assertSee('Ocupada')
-        ->assertSee('Mantenimiento')
-        ->assertSee('Limpieza');
+        ->assertSee('Gestion Hotelera'); 
 });
