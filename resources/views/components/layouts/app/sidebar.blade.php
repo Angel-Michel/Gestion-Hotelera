@@ -6,7 +6,7 @@
         @include('partials.head')
     </head>
 
-    <body class="min-h-screen bg-slate-50 text-slate-700 dark:bg-zinc-950 dark:text-zinc-200">
+    <body class="min-h-screen bg-slate-100 text-slate-700 dark:bg-zinc-950 dark:text-zinc-200">
 
         {{-- ==========================================================
              MENÚ LATERAL

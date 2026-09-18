@@ -29,6 +29,8 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::get('/buscar-habitaciones', [RoomSearchController::class, 'index'])->name('rooms.search');
+Route::view('/nuestros-servicios', 'public-servicios')->name('servicios.public');
+Route::get('/nuestras-habitaciones', [RoomSearchController::class, 'index'])->name('habitaciones.public');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
