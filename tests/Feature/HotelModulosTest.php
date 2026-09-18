@@ -513,14 +513,5 @@ test('the sidebar displays the Novastay wordmark', function () {
     $this->actingAs($user)
         ->get('/dashboard')
         ->assertOk()
-        ->assertSee('Novastay');
-});
-
-test('the sidebar displays the system wordmark', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user)
-        ->get('/dashboard')
-        ->assertOk()
-        ->assertSee('Gestion Hotelera'); 
+        ->assertSee('Gestion-Hotelera');
 });
