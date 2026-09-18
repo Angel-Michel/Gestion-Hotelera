@@ -75,7 +75,7 @@
                             :href="route('dashboard')"
                             :current="request()->routeIs('dashboard')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Dashboard
                         </flux:navlist.item>
@@ -101,7 +101,7 @@
                             :href="route('reservaciones')"
                             :current="request()->routeIs('reservaciones')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Reservaciones
                         </flux:navlist.item>
@@ -116,7 +116,7 @@
                             :href="route('habitaciones')"
                             :current="request()->routeIs('habitaciones')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Habitaciones
                         </flux:navlist.item>
@@ -131,7 +131,7 @@
                             :href="route('clientes')"
                             :current="request()->routeIs('clientes')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Clientes
                         </flux:navlist.item>
@@ -146,7 +146,7 @@
                             :href="route('checkin-checkout')"
                             :current="request()->routeIs('checkin-checkout')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Check-in / Check-out
                         </flux:navlist.item>
@@ -161,7 +161,7 @@
                             :href="route('limpieza')"
                             :current="request()->routeIs('limpieza')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Limpieza
                         </flux:navlist.item>
@@ -176,7 +176,7 @@
                             :href="route('pagos')"
                             :current="request()->routeIs('pagos')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Pagos
                         </flux:navlist.item>
@@ -191,7 +191,7 @@
                             :href="route('servicios')"
                             :current="request()->routeIs('servicios')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Servicios
                         </flux:navlist.item>
@@ -217,7 +217,7 @@
                             :href="route('gastos')"
                             :current="request()->routeIs('gastos')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Gastos
                         </flux:navlist.item>
@@ -232,7 +232,7 @@
                             :href="route('empleados')"
                             :current="request()->routeIs('empleados')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Empleados
                         </flux:navlist.item>
@@ -247,7 +247,7 @@
                             :href="route('temporadas')"
                             :current="request()->routeIs('temporadas')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Temporadas
                         </flux:navlist.item>
@@ -262,7 +262,7 @@
                             :href="route('reportes')"
                             :current="request()->routeIs('reportes')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Reportes
                         </flux:navlist.item>
@@ -277,7 +277,7 @@
                             :href="route('roles')"
                             :current="request()->routeIs('roles')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Roles
                         </flux:navlist.item>
@@ -292,7 +292,7 @@
                             :href="route('permisos')"
                             :current="request()->routeIs('permisos')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Permisos
                         </flux:navlist.item>
@@ -307,7 +307,7 @@
                             :href="route('configuracion')"
                             :current="request()->routeIs('configuracion')"
                             wire:navigate
-                            class="rounded-lg !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!bg-amber-500/10 data-current:!text-amber-400"
+                            class="rounded-lg border border-transparent !text-slate-300 hover:!bg-slate-800/70 hover:!text-white data-current:!border-amber-500/50 data-current:!bg-amber-500/10 data-current:!text-amber-400"
                         >
                             Configuración
                         </flux:navlist.item>

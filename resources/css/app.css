@@ -20,7 +20,7 @@
     --color-novastay-activo: #263A70;
     --color-novastay-dorado: #C9A227;
     --color-novastay-beige: #E9DCC3;
-    --color-novastay-acento: #3B82F6;
+    --color-novastay-acento: #f59e0b;
     --color-novastay-cielo: #7DD3FC;
     --color-novastay-hueso: #F8FAFC;
 
@@ -36,16 +36,16 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-novastay-acento);
-    --color-accent-content: var(--color-novastay-acento);
-    --color-accent-foreground: var(--color-white);
+    --color-accent: #f59e0b;
+    --color-accent-content: #d97706;
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-novastay-acento);
-        --color-accent-content: var(--color-novastay-acento);
-        --color-accent-foreground: var(--color-white);
+        --color-accent: #fbbf24;
+        --color-accent-content: #fbbf24;
+        --color-accent-foreground: #451a03;
     }
 }
 
@@ -72,6 +72,16 @@ input:focus[data-flux-control],
 textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
+}
+
+/* NovaStay: tarjetas de contenido con borde sutil y sombra ligera */
+[data-flux-card] {
+    @apply border-slate-100 shadow-sm dark:border-white/15;
+}
+
+/* NovaStay: encabezados de sección del menú lateral en texto tenue */
+[data-flux-sidebar] [data-flux-navlist] > div > div > .text-sm.text-zinc-400 {
+    @apply text-xs font-semibold uppercase tracking-widest text-slate-400;
 }
 
 /* \[:where(&)\]:size-4 {

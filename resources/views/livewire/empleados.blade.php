@@ -9,7 +9,13 @@
         <div>
             <flux:heading size="xl">Empleados</flux:heading>
             <flux:subheading>
-                Gestiona el personal del hotel, sus datos y su acceso al sistema.
+                <span class="inline-flex items-center gap-2">
+                    <span class="relative flex size-2" aria-hidden="true">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+                    </span>
+                    Gestiona el personal del hotel, sus datos y su acceso al sistema.
+                </span>
             </flux:subheading>
         </div>
 
@@ -30,7 +36,7 @@
 
             <flux:field>
                 <flux:label>Estado</flux:label>
-                <select wire:model.live="filtroEstado" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                <select wire:model.live="filtroEstado" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                     <option value="todos">Todos</option>
                     <option value="activos">Activos</option>
                     <option value="inactivos">Inactivos</option>
@@ -148,7 +154,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Rol del Sistema</flux:label>
-                    <select wire:model="rol" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="rol" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Sin rol asignado…</option>
                         @foreach ($roles as $rolDisponible)
                             <option value="{{ $rolDisponible->name }}">{{ $rolDisponible->name }}</option>
@@ -166,7 +172,7 @@
 
                 <flux:field>
                     <flux:label>Turno</flux:label>
-                    <select wire:model="turno" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="turno" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona un turno…</option>
                         @foreach ($turnos as $turnoDisponible)
                             <option value="{{ $turnoDisponible }}">{{ $turnoDisponible }}</option>
@@ -177,7 +183,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Estado</flux:label>
-                    <select wire:model="esta_activo" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="esta_activo" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="1">Activo</option>
                         <option value="0">Inactivo</option>
                     </select>

@@ -9,25 +9,25 @@
     <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <flux:card>
             <flux:text size="sm">Ocupación</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">{{ $ocupacion }}%</p>
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">{{ $ocupacion }}%</p>
             <flux:text size="sm">{{ $habitacionesOcupadas }} de {{ $totalHabitaciones }} habitaciones</flux:text>
         </flux:card>
 
         <flux:card>
             <flux:text size="sm">Ingresos totales</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">${{ number_format($ingresosTotales, 2) }}</p>
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">${{ number_format($ingresosTotales, 2) }}</p>
             <flux:text size="sm">Suma de pagos registrados</flux:text>
         </flux:card>
 
         <flux:card>
             <flux:text size="sm">Gastos totales</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">${{ number_format($gastosTotales, 2) }}</p>
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">${{ number_format($gastosTotales, 2) }}</p>
             <flux:text size="sm">Suma de gastos registrados</flux:text>
         </flux:card>
 
         <flux:card>
             <flux:text size="sm">Balance</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">${{ number_format($balance, 2) }}</p>
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">${{ number_format($balance, 2) }}</p>
             <flux:text size="sm">Ingresos menos gastos</flux:text>
         </flux:card>
     </div>
@@ -47,7 +47,7 @@
                         <flux:table.row>
                             <flux:table.cell variant="strong">{{ $estado }}</flux:table.cell>
                             <flux:table.cell align="center">
-                                <flux:badge color="blue" size="sm">{{ $total }}</flux:badge>
+                                <flux:badge color="amber" size="sm">{{ $total }}</flux:badge>
                             </flux:table.cell>
                         </flux:table.row>
                     @empty

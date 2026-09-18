@@ -18,7 +18,7 @@
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Entorno</dt>
                     <dd>
-                        <flux:badge color="blue" size="sm">{{ $entorno }}</flux:badge>
+                        <flux:badge color="amber" size="sm">{{ $entorno }}</flux:badge>
                     </dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">

@@ -86,7 +86,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Tipo de habitación</flux:label>
-                    <select wire:model="tipo_habitacion_id" required class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="tipo_habitacion_id" required class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         <option value="">Selecciona un tipo…</option>
                         @foreach ($tipos as $tipo)
                             <option value="{{ $tipo->id }}">{{ $tipo->nombre }} — ${{ number_format($tipo->precio_base, 2) }}</option>
@@ -97,7 +97,7 @@
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Estado</flux:label>
-                    <select wire:model="estado" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                    <select wire:model="estado" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
                         @foreach ($estados as $estado)
                             <option value="{{ $estado }}">{{ $estado }}</option>
                         @endforeach

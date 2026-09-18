@@ -21,7 +21,13 @@
         <div>
             <flux:heading size="xl">Gestión de Roles</flux:heading>
             <flux:subheading>
-                Crea roles, edita sus nombres y administra los niveles de acceso.
+                <span class="inline-flex items-center gap-2">
+                    <span class="relative flex size-2" aria-hidden="true">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+                    </span>
+                    Crea roles, edita sus nombres y administra los niveles de acceso.
+                </span>
             </flux:subheading>
         </div>
 
@@ -54,13 +60,13 @@
                     <flux:table.row :key="$rol->id">
                         <flux:table.cell variant="strong">
                             <span class="inline-flex items-center gap-2">
-                                <flux:icon.shield-check class="size-4 text-blue-500" />
+                                <flux:icon.shield-check class="size-4 text-amber-600" />
                                 {{ Str::headline($rol->name) }}
                             </span>
                         </flux:table.cell>
 
                         <flux:table.cell>
-                            <flux:badge color="zinc" size="sm">
+                            <flux:badge color="amber" size="sm">
                                 {{ $rol->permissions_count }} permiso(s)
                             </flux:badge>
                         </flux:table.cell>
@@ -122,7 +128,7 @@
                         <flux:heading size="lg">Permisos iniciales</flux:heading>
 
                         <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                            <input type="checkbox" wire:model.live="seleccionarTodos" class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
+                            <input type="checkbox" wire:model.live="seleccionarTodos" class="size-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800" />
                             Seleccionar todos
                         </label>
                     </div>
@@ -131,7 +137,7 @@
                         Marca los permisos que el rol podrá ejercer al momento de crearse.
                     </flux:text>
 
-                    <div class="max-h-72 space-y-4 overflow-y-auto rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
+                    <div class="max-h-72 space-y-4 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
                         @foreach ($this->permisosPorModulo as $modulo => $permisosDelModulo)
                             <fieldset>
                                 <legend class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -145,7 +151,7 @@
                                                 type="checkbox"
                                                 wire:model.live="permisosSeleccionados"
                                                 value="{{ $permiso->id }}"
-                                                class="size-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800"
+                                                class="size-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800"
                                             />
                                             {{ $this->etiquetaAccion(Str::after($permiso->name, '.')) }}
                                         </label>
@@ -210,7 +216,7 @@
 
         <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
             ¿Estás seguro de que deseas eliminar el rol
-            <span class="font-semibold text-blue-600 dark:text-blue-400">{{ $nombreRolAEliminar }}</span>?
+            <span class="font-semibold text-amber-600 dark:text-amber-400">{{ $nombreRolAEliminar }}</span>?
             Se retirará el acceso a los usuarios asignados a este rol.
         </p>
 

@@ -9,7 +9,7 @@
     <div class="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <flux:card>
             <flux:text size="sm">Ocupación actual</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">
                 {{ $ocupacion }}%
             </p>
             <flux:text size="sm">{{ $habitacionesOcupadas }} de {{ $totalHabitaciones }} habitaciones ocupadas</flux:text>
@@ -17,7 +17,7 @@
 
         <flux:card>
             <flux:text size="sm">Reservas activas</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">
                 {{ $reservasActivas }}
             </p>
             <flux:text size="sm">Pendientes y confirmadas</flux:text>
@@ -25,7 +25,7 @@
 
         <flux:card>
             <flux:text size="sm">Ingresos del mes</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">
                 ${{ number_format($ingresosMes, 2) }}
             </p>
             <flux:text size="sm">{{ now()->translatedFormat('F Y') }}</flux:text>
@@ -33,7 +33,7 @@
 
         <flux:card>
             <flux:text size="sm">Tareas de limpieza</flux:text>
-            <p class="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">
+            <p class="mt-1 text-3xl font-semibold text-amber-600 dark:text-amber-400">
                 {{ $tareasPendientes->count() }}
             </p>
             <flux:text size="sm">Pendientes o en proceso</flux:text>

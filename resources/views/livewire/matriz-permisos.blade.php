@@ -16,7 +16,13 @@
     <div class="mb-6">
         <flux:heading size="xl">Matriz de Permisos</flux:heading>
         <flux:subheading>
-            Vista granular de permisos: cada fila es un permiso y cada columna un rol.
+            <span class="inline-flex items-center gap-2">
+                <span class="relative flex size-2" aria-hidden="true">
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+                </span>
+                Vista granular de permisos: cada fila es un permiso y cada columna un rol.
+            </span>
         </flux:subheading>
     </div>
 
@@ -36,13 +42,13 @@
 
         <table class="w-full min-w-[860px] border-collapse text-sm">
             <thead>
-                <tr class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50">
-                    <th class="sticky left-0 z-10 bg-zinc-50 px-4 py-3 text-left font-semibold text-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-200">
+                <tr class="border-b border-slate-200 bg-slate-50 dark:border-zinc-700 dark:bg-zinc-800/50">
+                    <th class="sticky left-0 z-10 bg-slate-50 px-4 py-3 text-left font-semibold text-slate-700 dark:bg-zinc-800/80 dark:text-zinc-200">
                         Permiso
                     </th>
 
                     @foreach ($roles as $rol)
-                        <th class="px-3 py-3 text-center font-semibold text-zinc-700 dark:text-zinc-200">
+                        <th class="px-3 py-3 text-center font-semibold text-slate-700 dark:text-zinc-200">
                             <span class="inline-flex items-center gap-1.5">
                                 {{ Str::headline($rol->name) }}
                                 @if ($this->esRolInmutable($rol->name))
@@ -54,17 +60,17 @@
                 </tr>
             </thead>
 
-            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tbody class="divide-y divide-slate-100 dark:divide-zinc-800">
                 @foreach ($this->permisosPorModulo as $modulo => $permisosDelModulo)
-                    <tr class="bg-blue-50/50 dark:bg-blue-950/20">
-                        <td colspan="{{ $roles->count() + 1 }}" class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                    <tr class="bg-amber-50/60 dark:bg-amber-950/20">
+                        <td colspan="{{ $roles->count() + 1 }}" class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
                             {{ $this->etiquetaModulo($modulo) }}
                         </td>
                     </tr>
 
                     @foreach ($permisosDelModulo as $permiso)
                         <tr>
-                            <td class="sticky left-0 z-10 bg-white px-4 py-2.5 font-medium text-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
+                            <td class="sticky left-0 z-10 bg-white px-4 py-2.5 font-medium text-slate-700 dark:bg-zinc-900 dark:text-zinc-200">
                                 {{ $this->etiquetaAccion(Str::after($permiso->name, '.')) }}
                             </td>
 

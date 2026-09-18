@@ -36,7 +36,7 @@
                         <flux:table.cell>{{ $temporada->fecha_inicio->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell>{{ $temporada->fecha_fin->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell align="center">
-                            <flux:badge color="blue" size="sm">x{{ number_format($temporada->multiplicador_precio, 2) }}</flux:badge>
+                            <flux:badge color="amber" size="sm">x{{ number_format($temporada->multiplicador_precio, 2) }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
