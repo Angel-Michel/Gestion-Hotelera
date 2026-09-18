@@ -19,18 +19,33 @@
 
         <div class="hidden md:flex items-center space-x-8">
             <a href="{{ route('home') }}" class="text-amber-600 font-medium hover:text-amber-700 transition">Inicio</a>
-            <a href="#habitaciones" class="text-slate-600 hover:text-slate-900 transition">Habitaciones</a>
-            <a href="#servicios" class="text-slate-600 hover:text-slate-900 transition">Servicios</a>
+            <!-- Enlace corregido hacia la ruta pública de habitaciones -->
+            <a href="{{ route('habitaciones.public') }}" class="text-slate-600 hover:text-slate-900 transition">Habitaciones</a>
+            <a href="{{ route('servicios.public') }}" class="text-slate-600 hover:text-slate-900 transition">Servicios</a>
         </div>
 
         <div class="flex items-center space-x-4">
-            <a href="{{ route('login') }}" class="text-slate-700 font-medium hover:text-slate-900 transition">Iniciar sesión</a>
-            <a href="#reservar" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">Reservar</a>
+            @auth
+                @if (auth()->user()->hasRole('cliente'))
+                    <a href="{{ route('mis-reservaciones') }}" class="text-amber-600 font-semibold hover:text-amber-700 transition">Mis reservaciones</a>
+                @endif
+                <span class="text-slate-700 font-medium">{{ auth()->user()->name }}</span>
+            @else
+                <a href="{{ route('login') }}" class="text-slate-700 font-medium hover:text-slate-900 transition">Iniciar sesión</a>
+                <a href="{{ route('register') }}" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition">Crear cuenta</a>
+            @endauth
+            <a href="#reservar" class="hidden sm:inline-block bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">Reservar</a>
         </div>
     </nav>
 
+    @if (session('success'))
+        <div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-100 border border-emerald-300 text-emerald-900 text-sm font-medium px-5 py-3 rounded-xl shadow-lg">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <!-- Sección Hero / Principal -->
-    <header class="relative pt-24 pb-32 bg-slate-900 text-white overflow-hidden">
+    <header class="relative pt-24 pb-24 min-h-[85vh] bg-slate-900 text-white flex flex-col justify-between">
         <!-- Fondo con imagen -->
         <div class="absolute inset-0 opacity-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=80');"></div>
         <div class="absolute inset-0 bg-slate-950/50"></div>
@@ -42,13 +57,14 @@
             <p class="text-slate-300 text-lg md:text-xl mb-8">
                 Habitaciones de lujo, servicio personalizado y experiencias únicas para cada huésped.
             </p>
-            <a href="#explorar" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-3 rounded-lg transition shadow-lg">
+            <!-- Botón central conectado a la ruta de habitaciones -->
+            <a href="{{ route('habitaciones.public') }}" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-3 rounded-lg transition shadow-lg">
                 Explorar habitaciones
             </a>
         </div>
 
-        <!-- Buscador Flotante de Disponibilidad -->
-        <div class="absolute -bottom-8 left-0 right-0 max-w-4xl mx-auto px-4 z-20">
+        <!-- Buscador de Disponibilidad (integrado al flujo del hero) -->
+        <div id="reservar" class="relative max-w-4xl mx-auto px-4 z-20 pb-4">
             <div class="bg-white rounded-2xl shadow-2xl p-6 text-slate-900 border border-slate-100">
                 <h3 class="text-lg font-bold text-slate-900 mb-4">Buscar disponibilidad</h3>
                 
@@ -56,21 +72,21 @@
                     <!-- Check-in -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Check-in</label>
-                        <input type="date" name="check_in" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-slate-900 outline-none" value="2026-09-15">
+                        <input type="date" name="check_in" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-amber-500 outline-none" value="{{ now()->addDays(7)->toDateString() }}" required>
                     </div>
                     <!-- Check-out -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Check-out</label>
-                        <input type="date" name="check_out" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-slate-900 outline-none" value="2026-09-18">
+                        <input type="date" name="check_out" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-amber-500 outline-none" value="{{ now()->addDays(9)->toDateString() }}" required>
                     </div>
                     <!-- Huéspedes -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Huéspedes</label>
-                        <input type="text" name="guests" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-slate-900 outline-none" value="2 huéspedes">
+                        <input type="number" name="guests" min="1" max="10" value="2" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-amber-500 outline-none">
                     </div>
                     <!-- Botón -->
                     <div>
-                        <button type="submit" class="w-full bg-[#1e293b] hover:bg-slate-800 text-white font-medium py-2.5 px-4 rounded-lg transition shadow-md">
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 px-4 rounded-lg transition shadow-md">
                             Buscar disponibilidad
                         </button>
                     </div>

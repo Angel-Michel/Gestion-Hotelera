@@ -7,8 +7,8 @@
 
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Gastos</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Gastos</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 Controla los gastos operativos del hotel. Total: ${{ number_format($total, 2) }}
             </flux:subheading>
         </div>
@@ -22,19 +22,19 @@
     <flux:card>
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Concepto</flux:table.column>
-                <flux:table.column>Categoría</flux:table.column>
-                <flux:table.column>Monto</flux:table.column>
-                <flux:table.column>Fecha</flux:table.column>
-                <flux:table.column align="end">Acciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Concepto</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Categoría</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Monto</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Fecha</flux:table.column>
+                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($gastos as $gasto)
                     <flux:table.row :key="$gasto->id">
-                        <flux:table.cell variant="strong">{{ $gasto->concepto }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">{{ $gasto->concepto }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $gasto->categoria }}</flux:badge>
+                            <flux:badge color="amber" size="sm" class="!bg-amber-100 !text-amber-800 !font-semibold">{{ $gasto->categoria }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell>${{ number_format($gasto->monto, 2) }}</flux:table.cell>
                         <flux:table.cell>{{ $gasto->fecha_gasto->format('d/m/Y') }}</flux:table.cell>
@@ -65,8 +65,8 @@
     <flux:modal name="gasto-form" wire:model="mostrarModal" class="w-full max-w-lg">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $gastoId ? 'Editar gasto' : 'Nuevo gasto' }}</flux:heading>
-                <flux:subheading>Completa los datos del gasto.</flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $gastoId ? 'Editar gasto' : 'Nuevo gasto' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">Completa los datos del gasto.</flux:subheading>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">

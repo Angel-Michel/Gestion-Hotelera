@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Confirmar reserva - NovaStay</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-slate-50 font-sans antialiased text-slate-800">
+
+    <!-- Navbar -->
+    <nav class="flex items-center justify-between px-8 py-4 bg-white shadow-sm border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+            <div class="bg-amber-600 text-white p-1.5 rounded-md">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+            <div>
+                <span class="text-xl font-bold text-slate-900 leading-none block">NovaStay</span>
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block">Hotel Management</span>
+            </div>
+        </div>
+        <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+            <a href="{{ route('home') }}" class="text-slate-500 hover:text-slate-900 transition">Inicio</a>
+            <a href="{{ route('habitaciones.public') }}" class="text-slate-500 hover:text-slate-900 transition">Habitaciones</a>
+            <a href="{{ route('servicios.public') }}" class="text-slate-500 hover:text-slate-900 transition">Servicios</a>
+        </div>
+        <div class="flex items-center space-x-4 text-sm font-medium">
+            <span class="text-slate-700 font-medium">{{ auth()->user()->name }}</span>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="text-slate-500 hover:text-slate-900 transition">Salir</button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-10">
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Confirmar tu reserva</h1>
+            <p class="text-slate-500 text-sm">Revisa el detalle de tu estancia y confirma la reserva para asegurar tu habitación.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <!-- Detalle de la habitación -->
+            <div class="md:col-span-3 bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                <div class="relative h-48 bg-slate-200">
+                    <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80" alt="{{ $habitacion->tipo->nombre }}" class="w-full h-full object-cover">
+                    <div class="absolute top-4 left-4 bg-white text-slate-700 text-xs font-bold px-3 py-1 rounded-md shadow-sm">Habitación #{{ $habitacion->numero_habitacion }}</div>
+                </div>
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">{{ $habitacion->tipo->nombre }}</h2>
+                    <p class="text-sm text-slate-500 mb-4">Piso {{ $habitacion->piso }} &middot; hasta {{ $habitacion->tipo->capacidad }} personas</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">{{ $habitacion->tipo->descripcion }}</p>
+
+                    <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                        <div class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                            <p class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Check-in</p>
+                            <p class="font-semibold text-slate-800">{{ $checkIn->format('d/m/Y') }}</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                            <p class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Check-out</p>
+                            <p class="font-semibold text-slate-800">{{ $checkOut->format('d/m/Y') }}</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                            <p class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Noches</p>
+                            <p class="font-semibold text-slate-800">{{ $noches }}</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                            <p class="text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Huéspedes</p>
+                            <p class="font-semibold text-slate-800">{{ $datos['guests'] ?? 1 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desglose de precios -->
+            <div class="md:col-span-2">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-24">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Resumen de tu reserva</h3>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between text-slate-600">
+                            <span>${{ number_format($precioPorNoche, 2) }} x {{ $noches }} {{ $noches === 1 ? 'noche' : 'noches' }}</span>
+                            <span class="font-medium text-slate-800">${{ number_format($precioPorNoche * $noches, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Impuestos y cargos</span>
+                            <span class="font-medium text-slate-800">-</span>
+                        </div>
+                        <div class="border-t border-slate-100 pt-3 flex justify-between items-center">
+                            <span class="font-semibold text-slate-900">Total</span>
+                            <span class="text-2xl font-bold text-amber-600">${{ number_format($total, 2) }}</span>
+                        </div>
+                    </div>
+
+                    @if(session('error'))
+                        <div class="mt-4 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('reserva.store') }}" method="POST" class="mt-6">
+                        @csrf
+                        <input type="hidden" name="habitacion_id" value="{{ $habitacion->id }}">
+                        <input type="hidden" name="check_in" value="{{ $checkIn->format('Y-m-d') }}">
+                        <input type="hidden" name="check_out" value="{{ $checkOut->format('Y-m-d') }}">
+                        <input type="hidden" name="guests" value="{{ $datos['guests'] ?? 1 }}">
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-xl shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                            Confirmar reserva
+                        </button>
+                    </form>
+
+                    <a href="{{ route('habitaciones.public') }}" class="mt-4 block text-center text-sm text-slate-500 hover:text-slate-700 transition">&larr; Elegir otra habitación</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

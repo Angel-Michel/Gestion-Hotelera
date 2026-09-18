@@ -7,8 +7,8 @@
 
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Reservaciones</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Reservaciones</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 Gestiona las reservaciones del hotel y asigna habitaciones.
             </flux:subheading>
         </div>
@@ -22,19 +22,19 @@
     <flux:card>
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Cliente</flux:table.column>
-                <flux:table.column>Check-in</flux:table.column>
-                <flux:table.column>Check-out</flux:table.column>
-                <flux:table.column>Habitaciones</flux:table.column>
-                <flux:table.column>Estado</flux:table.column>
-                <flux:table.column>Monto total</flux:table.column>
-                <flux:table.column align="end">Acciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Cliente</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Check-in</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Check-out</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Habitaciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Estado</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Monto total</flux:table.column>
+                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($reservas as $reserva)
                     <flux:table.row :key="$reserva->id">
-                        <flux:table.cell variant="strong">{{ $reserva->cliente?->nombreCompleto() ?? '—' }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">{{ $reserva->cliente?->nombreCompleto() ?? '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $reserva->check_in->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell>{{ $reserva->check_out->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell>
@@ -71,8 +71,8 @@
     <flux:modal name="reservacion-form" wire:model="mostrarModal" class="w-full max-w-2xl">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $reservaId ? 'Editar reservación' : 'Nueva reservación' }}</flux:heading>
-                <flux:subheading>Completa los datos de la reservación.</flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $reservaId ? 'Editar reservación' : 'Nueva reservación' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">Completa los datos de la reservación.</flux:subheading>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
@@ -116,7 +116,7 @@
                 </flux:field>
 
                 <div class="sm:col-span-2">
-                    <p class="mb-2 text-sm font-medium text-zinc-800 dark:text-white">Habitaciones asignadas</p>
+                    <p class="mb-2 text-sm font-semibold text-slate-800">Habitaciones asignadas</p>
                     <div class="grid max-h-48 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-3">
                         @foreach ($habitaciones as $habitacion)
                             <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">

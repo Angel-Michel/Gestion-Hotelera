@@ -7,8 +7,8 @@
 
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Habitaciones</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Habitaciones</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 Gestiona el inventario de habitaciones del hotel.
             </flux:subheading>
         </div>
@@ -22,18 +22,18 @@
     <flux:card>
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Número</flux:table.column>
-                <flux:table.column>Tipo</flux:table.column>
-                <flux:table.column>Precio base</flux:table.column>
-                <flux:table.column align="center">Piso</flux:table.column>
-                <flux:table.column>Estado</flux:table.column>
-                <flux:table.column align="end">Acciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Número</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Tipo</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Precio base</flux:table.column>
+                <flux:table.column align="center" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Piso</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Estado</flux:table.column>
+                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($habitaciones as $habitacion)
                     <flux:table.row :key="$habitacion->id">
-                        <flux:table.cell variant="strong">Hab. {{ $habitacion->numero_habitacion }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">Hab. {{ $habitacion->numero_habitacion }}</flux:table.cell>
                         <flux:table.cell>{{ $habitacion->tipo?->nombre ?? '—' }}</flux:table.cell>
                         <flux:table.cell>${{ number_format($habitacion->tipo?->precio_base ?? 0, 2) }}</flux:table.cell>
                         <flux:table.cell align="center">{{ $habitacion->piso }}</flux:table.cell>
@@ -67,8 +67,8 @@
     <flux:modal name="habitacion-form" wire:model="mostrarModal" class="w-full max-w-lg">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $habitacionId ? 'Editar habitación' : 'Nueva habitación' }}</flux:heading>
-                <flux:subheading>Completa los datos de la habitación.</flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $habitacionId ? 'Editar habitación' : 'Nueva habitación' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">Completa los datos de la habitación.</flux:subheading>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">

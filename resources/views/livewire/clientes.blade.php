@@ -7,8 +7,8 @@
 
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Clientes</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Clientes</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 Gestiona la información de los huéspedes del hotel.
             </flux:subheading>
         </div>
@@ -22,23 +22,23 @@
     <flux:card>
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Nombre</flux:table.column>
-                <flux:table.column>Email</flux:table.column>
-                <flux:table.column>Teléfono</flux:table.column>
-                <flux:table.column>Identificación</flux:table.column>
-                <flux:table.column align="center">Reservas</flux:table.column>
-                <flux:table.column align="end">Acciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Nombre</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Email</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Teléfono</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Identificación</flux:table.column>
+                <flux:table.column align="center" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Reservas</flux:table.column>
+                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($clientes as $cliente)
                     <flux:table.row :key="$cliente->id">
-                        <flux:table.cell variant="strong">{{ $cliente->nombreCompleto() }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">{{ $cliente->nombreCompleto() }}</flux:table.cell>
                         <flux:table.cell>{{ $cliente->email ?? '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $cliente->telefono ?? '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $cliente->tipo_identificacion ? $cliente->tipo_identificacion.' · '.$cliente->numero_identificacion : '—' }}</flux:table.cell>
                         <flux:table.cell align="center">
-                            <flux:badge color="zinc" size="sm">{{ $cliente->reservas_count }}</flux:badge>
+                            <flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $cliente->reservas_count }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
@@ -67,8 +67,8 @@
     <flux:modal name="cliente-form" wire:model="mostrarModal" class="w-full max-w-lg">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $clienteId ? 'Editar cliente' : 'Nuevo cliente' }}</flux:heading>
-                <flux:subheading>Completa los datos del cliente.</flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $clienteId ? 'Editar cliente' : 'Nuevo cliente' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">Completa los datos del cliente.</flux:subheading>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">

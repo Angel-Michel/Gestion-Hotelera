@@ -1,3 +1,5 @@
+@use('Illuminate\Support\Str')
+
 <div>
     @if ($mensajeExito)
         <flux:callout variant="success" icon="check-circle" class="mb-4">
@@ -5,10 +7,16 @@
         </flux:callout>
     @endif
 
+    @if ($mensajeError)
+        <flux:callout variant="danger" icon="x-circle" class="mb-4">
+            <p>{{ $mensajeError }}</p>
+        </flux:callout>
+    @endif
+
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Empleados</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Empleados</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 <span class="inline-flex items-center gap-2">
                     <span class="relative flex size-2" aria-hidden="true">
                         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
@@ -31,7 +39,7 @@
         <div class="mb-6 grid gap-4 sm:grid-cols-2">
             <flux:field>
                 <flux:label>Buscar</flux:label>
-                <flux:input wire:model.live="busqueda" placeholder="Nombre, puesto o correo electrónico…" />
+                <flux:input wire:model.live="busqueda" placeholder="Nombre, correo electrónico…" />
             </flux:field>
 
             <flux:field>
@@ -46,26 +54,36 @@
 
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Nombre</flux:table.column>
-                <flux:table.column>Apellidos</flux:table.column>
-                <flux:table.column>Teléfono</flux:table.column>
-                <flux:table.column>Puesto</flux:table.column>
-                <flux:table.column>Salario</flux:table.column>
-                <flux:table.column>Turno</flux:table.column>
-                <flux:table.column>Correo electrónico</flux:table.column>
-                <flux:table.column align="center">Estado</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Nombre</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Apellidos</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Teléfono</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Rol del Sistema</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Salario</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Turno</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Correo electrónico</flux:table.column>
+                <flux:table.column align="center" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Estado</flux:table.column>
+                <flux:table.column align="center" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Permisos</flux:table.column>
                 @if ($this->esSuperAdmin())
-                    <flux:table.column align="end">Acciones</flux:table.column>
+                    <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
                 @endif
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($empleados as $empleado)
                     <flux:table.row :key="$empleado->id_empleado">
-                        <flux:table.cell variant="strong">{{ $empleado->nombre }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">{{ $empleado->nombre }}</flux:table.cell>
                         <flux:table.cell>{{ $empleado->apellidos }}</flux:table.cell>
                         <flux:table.cell>{{ $empleado->telefono ?? '—' }}</flux:table.cell>
-                        <flux:table.cell>{{ $empleado->puesto ?? '—' }}</flux:table.cell>
+                        <flux:table.cell>
+                            @php $rolEmpleado = $empleado->usuario?->roles->first()?->name; @endphp
+                            @if ($rolEmpleado)
+                                <flux:badge color="amber" size="sm" class="!bg-amber-100 !text-amber-800 !font-semibold">
+                                    {{ Str::headline($rolEmpleado) }}
+                                </flux:badge>
+                            @else
+                                <span class="text-slate-400">—</span>
+                            @endif
+                        </flux:table.cell>
                         <flux:table.cell>
                             {{ $empleado->salario !== null ? '$ '.number_format((float) $empleado->salario, 2) : '—' }}
                         </flux:table.cell>
@@ -73,6 +91,18 @@
                         <flux:table.cell>{{ $empleado->correo_electronico ?? $empleado->usuario?->email ?? '—' }}</flux:table.cell>
                         <flux:table.cell align="center">
                             <x-estado-badge :estado="$empleado->esta_activo ? 'Activo' : 'Inactivo'" />
+                        </flux:table.cell>
+                        <flux:table.cell align="center">
+                            @if ($this->esSuperAdmin())
+                                <flux:button type="button" size="sm" variant="outline" wire:click="abrirModalPermisos({{ $empleado->id_empleado }})">
+                                    <flux:icon.key class="size-4" />
+                                    Configurar
+                                </flux:button>
+                            @else
+                                <span class="inline-flex items-center text-zinc-400" title="Solo el Super Admin puede configurar permisos">
+                                    <flux:icon.lock-closed class="size-4" />
+                                </span>
+                            @endif
                         </flux:table.cell>
 
                         @if ($this->esSuperAdmin())
@@ -97,7 +127,7 @@
                     </flux:table.row>
                 @empty
                     <flux:table.row>
-                        <flux:table.cell :colspan="$this->esSuperAdmin() ? 9 : 8" align="center">
+                        <flux:table.cell :colspan="$this->esSuperAdmin() ? 10 : 9" align="center">
                             <p class="py-8">No hay empleados que coincidan con la búsqueda.</p>
                         </flux:table.cell>
                     </flux:table.row>
@@ -113,8 +143,8 @@
     <flux:modal name="empleado-form" wire:model="mostrarModal" class="w-full max-w-2xl">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $empleadoId ? 'Editar Empleado' : 'Crear Nuevo Empleado' }}</flux:heading>
-                <flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $empleadoId ? 'Editar Empleado' : 'Crear Nuevo Empleado' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">
                     {{ $empleadoId
                         ? 'Actualiza los datos personales del empleado y su acceso al sistema.'
                         : 'Registra al empleado y define si podrá acceder al sistema.' }}
@@ -141,27 +171,21 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Puesto</flux:label>
-                    <flux:input wire:model="puesto" placeholder="Ejemplo: Recepcionista" />
-                    <flux:error name="puesto" />
+                    <flux:label>Rol del Sistema</flux:label>
+                    <select wire:model="rol" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                        <option value="">Sin rol asignado…</option>
+                        @foreach ($this->rolesDisponibles as $rolDisponible)
+                            <option value="{{ $rolDisponible->name }}">{{ Str::headline($rolDisponible->name) }}</option>
+                        @endforeach
+                    </select>
+                    <flux:description>Categoría principal del empleado. No incluye a Super Admin.</flux:description>
+                    <flux:error name="rol" />
                 </flux:field>
 
                 <flux:field class="sm:col-span-2">
                     <flux:label>Correo Electrónico</flux:label>
                     <flux:input type="email" wire:model="correo_electronico" placeholder="empleado@hotel.com" required />
                     <flux:error name="correo_electronico" />
-                </flux:field>
-
-                <flux:field class="sm:col-span-2">
-                    <flux:label>Rol del Sistema</flux:label>
-                    <select wire:model="rol" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
-                        <option value="">Sin rol asignado…</option>
-                        @foreach ($roles as $rolDisponible)
-                            <option value="{{ $rolDisponible->name }}">{{ $rolDisponible->name }}</option>
-                        @endforeach
-                    </select>
-                    <flux:description>El rol no incluye a Super Admin.</flux:description>
-                    <flux:error name="rol" />
                 </flux:field>
 
                 <flux:field>
@@ -216,6 +240,60 @@
                 <flux:button type="submit" variant="primary">
                     <flux:icon.check class="size-4" />
                     {{ $empleadoId ? 'Guardar cambios' : 'Crear empleado' }}
+                </flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="permisos-empleado" wire:model="mostrarModalPermisos" class="w-full max-w-3xl">
+        <form wire:submit="guardarPermisosGranulares">
+            <div class="mb-4">
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">Seguridad Granular</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">
+                    Permisos directos de
+                    <span class="font-semibold text-slate-900">{{ $empleadoNombrePermisos }}</span>.
+                </flux:subheading>
+            </div>
+
+            <flux:callout color="sky" icon="information-circle" class="mb-4">
+                <p>
+                    Estos permisos se asignan directamente al usuario y son independientes
+                    de los que otorga su <strong>Rol del Sistema</strong>. Solo el Super Admin
+                    puede modificarlos.
+                </p>
+            </flux:callout>
+
+            <div class="max-h-[28rem] space-y-4 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
+                @forelse ($this->permisosPorModulo as $modulo => $permisosDelModulo)
+                    <fieldset>
+                        <legend class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                            {{ $this->etiquetaModulo($modulo) }}
+                        </legend>
+
+                        <div class="grid gap-2 sm:grid-cols-2">
+                            @foreach ($permisosDelModulo as $permiso)
+                                <label class="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                                    <input
+                                        type="checkbox"
+                                        wire:model.live="permisosUsuario"
+                                        value="{{ $permiso->name }}"
+                                        class="size-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-800"
+                                    />
+                                    {{ $this->etiquetaAccion(Str::after($permiso->name, '.')) }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
+                @empty
+                    <p class="py-6 text-center text-sm text-slate-500">No hay permisos registrados en el sistema.</p>
+                @endforelse
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-3">
+                <flux:button type="button" variant="ghost" wire:click="cerrarModalPermisos">Cancelar</flux:button>
+                <flux:button type="submit" variant="primary">
+                    <flux:icon.check class="size-4" />
+                    Guardar permisos
                 </flux:button>
             </div>
         </form>

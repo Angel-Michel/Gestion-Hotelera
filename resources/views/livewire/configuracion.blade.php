@@ -1,14 +1,14 @@
 <div>
     <div class="mb-6">
-        <flux:heading size="xl">Configuración</flux:heading>
-        <flux:subheading>
+        <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Configuración</flux:heading>
+        <flux:subheading class="!text-slate-600 !font-medium">
             Información general del sistema Novastay.
         </flux:subheading>
     </div>
 
     <div class="grid gap-4 lg:grid-cols-2">
         <flux:card>
-            <flux:heading size="lg" class="mb-4">Sistema</flux:heading>
+            <flux:heading size="lg" class="mb-4 !text-slate-800 !font-semibold">Sistema</flux:heading>
 
             <dl class="space-y-3 text-sm">
                 <div class="flex items-center justify-between gap-4">
@@ -18,7 +18,7 @@
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Entorno</dt>
                     <dd>
-                        <flux:badge color="amber" size="sm">{{ $entorno }}</flux:badge>
+                        <flux:badge color="amber" size="sm" class="!bg-amber-100 !text-amber-800 !font-semibold">{{ $entorno }}</flux:badge>
                     </dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
@@ -39,32 +39,32 @@
         </flux:card>
 
         <flux:card>
-            <flux:heading size="lg" class="mb-4">Registros del sistema</flux:heading>
+            <flux:heading size="lg" class="mb-4 !text-slate-800 !font-semibold">Registros del sistema</flux:heading>
 
             <dl class="space-y-3 text-sm">
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Usuarios</dt>
-                    <dd><flux:badge color="zinc" size="sm">{{ $totalUsuarios }}</flux:badge></dd>
+                    <dd><flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $totalUsuarios }}</flux:badge></dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Roles</dt>
-                    <dd><flux:badge color="zinc" size="sm">{{ $totalRoles }}</flux:badge></dd>
+                    <dd><flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $totalRoles }}</flux:badge></dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Permisos</dt>
-                    <dd><flux:badge color="zinc" size="sm">{{ $totalPermisos }}</flux:badge></dd>
+                    <dd><flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $totalPermisos }}</flux:badge></dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Habitaciones</dt>
-                    <dd><flux:badge color="zinc" size="sm">{{ $totalHabitaciones }}</flux:badge></dd>
+                    <dd><flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $totalHabitaciones }}</flux:badge></dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Clientes</dt>
-                    <dd><flux:badge color="zinc" size="sm">{{ $totalClientes }}</flux:badge></dd>
+                    <dd><flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $totalClientes }}</flux:badge></dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-zinc-500">Reservaciones</dt>
-                    <dd><flux:badge color="zinc" size="sm">{{ $totalReservas }}</flux:badge></dd>
+                    <dd><flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $totalReservas }}</flux:badge></dd>
                 </div>
             </dl>
         </flux:card>
@@ -73,7 +73,7 @@
     <flux:card class="mt-4">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <flux:heading size="lg">Cuenta y apariencia</flux:heading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">Cuenta y apariencia</flux:heading>
                 <flux:text size="sm">Gestiona tu perfil, contraseña y tema desde los ajustes de cuenta.</flux:text>
             </div>
 

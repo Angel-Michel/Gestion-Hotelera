@@ -6,9 +6,12 @@ use App\Livewire\MatrizPermisos;
 use App\Models\Cliente;
 use App\Models\Empleado;
 use App\Models\Habitacion;
+use App\Models\Reserva;
+use App\Models\ReservaHabitacion;
 use App\Models\TipoHabitacion;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Livewire;
@@ -20,7 +23,8 @@ test('guests are redirected to login on hotel module routes', function () {
         '/dashboard', '/reservaciones', '/habitaciones', '/clientes',
         '/checkin-checkout', '/limpieza', '/pagos', '/servicios',
         '/gastos', '/empleados', '/temporadas', '/reportes',
-        '/roles', '/permisos', '/configuracion',
+        '/roles', '/configuracion', '/mis-reservaciones',
+        '/mis-reservaciones/1/estado-cuenta',
     ];
 
     foreach ($uris as $uri) {
@@ -28,9 +32,17 @@ test('guests are redirected to login on hotel module routes', function () {
     }
 });
 
-test('authenticated users can visit the general hotel module pages', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user);
+test('staff with module permissions can visit the admin module pages', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $staff = User::factory()->create();
+    $staff->assignRole('gerente');
+    $staff->givePermissionTo([
+        'habitaciones.ver', 'clientes.ver', 'checkin_checkout.ver',
+        'limpieza.ver', 'servicios.ver', 'temporadas.ver', 'configuracion.ver',
+    ]);
+
+    $this->actingAs($staff);
 
     $uris = [
         '/dashboard', '/reservaciones', '/habitaciones', '/clientes',
@@ -43,21 +55,46 @@ test('authenticated users can visit the general hotel module pages', function ()
     }
 });
 
-test('only super-admins can access the roles, permissions and employees pages', function () {
+test('users without module permissions are forbidden from the admin module pages', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $uris = [
+        '/dashboard', '/reservaciones', '/habitaciones', '/clientes',
+        '/checkin-checkout', '/limpieza', '/pagos', '/servicios',
+        '/gastos', '/temporadas', '/reportes', '/configuracion', '/roles',
+    ];
+
+    foreach ($uris as $uri) {
+        $this->get($uri)->assertForbidden();
+    }
+});
+
+test('only super-admins can access the roles and employees pages', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $plano = User::factory()->create();
     $this->actingAs($plano);
     $this->get('/roles')->assertForbidden();
-    $this->get('/permisos')->assertForbidden();
     $this->get('/empleados')->assertForbidden();
 
     $admin = User::factory()->create();
     $admin->assignRole('super-admin');
     $this->actingAs($admin);
     $this->get('/roles')->assertOk();
-    $this->get('/permisos')->assertOk();
     $this->get('/empleados')->assertOk();
+});
+
+test('the permissions matrix is no longer available as a standalone route', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+    $this->actingAs($admin);
+
+    $this->get('/permisos')->assertNotFound();
 });
 
 test('the sidebar shows every section to the super-admin', function () {
@@ -73,7 +110,7 @@ test('the sidebar shows every section to the super-admin', function () {
         ->assertSee('Reportes')
         ->assertSee('Empleados')
         ->assertSee('Roles')
-        ->assertSee('Permisos')
+        ->assertDontSee('Permisos')
         ->assertSee('Configuración');
 });
 
@@ -84,11 +121,12 @@ test('the sidebar hides restricted sections from the recepcionista', function ()
     $recepcionista->assignRole('recepcionista');
 
     $this->actingAs($recepcionista)
-        ->get('/dashboard')
+        ->get('/reservaciones')
         ->assertOk()
         ->assertSee('Reservaciones')
         ->assertSee('Clientes')
         ->assertSee('Limpieza')
+        ->assertDontSee('Dashboard')
         ->assertDontSee('Empleados')
         ->assertDontSee('Roles')
         ->assertDontSee('Permisos')
@@ -218,7 +256,6 @@ test('employees can be created with a system account, hashed password and role',
         ->set('contrasena', 'secret123')
         ->set('rol', 'recepcionista')
         ->set('telefono', '5512345678')
-        ->set('puesto', 'Recepcionista')
         ->set('salario', '12500.00')
         ->set('turno', 'Tarde')
         ->set('acceso_sistema', true)
@@ -386,7 +423,6 @@ test('a super-admin can edit the employee personal data and its system role', fu
     Livewire::actingAs($admin)
         ->test(Empleados::class)
         ->call('editar', $empleado->id_empleado)
-        ->set('puesto', 'Jefa de Recepción')
         ->set('telefono', '5598765432')
         ->set('turno', 'Noche')
         ->set('salario', '11000.00')
@@ -397,8 +433,7 @@ test('a super-admin can edit the employee personal data and its system role', fu
 
     $empleado->refresh();
 
-    expect($empleado->puesto)->toBe('Jefa de Recepción')
-        ->and($empleado->telefono)->toBe('5598765432')
+    expect($empleado->telefono)->toBe('5598765432')
         ->and($empleado->turno)->toBe('Noche')
         ->and($empleado->salario)->toBe('11000.00')
         ->and($usuario->fresh()->hasRole('gerente'))->toBeTrue();
@@ -507,25 +542,525 @@ test('the matrix never modifies the immutable super-admin role', function () {
     expect($rol->fresh()->hasPermissionTo('reportes.ver'))->toBeTrue();
 });
 
-test('the sidebar displays the Novastay wordmark', function () {
-    $user = User::factory()->create();
+test('the sidebar displays the NovaStay wordmark', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
 
-    $this->actingAs($user)
+    $gerente = User::factory()->create();
+    $gerente->assignRole('gerente');
+
+    $this->actingAs($gerente)
         ->get('/dashboard')
         ->assertOk()
-        ->assertSee('Novastay');
+        ->assertSee('NovaStay');
 });
 
-test('room statuses render with consistent labels', function () {
-    $this->seed();
+test('a super-admin can update a role name and its permissions from the edit modal', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
 
-    $user = User::factory()->create();
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
 
-    $this->actingAs($user)
-        ->get('/habitaciones')
+    $rol = Role::create(['name' => 'contabilidad', 'guard_name' => 'web']);
+    $permiso = Permission::findByName('reportes.ver');
+
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('abrirModalEditar', $rol->id)
+        ->assertSet('nombre', 'contabilidad')
+        ->set('nombre', 'finanzas')
+        ->set('permisosSeleccionados', [(string) $permiso->id])
+        ->call('actualizarRol')
+        ->assertHasNoErrors()
+        ->assertSee('actualizado correctamente');
+
+    $rol->refresh();
+
+    expect($rol->name)->toBe('finanzas')
+        ->and($rol->hasPermissionTo('reportes.ver'))->toBeTrue();
+});
+
+test('only the super-admin can edit or delete roles from the component', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $usuario = User::factory()->create();
+    $usuario->givePermissionTo('roles_permisos.ver');
+
+    $rol = Role::create(['name' => 'contabilidad', 'guard_name' => 'web']);
+
+    Livewire::actingAs($usuario)
+        ->test(GestionRoles::class)
+        ->call('abrirModalEditar', $rol->id)
+        ->assertStatus(403);
+
+    Livewire::actingAs($usuario)
+        ->test(GestionRoles::class)
+        ->call('seleccionarRolAEliminar', $rol->id)
+        ->assertStatus(403);
+});
+
+test('a super-admin can assign direct permissions to an employee from the granular matrix', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $usuario = User::factory()->create(['email' => 'granular@example.com']);
+    $usuario->assignRole('recepcionista');
+
+    $empleado = Empleado::create([
+        'nombre' => 'Ana',
+        'apellidos' => 'Paredes',
+        'correo_electronico' => 'granular@example.com',
+        'id_usuario' => $usuario->id,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->call('abrirModalPermisos', $empleado->id_empleado)
+        ->assertSet('mostrarModalPermisos', true)
+        ->set('permisosUsuario', ['reportes.ver', 'pagos.ver'])
+        ->call('guardarPermisosGranulares')
+        ->assertHasNoErrors()
+        ->assertSee('Permisos del empleado actualizados correctamente.');
+
+    expect($usuario->fresh()->hasDirectPermission('reportes.ver'))->toBeTrue()
+        ->and($usuario->fresh()->hasDirectPermission('pagos.ver'))->toBeTrue()
+        ->and($usuario->fresh()->hasDirectPermission('gastos.ver'))->toBeFalse();
+});
+
+test('only the super-admin can open the granular permissions matrix', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $recepcionista = User::factory()->create();
+    $recepcionista->assignRole('recepcionista');
+
+    $usuario = User::factory()->create();
+    $empleado = Empleado::create([
+        'nombre' => 'Luis',
+        'apellidos' => 'Quispe',
+        'correo_electronico' => 'luis@example.com',
+        'id_usuario' => $usuario->id,
+    ]);
+
+    Livewire::actingAs($recepcionista)
+        ->test(Empleados::class)
+        ->call('abrirModalPermisos', $empleado->id_empleado)
+        ->assertStatus(403);
+});
+
+test('the employees table shows the permissions column with a configure button', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    Empleado::create([
+        'nombre' => 'Sofía',
+        'apellidos' => 'Mendoza',
+        'esta_activo' => true,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->assertSee('Rol del Sistema')
+        ->assertSee('Permisos')
+        ->assertSee('Configurar');
+});
+
+test('the employee form no longer shows the Puesto field', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->call('crear')
+        ->assertDontSee('Puesto');
+});
+
+test('guests can visit the public registration page', function () {
+    $this->get(route('register'))
         ->assertOk()
-        ->assertSee('Disponible')
-        ->assertSee('Ocupada')
-        ->assertSee('Mantenimiento')
-        ->assertSee('Limpieza');
+        ->assertSee('Crea tu cuenta')
+        ->assertSee('Nombre completo');
+});
+
+test('public registration creates a user with the cliente role and a linked customer record', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $this->post(route('register'), [
+        'name' => 'María González',
+        'email' => 'maria.gonzalez@example.com',
+        'telefono' => '5512345678',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+    ])->assertRedirect(route('home'));
+
+    $usuario = User::where('email', 'maria.gonzalez@example.com')->first();
+
+    expect($usuario)->not->toBeNull()
+        ->and($usuario->hasRole('cliente'))->toBeTrue()
+        ->and(Auth::check())->toBeTrue();
+
+    $cliente = Cliente::where('user_id', $usuario->id)->first();
+
+    expect($cliente)->not->toBeNull()
+        ->and($cliente->nombre)->toBe('María')
+        ->and($cliente->apellido)->toBe('González')
+        ->and($cliente->email)->toBe('maria.gonzalez@example.com')
+        ->and($cliente->telefono)->toBe('5512345678');
+});
+
+test('public registration redirects to the reservation confirmation when there is a pending reservation', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $checkIn = now()->addDays(7)->toDateString();
+    $checkOut = now()->addDays(9)->toDateString();
+
+    $this->withSession([
+        'reserva.pendiente' => [
+            'habitacion_id' => 1,
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+            'guests' => 2,
+        ],
+    ])->post(route('register'), [
+        'name' => 'Juan Pérez',
+        'email' => 'juan.perez@example.com',
+        'telefono' => '5576543210',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
+    ])->assertRedirect(route('reserva.confirmar'));
+});
+
+test('guests who reserve a room are redirected to login with the search data kept in session', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Estándar', 'precio_base' => 899.00, 'capacidad' => 2]);
+    $habitacion = Habitacion::create(['numero_habitacion' => '101', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $checkIn = now()->addDays(7)->toDateString();
+    $checkOut = now()->addDays(9)->toDateString();
+
+    $this->post(route('reserva.iniciar'), [
+        'habitacion_id' => $habitacion->id,
+        'check_in' => $checkIn,
+        'check_out' => $checkOut,
+        'guests' => 2,
+    ])->assertRedirect(route('login'));
+
+    expect(session('reserva.pendiente'))->not->toBeNull()
+        ->and(session('reserva.pendiente.habitacion_id'))->toBe($habitacion->id);
+});
+
+test('authenticated clients can see the reservation confirmation with the price breakdown', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Deluxe', 'precio_base' => 1499.00, 'capacidad' => 3]);
+    $habitacion = Habitacion::create(['numero_habitacion' => '201', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $cliente = User::factory()->create();
+    $cliente->assignRole('cliente');
+
+    $checkIn = now()->addDays(7)->toDateString();
+    $checkOut = now()->addDays(10)->toDateString();
+
+    $this->actingAs($cliente)
+        ->withSession([
+            'reserva.pendiente' => [
+                'habitacion_id' => $habitacion->id,
+                'check_in' => $checkIn,
+                'check_out' => $checkOut,
+                'guests' => 2,
+            ],
+        ])
+        ->get(route('reserva.confirmar'))
+        ->assertOk()
+        ->assertSee('Confirmar tu reserva')
+        ->assertSee($tipo->nombre)
+        ->assertSee('4,497.00');
+});
+
+test('a client can confirm a reservation and it is stored with its price details', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Suite Familiar', 'precio_base' => 2499.00, 'capacidad' => 5]);
+    $habitacion = Habitacion::create(['numero_habitacion' => '301', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $clienteUsuario = User::factory()->create(['email' => 'ana.garcia@example.com']);
+    $clienteUsuario->assignRole('cliente');
+
+    Cliente::create([
+        'user_id' => $clienteUsuario->id,
+        'nombre' => 'Ana',
+        'apellido' => 'García',
+        'email' => 'ana.garcia@example.com',
+    ]);
+
+    $checkIn = now()->addDays(7)->toDateString();
+    $checkOut = now()->addDays(9)->toDateString();
+
+    $this->actingAs($clienteUsuario)
+        ->withSession([
+            'reserva.pendiente' => [
+                'habitacion_id' => $habitacion->id,
+                'check_in' => $checkIn,
+                'check_out' => $checkOut,
+                'guests' => 4,
+            ],
+        ])
+        ->post(route('reserva.store'), [
+            'habitacion_id' => $habitacion->id,
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+            'guests' => 4,
+        ])
+        ->assertRedirect(route('home'));
+
+    expect(session('reserva.pendiente'))->toBeNull();
+
+    $reserva = Reserva::first();
+
+    expect($reserva)->not->toBeNull()
+        ->and($reserva->user_id)->toBe($clienteUsuario->id)
+        ->and($reserva->estado)->toBe('Confirmada')
+        ->and($reserva->monto_total)->toBe('4998.00');
+
+    expect(ReservaHabitacion::where('reserva_id', $reserva->id)->exists())->toBeTrue();
+
+    $asignacion = ReservaHabitacion::where('reserva_id', $reserva->id)->first();
+
+    expect($asignacion->habitacion_id)->toBe($habitacion->id)
+        ->and($asignacion->precio_por_noche)->toBe('2499.00');
+});
+
+test('the room search only shows rooms available for the requested dates', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Estándar', 'precio_base' => 899.00, 'capacidad' => 2]);
+    $disponible = Habitacion::create(['numero_habitacion' => '101', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+    $ocupada = Habitacion::create(['numero_habitacion' => '102', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $cliente = Cliente::create(['nombre' => 'Laura', 'apellido' => 'López', 'email' => 'laura@example.com']);
+    $usuario = User::factory()->create();
+
+    $reserva = Reserva::create([
+        'cliente_id' => $cliente->id,
+        'user_id' => $usuario->id,
+        'check_in' => now()->addDays(7)->toDateString(),
+        'check_out' => now()->addDays(10)->toDateString(),
+        'estado' => 'Confirmada',
+        'monto_total' => 2697.00,
+    ]);
+
+    ReservaHabitacion::create([
+        'reserva_id' => $reserva->id,
+        'habitacion_id' => $ocupada->id,
+        'precio_por_noche' => 899.00,
+    ]);
+
+    $this->get(route('rooms.search', [
+        'check_in' => now()->addDays(7)->toDateString(),
+        'check_out' => now()->addDays(9)->toDateString(),
+        'guests' => 2,
+    ]))
+        ->assertOk()
+        ->assertSee('#101')
+        ->assertDontSee('#102');
+});
+
+test('guests cannot access the reservation confirmation page', function () {
+    $this->get(route('reserva.confirmar'))->assertRedirect(route('login'));
+});
+
+test('clients are redirected to their private panel after login without a pending reservation', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $cliente = User::factory()->create(['email' => 'cliente@example.com', 'password' => Hash::make('secret123')]);
+    $cliente->assignRole('cliente');
+
+    Cliente::create([
+        'user_id' => $cliente->id,
+        'nombre' => 'Cliente',
+        'apellido' => 'Prueba',
+        'email' => 'cliente@example.com',
+    ]);
+
+    $this->post(route('login'), [
+        'email' => 'cliente@example.com',
+        'password' => 'secret123',
+    ])->assertRedirect(route('mis-reservaciones'));
+});
+
+test('the public home page shows the create-account button next to login', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('Crear cuenta')
+        ->assertSee('Iniciar sesión');
+});
+
+test('the public services page shows the create-account button next to login', function () {
+    $this->get(route('servicios.public'))
+        ->assertOk()
+        ->assertSee('Crear cuenta')
+        ->assertSee('Iniciar sesión');
+});
+
+test('clients are redirected to their private panel when they try to visit the dashboard', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $cliente = User::factory()->create();
+    $cliente->assignRole('cliente');
+
+    $this->actingAs($cliente)
+        ->get('/dashboard')
+        ->assertRedirect(route('mis-reservaciones'));
+});
+
+test('non-manager staff are forbidden from the dashboard', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $recepcionista = User::factory()->create();
+    $recepcionista->assignRole('recepcionista');
+
+    $this->actingAs($recepcionista)
+        ->get('/dashboard')
+        ->assertForbidden();
+});
+
+test('staff cannot access the client private panel', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $recepcionista = User::factory()->create();
+    $recepcionista->assignRole('recepcionista');
+
+    $this->actingAs($recepcionista)
+        ->get(route('mis-reservaciones'))
+        ->assertForbidden();
+});
+
+test('clients can view their reservations in the private panel', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $usuario = User::factory()->create(['email' => 'panel@example.com']);
+    $usuario->assignRole('cliente');
+
+    $cliente = Cliente::create([
+        'user_id' => $usuario->id,
+        'nombre' => 'Elena',
+        'apellido' => 'Ríos',
+        'email' => 'panel@example.com',
+    ]);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Deluxe', 'precio_base' => 1499.00, 'capacidad' => 3]);
+    $habitacion = Habitacion::create(['numero_habitacion' => '205', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $reserva = Reserva::create([
+        'cliente_id' => $cliente->id,
+        'user_id' => $usuario->id,
+        'check_in' => now()->addDays(7)->toDateString(),
+        'check_out' => now()->addDays(10)->toDateString(),
+        'estado' => 'Confirmada',
+        'monto_total' => 4497.00,
+    ]);
+
+    ReservaHabitacion::create([
+        'reserva_id' => $reserva->id,
+        'habitacion_id' => $habitacion->id,
+        'precio_por_noche' => 1499.00,
+    ]);
+
+    $this->actingAs($usuario)
+        ->get(route('mis-reservaciones'))
+        ->assertOk()
+        ->assertSee('Mis reservaciones')
+        ->assertSee('#205')
+        ->assertSee('Confirmada')
+        ->assertSee('Descargar estado de cuenta');
+});
+
+test('clients can download the estado de cuenta PDF of a reservation', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $usuario = User::factory()->create(['email' => 'pdf@example.com']);
+    $usuario->assignRole('cliente');
+
+    $cliente = Cliente::create([
+        'user_id' => $usuario->id,
+        'nombre' => 'Pedro',
+        'apellido' => 'Soto',
+        'email' => 'pdf@example.com',
+    ]);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Deluxe', 'precio_base' => 1499.00, 'capacidad' => 3]);
+    $habitacion = Habitacion::create(['numero_habitacion' => '210', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $reserva = Reserva::create([
+        'cliente_id' => $cliente->id,
+        'user_id' => $usuario->id,
+        'check_in' => now()->addDays(7)->toDateString(),
+        'check_out' => now()->addDays(10)->toDateString(),
+        'estado' => 'Confirmada',
+        'monto_total' => 4497.00,
+    ]);
+
+    ReservaHabitacion::create([
+        'reserva_id' => $reserva->id,
+        'habitacion_id' => $habitacion->id,
+        'precio_por_noche' => 1499.00,
+    ]);
+
+    $this->actingAs($usuario)
+        ->get(route('estado-cuenta.pdf', $reserva->id))
+        ->assertOk()
+        ->assertHeader('content-type', 'application/pdf');
+});
+
+test('a client cannot download the estado de cuenta PDF of another client', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $dueño = User::factory()->create(['email' => 'dueno@example.com']);
+    $dueño->assignRole('cliente');
+
+    $otro = User::factory()->create(['email' => 'otro@example.com']);
+    $otro->assignRole('cliente');
+
+    $cliente = Cliente::create([
+        'user_id' => $dueño->id,
+        'nombre' => 'Dueño',
+        'apellido' => 'Casa',
+        'email' => 'dueno@example.com',
+    ]);
+
+    $reserva = Reserva::create([
+        'cliente_id' => $cliente->id,
+        'user_id' => $dueño->id,
+        'check_in' => now()->addDays(7)->toDateString(),
+        'check_out' => now()->addDays(8)->toDateString(),
+        'estado' => 'Confirmada',
+        'monto_total' => 1499.00,
+    ]);
+
+    $this->actingAs($otro)
+        ->get(route('estado-cuenta.pdf', $reserva->id))
+        ->assertForbidden();
+});
+
+test('guests who choose to create an account are sent to the registration page', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $tipo = TipoHabitacion::create(['nombre' => 'Estándar', 'precio_base' => 899.00, 'capacidad' => 2]);
+    $habitacion = Habitacion::create(['numero_habitacion' => '102', 'tipo_habitacion_id' => $tipo->id, 'estado' => 'Disponible']);
+
+    $this->post(route('reserva.iniciar'), [
+        'habitacion_id' => $habitacion->id,
+        'check_in' => now()->addDays(7)->toDateString(),
+        'check_out' => now()->addDays(9)->toDateString(),
+        'guests' => 2,
+        'accion' => 'registro',
+    ])->assertRedirect(route('register'));
+
+    expect(session('reserva.pendiente'))->not->toBeNull()
+        ->and(session('reserva.pendiente.habitacion_id'))->toBe($habitacion->id);
 });

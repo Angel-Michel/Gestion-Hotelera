@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\EstadoCuentaController;
+use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\RoomSearchController;
 use App\Http\Controllers\UsuarioController;
 use App\Livewire\CheckInOut;
@@ -11,7 +13,6 @@ use App\Livewire\Gastos;
 use App\Livewire\GestionRoles;
 use App\Livewire\Habitaciones;
 use App\Livewire\Limpieza;
-use App\Livewire\MatrizPermisos;
 use App\Livewire\Pagos;
 use App\Livewire\Reportes;
 use App\Livewire\Reservaciones;
@@ -24,11 +25,16 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
 Route::get('/buscar-habitaciones', [RoomSearchController::class, 'index'])->name('rooms.search');
+Route::view('/nuestros-servicios', 'public-servicios')->name('servicios.public');
+Route::get('/nuestras-habitaciones', [RoomSearchController::class, 'index'])->name('habitaciones.public');
+
+Route::post('/reserva/iniciar', [ReservaController::class, 'iniciar'])->name('reserva.iniciar');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reserva/confirmar', [ReservaController::class, 'confirmar'])->name('reserva.confirmar');
+    Route::post('/reserva', [ReservaController::class, 'store'])->name('reserva.store');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -61,26 +67,65 @@ Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])
     ->name('usuarios.update');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', Dashboard::class)->name('dashboard');
-    Route::get('/reservaciones', Reservaciones::class)->name('reservaciones');
-    Route::get('/habitaciones', Habitaciones::class)->name('habitaciones');
-    Route::get('/clientes', Clientes::class)->name('clientes');
-    Route::get('/checkin-checkout', CheckInOut::class)->name('checkin-checkout');
-    Route::get('/limpieza', Limpieza::class)->name('limpieza');
-    Route::get('/pagos', Pagos::class)->name('pagos');
-    Route::get('/servicios', Servicios::class)->name('servicios');
-    Route::get('/gastos', Gastos::class)->name('gastos');
-    Route::get('/temporadas', Temporadas::class)->name('temporadas');
-    Route::get('/reportes', Reportes::class)->name('reportes');
-    Route::get('/configuracion', Configuracion::class)->name('configuracion');
+    Route::get('/dashboard', Dashboard::class)
+        ->middleware(['cliente.redirect', 'role:super-admin|gerente'])
+        ->name('dashboard');
+
+    Route::get('/reservaciones', Reservaciones::class)
+        ->middleware('permission:reservaciones.ver')
+        ->name('reservaciones');
+
+    Route::get('/habitaciones', Habitaciones::class)
+        ->middleware('permission:habitaciones.ver')
+        ->name('habitaciones');
+
+    Route::get('/clientes', Clientes::class)
+        ->middleware('permission:clientes.ver')
+        ->name('clientes');
+
+    Route::get('/checkin-checkout', CheckInOut::class)
+        ->middleware('permission:checkin_checkout.ver')
+        ->name('checkin-checkout');
+
+    Route::get('/limpieza', Limpieza::class)
+        ->middleware('permission:limpieza.ver')
+        ->name('limpieza');
+
+    Route::get('/pagos', Pagos::class)
+        ->middleware('permission:pagos.ver')
+        ->name('pagos');
+
+    Route::get('/servicios', Servicios::class)
+        ->middleware('permission:servicios.ver')
+        ->name('servicios');
+
+    Route::get('/gastos', Gastos::class)
+        ->middleware('permission:gastos.ver')
+        ->name('gastos');
+
+    Route::get('/temporadas', Temporadas::class)
+        ->middleware('permission:temporadas.ver')
+        ->name('temporadas');
+
+    Route::get('/reportes', Reportes::class)
+        ->middleware('permission:reportes.ver')
+        ->name('reportes');
+
+    Route::get('/configuracion', Configuracion::class)
+        ->middleware('permission:configuracion.ver')
+        ->name('configuracion');
 
     Route::get('/roles', GestionRoles::class)
         ->middleware('permission:roles_permisos.ver')
         ->name('roles');
 
-    Route::get('/permisos', MatrizPermisos::class)
-        ->middleware('role:super-admin')
-        ->name('permisos');
+    Route::get('/mis-reservaciones', [EstadoCuentaController::class, 'index'])
+        ->middleware('role:cliente')
+        ->name('mis-reservaciones');
+
+    Route::get('/mis-reservaciones/{reserva}/estado-cuenta', [EstadoCuentaController::class, 'descargar'])
+        ->middleware('role:cliente')
+        ->name('estado-cuenta.pdf');
 });
 
 Route::middleware(['auth', 'role:super-admin'])->group(function () {

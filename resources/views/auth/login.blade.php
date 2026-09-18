@@ -25,6 +25,23 @@
             <!-- Tarjeta Blanca Centrada -->
             <div class="rounded-2xl border border-slate-100 bg-white p-8 shadow-sm sm:p-10">
 
+                @if (session('aviso'))
+                    <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        {{ session('aviso') }}
+                    </div>
+                @endif
+
+                @if (session('aviso') && session()->has('reserva.pendiente'))
+                    <div class="mb-6 rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
+                        <p class="text-sm font-semibold text-slate-900 mb-1">Tienes una reservación en espera</p>
+                        <p class="text-sm text-slate-600 mb-4">Guarda tu habitación: crea una cuenta como Cliente y la completarás de inmediato.</p>
+                        <a href="{{ route('register') }}"
+                           class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 py-3 font-bold text-white shadow-md transition hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                            Crear cuenta y continuar
+                        </a>
+                    </div>
+                @endif
+
                 <!-- Selector de Rol (Toggle) -->
                 <div class="mb-8 flex rounded-xl bg-slate-100 p-1.5">
                     <button id="btn-personal" onclick="setRole('personal')" class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 bg-white shadow-sm text-slate-900 border border-slate-200">
@@ -84,6 +101,11 @@
                     <button type="submit" class="mt-2 w-full rounded-xl bg-amber-500 py-3.5 font-semibold text-white shadow-md transition hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
                         Iniciar sesión
                     </button>
+
+                    <p class="mt-5 text-center text-sm text-slate-500">
+                        ¿Aún no tienes cuenta?
+                        <a href="{{ route('register') }}" class="font-medium text-amber-600 transition hover:text-amber-700">Crea una cuenta</a>
+                    </p>
                 </form>
 
                 @if ($errors->any())

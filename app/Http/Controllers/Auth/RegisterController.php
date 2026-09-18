@@ -3,68 +3,69 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
-class RegisterController extends Controller
+class RegisterController extends Controller implements HasMiddleware
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
-    use RegistersUsers;
-
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('guest');
+        return [
+            new Middleware('guest'),
+        ];
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
+    public function show(): View
     {
-        return Validator::make($data, [
+        return view('auth.register');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $datos = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'telefono' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
-    }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        $usuario = User::create([
+            'name' => $datos['name'],
+            'email' => $datos['email'],
+            'password' => Hash::make($datos['password']),
+            'activo' => true,
         ]);
+
+        $rol = Role::firstOrCreate([
+            'name' => 'cliente',
+            'guard_name' => 'web',
+        ]);
+        $usuario->assignRole($rol);
+
+        $partes = preg_split('/\s+/', trim($datos['name']), 2);
+
+        Cliente::create([
+            'user_id' => $usuario->id,
+            'nombre' => $partes[0],
+            'apellido' => $partes[1] ?? '',
+            'email' => $datos['email'],
+            'telefono' => $datos['telefono'] ?? null,
+        ]);
+
+        Auth::login($usuario);
+
+        if (session()->has('reserva.pendiente')) {
+            return redirect()->route('reserva.confirmar');
+        }
+
+        return redirect()->route('home');
     }
 }

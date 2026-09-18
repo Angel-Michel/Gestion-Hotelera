@@ -7,8 +7,8 @@
 
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Servicios</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Servicios</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 Gestiona el catálogo de servicios adicionales del hotel.
             </flux:subheading>
         </div>
@@ -22,19 +22,19 @@
     <flux:card>
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Nombre</flux:table.column>
-                <flux:table.column>Precio</flux:table.column>
-                <flux:table.column align="center">Veces contratado</flux:table.column>
-                <flux:table.column align="end">Acciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Nombre</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Precio</flux:table.column>
+                <flux:table.column align="center" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Veces contratado</flux:table.column>
+                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($servicios as $servicio)
                     <flux:table.row :key="$servicio->id">
-                        <flux:table.cell variant="strong">{{ $servicio->nombre }}</flux:table.cell>
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">{{ $servicio->nombre }}</flux:table.cell>
                         <flux:table.cell>${{ number_format($servicio->precio, 2) }}</flux:table.cell>
                         <flux:table.cell align="center">
-                            <flux:badge color="zinc" size="sm">{{ $servicio->reservas_servicio_count }}</flux:badge>
+                            <flux:badge color="zinc" size="sm" class="!bg-zinc-100 !text-zinc-800 !font-semibold">{{ $servicio->reservas_servicio_count }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
@@ -63,8 +63,8 @@
     <flux:modal name="servicio-form" wire:model="mostrarModal" class="w-full max-w-md">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $servicioId ? 'Editar servicio' : 'Nuevo servicio' }}</flux:heading>
-                <flux:subheading>Completa los datos del servicio.</flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $servicioId ? 'Editar servicio' : 'Nuevo servicio' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">Completa los datos del servicio.</flux:subheading>
             </div>
 
             <div class="space-y-4">

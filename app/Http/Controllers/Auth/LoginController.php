@@ -11,13 +11,42 @@ class LoginController extends Controller implements HasMiddleware
 {
     use AuthenticatesUsers;
 
-    protected $redirectTo = '/dashboard';
-
     public static function middleware(): array
     {
         return [
             new Middleware('guest', except: ['logout']),
             new Middleware('auth', only: ['logout']),
         ];
+    }
+
+    protected function redirectTo(): string
+    {
+        if (session()->has('reserva.pendiente')) {
+            return route('reserva.confirmar');
+        }
+
+        $usuario = auth()->user();
+
+        if ($usuario?->hasRole('cliente')) {
+            return route('mis-reservaciones');
+        }
+
+        if ($usuario?->can('dashboard.ver')) {
+            return '/dashboard';
+        }
+
+        if ($usuario?->can('reservaciones.ver')) {
+            return route('reservaciones');
+        }
+
+        if ($usuario?->can('checkin_checkout.ver')) {
+            return route('checkin-checkout');
+        }
+
+        if ($usuario?->can('limpieza.ver')) {
+            return route('limpieza');
+        }
+
+        return '/';
     }
 }

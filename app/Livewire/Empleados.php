@@ -5,11 +5,14 @@ namespace App\Livewire;
 use App\Models\Empleado;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 #[Layout('components.layouts.app')]
@@ -39,8 +42,6 @@ class Empleados extends Component
 
     public string $telefono = '';
 
-    public string $puesto = '';
-
     public string $salario = '';
 
     public string $turno = '';
@@ -49,7 +50,17 @@ class Empleados extends Component
 
     public ?string $mensajeExito = null;
 
-    /** Turnos disponibles para el personal del hotel. */
+    public ?string $mensajeError = null;
+
+    public bool $mostrarModalPermisos = false;
+
+    public ?int $empleadoIdPermisos = null;
+
+    public ?string $empleadoNombrePermisos = null;
+
+    /** @var list<string> */
+    public array $permisosUsuario = [];
+
     public const TURNOS = ['Mañana', 'Tarde', 'Noche', 'Rotativo'];
 
     public function updatedBusqueda(): void
@@ -89,9 +100,50 @@ class Empleados extends Component
 
         return view('livewire.empleados', [
             'empleados' => $empleados,
-            'roles' => Role::where('name', '!=', 'super-admin')->orderBy('name')->get(),
             'turnos' => self::TURNOS,
         ]);
+    }
+
+    /**
+     * Roles del sistema asignables desde el formulario (sin Super Admin).
+     */
+    #[Computed]
+    public function rolesDisponibles()
+    {
+        return Role::where('name', '!=', 'super-admin')->orderBy('name')->get();
+    }
+
+    /**
+     * Permisos del sistema agrupados por módulo para la matriz granular.
+     */
+    #[Computed]
+    public function permisosPorModulo()
+    {
+        return Permission::orderBy('name')
+            ->get()
+            ->groupBy(fn (Permission $permiso) => Str::before($permiso->name, '.'));
+    }
+
+    public function etiquetaModulo(string $modulo): string
+    {
+        return match ($modulo) {
+            'dashboard' => 'Dashboard',
+            'checkin_checkout' => 'Check-in / Check-out',
+            'roles_permisos' => 'Roles y permisos',
+            'configuracion' => 'Configuración',
+            default => Str::headline($modulo),
+        };
+    }
+
+    public function etiquetaAccion(string $accion): string
+    {
+        return match ($accion) {
+            'ver' => 'Ver',
+            'crear' => 'Crear',
+            'editar' => 'Editar',
+            'eliminar' => 'Eliminar',
+            default => Str::headline($accion),
+        };
     }
 
     public function crear(): void
@@ -104,7 +156,6 @@ class Empleados extends Component
             'contrasena',
             'rol',
             'telefono',
-            'puesto',
             'salario',
             'turno',
         ]);
@@ -112,7 +163,7 @@ class Empleados extends Component
         $this->esta_activo = true;
         $this->turno = 'Mañana';
         $this->resetValidation();
-        $this->reset('mensajeExito');
+        $this->reset('mensajeExito', 'mensajeError');
         $this->mostrarModal = true;
     }
 
@@ -125,7 +176,6 @@ class Empleados extends Component
         $this->apellidos = $empleado->apellidos;
         $this->correo_electronico = $empleado->correo_electronico ?? $empleado->usuario?->email ?? '';
         $this->telefono = $empleado->telefono ?? '';
-        $this->puesto = $empleado->puesto ?? '';
         $this->salario = (string) ($empleado->salario ?? '');
         $this->turno = $empleado->turno ?? '';
         $this->esta_activo = (bool) $empleado->esta_activo;
@@ -149,7 +199,6 @@ class Empleados extends Component
             'contrasena',
             'rol',
             'telefono',
-            'puesto',
             'salario',
             'turno',
         ]);
@@ -167,7 +216,6 @@ class Empleados extends Component
             'apellidos' => trim($this->apellidos),
             'correo_electronico' => $this->correo_electronico,
             'telefono' => $this->telefono ?: null,
-            'puesto' => $this->puesto ?: null,
             'salario' => $this->salario !== '' ? $this->salario : null,
             'turno' => $this->turno ?: null,
             'esta_activo' => $this->esta_activo,
@@ -202,7 +250,6 @@ class Empleados extends Component
             'apellidos' => ['required', 'string', 'max:100'],
             'correo_electronico' => ['required', 'email', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:20'],
-            'puesto' => ['nullable', 'string', 'max:100'],
             'salario' => ['nullable', 'numeric', 'min:0'],
             'turno' => ['nullable', Rule::in(self::TURNOS)],
             'rol' => ['nullable', Rule::exists('roles', 'name'), Rule::notIn(['super-admin'])],
@@ -333,5 +380,60 @@ class Empleados extends Component
         $empleado->delete();
 
         $this->mensajeExito = 'Empleado eliminado correctamente.';
+    }
+
+    /**
+     * Abre la matriz de seguridad granular del empleado. Solo el Super Admin
+     * puede configurar los permisos directos de un usuario.
+     */
+    public function abrirModalPermisos(int $id): void
+    {
+        abort_unless($this->esSuperAdmin(), 403);
+
+        $empleado = Empleado::with('usuario')->where('id_empleado', $id)->firstOrFail();
+
+        if ($empleado->usuario === null) {
+            $this->mensajeError = 'Este empleado no tiene acceso al sistema; asígnale una cuenta para configurar sus permisos.';
+            $this->reset('mensajeExito');
+
+            return;
+        }
+
+        $this->empleadoIdPermisos = $empleado->id_empleado;
+        $this->empleadoNombrePermisos = trim($empleado->nombre.' '.$empleado->apellidos);
+        $this->permisosUsuario = $empleado->usuario->getDirectPermissions()
+            ->pluck('name')
+            ->all();
+        $this->resetValidation();
+        $this->mostrarModalPermisos = true;
+        $this->reset('mensajeError');
+    }
+
+    public function cerrarModalPermisos(): void
+    {
+        $this->mostrarModalPermisos = false;
+        $this->reset('empleadoIdPermisos', 'empleadoNombrePermisos', 'permisosUsuario');
+        $this->resetValidation();
+    }
+
+    /**
+     * Sincroniza los permisos directos (Spatie) del usuario vinculado al empleado.
+     */
+    public function guardarPermisosGranulares(): void
+    {
+        abort_unless($this->esSuperAdmin(), 403);
+
+        $empleado = Empleado::with('usuario')->where('id_empleado', $this->empleadoIdPermisos)->firstOrFail();
+
+        abort_unless($empleado->usuario !== null, 403);
+
+        $nombresValidos = Permission::pluck('name')->all();
+
+        $nombres = array_values(array_intersect($this->permisosUsuario, $nombresValidos));
+
+        $empleado->usuario->syncPermissions($nombres);
+
+        $this->mensajeExito = 'Permisos del empleado actualizados correctamente.';
+        $this->cerrarModalPermisos();
     }
 }

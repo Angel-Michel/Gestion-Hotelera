@@ -7,8 +7,8 @@
 
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <flux:heading size="xl">Pagos</flux:heading>
-            <flux:subheading>
+            <flux:heading size="xl" class="!text-slate-900 !font-bold text-2xl">Pagos</flux:heading>
+            <flux:subheading class="!text-slate-600 !font-medium">
                 Registra y controla los pagos de las reservaciones. Total cobrado: ${{ number_format($total, 2) }}
             </flux:subheading>
         </div>
@@ -22,23 +22,23 @@
     <flux:card>
         <flux:table>
             <flux:table.columns>
-                <flux:table.column>Reservación</flux:table.column>
-                <flux:table.column>Monto</flux:table.column>
-                <flux:table.column>Método</flux:table.column>
-                <flux:table.column>Fecha de pago</flux:table.column>
-                <flux:table.column>Notas</flux:table.column>
-                <flux:table.column align="end">Acciones</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Reservación</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Monto</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Método</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Fecha de pago</flux:table.column>
+                <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Notas</flux:table.column>
+                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
                 @forelse ($pagos as $pago)
                     <flux:table.row :key="$pago->id">
-                        <flux:table.cell variant="strong">
+                        <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">
                             #{{ $pago->reserva_id }} · {{ $pago->reserva?->cliente?->nombreCompleto() ?? '—' }}
                         </flux:table.cell>
                         <flux:table.cell>${{ number_format($pago->monto, 2) }}</flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="amber" size="sm">{{ $pago->metodo_pago }}</flux:badge>
+                            <flux:badge color="amber" size="sm" class="!bg-amber-100 !text-amber-800 !font-semibold">{{ $pago->metodo_pago }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell>{{ $pago->fecha_pago?->format('d/m/Y H:i') ?? '—' }}</flux:table.cell>
                         <flux:table.cell>{{ $pago->notas ?? '—' }}</flux:table.cell>
@@ -69,8 +69,8 @@
     <flux:modal name="pago-form" wire:model="mostrarModal" class="w-full max-w-lg">
         <form wire:submit="guardar">
             <div class="mb-6">
-                <flux:heading size="lg">{{ $pagoId ? 'Editar pago' : 'Nuevo pago' }}</flux:heading>
-                <flux:subheading>Completa los datos del pago.</flux:subheading>
+                <flux:heading size="lg" class="!text-slate-800 !font-semibold">{{ $pagoId ? 'Editar pago' : 'Nuevo pago' }}</flux:heading>
+                <flux:subheading class="!text-slate-600 !font-medium">Completa los datos del pago.</flux:subheading>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">

@@ -61,6 +61,14 @@ class GestionRoles extends Component
         return in_array($this->normalizarNombre($nombre), $this->rolesProtegidos(), true);
     }
 
+    /**
+     * Solo el Super Admin puede crear, editar o eliminar roles.
+     */
+    public function esSuperAdmin(): bool
+    {
+        return auth()->user()?->hasRole('super-admin') ?? false;
+    }
+
     public function abrirModalCrear(): void
     {
         $this->reset('nombre', 'permisosSeleccionados', 'seleccionarTodos');
@@ -77,7 +85,7 @@ class GestionRoles extends Component
 
     public function guardarRol(): void
     {
-        abort_unless(auth()->user()?->can('roles_permisos.crear'), 403);
+        abort_unless($this->esSuperAdmin(), 403);
 
         $this->validate([
             'nombre' => ['required', 'string', 'max:255'],
@@ -111,9 +119,9 @@ class GestionRoles extends Component
 
     public function abrirModalEditar(int $roleId): void
     {
-        abort_unless(auth()->user()?->can('roles_permisos.editar'), 403);
+        abort_unless($this->esSuperAdmin(), 403);
 
-        $rol = Role::findOrFail($roleId);
+        $rol = Role::with('permissions')->findOrFail($roleId);
 
         if ($this->esRolProtegido($rol->name)) {
             $this->mensajeError = "El rol \"{$rol->name}\" es del sistema y no puede modificarse.";
@@ -124,6 +132,8 @@ class GestionRoles extends Component
 
         $this->rolIdEditar = $rol->id;
         $this->nombre = $rol->name;
+        $this->permisosSeleccionados = $rol->permissions->pluck('id')->map(fn (int $id): string => (string) $id)->all();
+        $this->seleccionarTodos = count($this->permisosSeleccionados) === count($this->todosLosPermisosIds());
         $this->resetValidation();
         $this->mostrarModalEditar = true;
         $this->reset('mensajeError');
@@ -132,13 +142,13 @@ class GestionRoles extends Component
     public function cerrarModalEditar(): void
     {
         $this->mostrarModalEditar = false;
-        $this->reset('rolIdEditar', 'nombre');
+        $this->reset('rolIdEditar', 'nombre', 'permisosSeleccionados', 'seleccionarTodos');
         $this->resetValidation();
     }
 
     public function actualizarRol(): void
     {
-        abort_unless(auth()->user()?->can('roles_permisos.editar'), 403);
+        abort_unless($this->esSuperAdmin(), 403);
 
         $rol = Role::findOrFail($this->rolIdEditar);
 
@@ -164,6 +174,12 @@ class GestionRoles extends Component
 
         $rol->update(['name' => $nombreRol]);
 
+        $nombresPermisos = Permission::whereIn('id', $this->permisosSeleccionados)
+            ->pluck('name')
+            ->all();
+
+        $rol->syncPermissions($nombresPermisos);
+
         unset($this->roles);
 
         $nombreActualizado = $rol->name;
@@ -174,7 +190,7 @@ class GestionRoles extends Component
 
     public function seleccionarRolAEliminar(int $roleId): void
     {
-        abort_unless(auth()->user()?->can('roles_permisos.eliminar'), 403);
+        abort_unless($this->esSuperAdmin(), 403);
 
         $rol = Role::findOrFail($roleId);
 
@@ -195,7 +211,7 @@ class GestionRoles extends Component
         $roleId ??= $this->rolAEliminar;
 
         abort_unless($roleId, 403);
-        abort_unless(auth()->user()?->can('roles_permisos.eliminar'), 403);
+        abort_unless($this->esSuperAdmin(), 403);
 
         $rol = Role::findOrFail($roleId);
 

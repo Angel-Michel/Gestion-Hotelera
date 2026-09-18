@@ -135,6 +135,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
+        $cliente = Role::firstOrCreate([
+            'name' => 'cliente',
+            'guard_name' => 'web',
+        ]);
+
         /*
         |--------------------------------------------------------------------------
         | Permisos del SUPER ADMIN
@@ -181,8 +186,6 @@ class RolesAndPermissionsSeeder extends Seeder
         */
 
         $recepcionista->syncPermissions([
-            'dashboard.ver',
-
             // Reservaciones
             'reservaciones.ver',
             'reservaciones.crear',
@@ -211,13 +214,19 @@ class RolesAndPermissionsSeeder extends Seeder
         */
 
         $limpieza->syncPermissions([
-            'dashboard.ver',
-
             'habitaciones.ver',
 
             'limpieza.ver',
             'limpieza.editar',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Permisos del CLIENTE / HUÉSPED
+        |--------------------------------------------------------------------------
+        */
+
+        $cliente->syncPermissions([]);
 
         /*
         |--------------------------------------------------------------------------
