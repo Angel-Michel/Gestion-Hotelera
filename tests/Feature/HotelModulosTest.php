@@ -983,17 +983,17 @@ test('clients are redirected to their private panel after login without a pendin
     ])->assertRedirect(route('mis-reservaciones'));
 });
 
-test('the public home page shows the create-account button next to login', function () {
+test('the public home page shows login without the create-account button', function () {
     $this->get(route('home'))
         ->assertOk()
-        ->assertSee('Crear cuenta')
+        ->assertDontSee('Crear cuenta')
         ->assertSee('Iniciar sesión');
 });
 
-test('the public services page shows the create-account button next to login', function () {
+test('the public services page shows login without the create-account button', function () {
     $this->get(route('servicios.public'))
         ->assertOk()
-        ->assertSee('Crear cuenta')
+        ->assertDontSee('Crear cuenta')
         ->assertSee('Iniciar sesión');
 });
 
@@ -1156,11 +1156,20 @@ test('guests who choose to create an account are sent to the registration page',
 });
 
 test('the personal login page does not offer public registration', function () {
-    $this->get(route('login'))
+    $html = $this->get(route('login'))
         ->assertOk()
-        ->assertDontSee('Crea una cuenta')
-        ->assertDontSee('Crear cuenta y continuar')
-        ->assertDontSee('Registrarse');
+        ->assertSee('Acceso al sistema')
+        ->assertSee('Ingresa tus credenciales de administrador')
+        ->assertSee('Iniciar sesión')
+        ->assertDontSee('Crea tu cuenta')
+        ->assertDontSee('Nombre completo')
+        ->getContent();
+
+    preg_match('/id="extra-personal".*?<\/div>/s', $html, $personalBlock);
+    preg_match('/id="extra-clientes".*?<\/div>/s', $html, $clientesBlock);
+
+    expect($personalBlock[0] ?? '')->not->toContain('Registrarse')
+        ->and($clientesBlock[0] ?? '')->toContain('Registrarse');
 });
 
 test('the employees table shows the system role assigned to the user', function () {
