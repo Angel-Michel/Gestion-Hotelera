@@ -42,13 +42,13 @@ class GestionRoles extends Component
     }
 
     /**
-     * Roles del sistema que no pueden eliminarse ni renombrarse.
+     * Variantes de nombre bajo las que se reconoce al rol Super Admin principal.
      *
      * @return list<string>
      */
-    protected function rolesProtegidos(): array
+    protected function nombresRolSuperAdmin(): array
     {
-        return ['super-admin', 'superadmin', 'super admin', 'gerente', 'recepcionista', 'limpieza'];
+        return ['super-admin', 'superadmin', 'super admin'];
     }
 
     public function normalizarNombre(string $nombre): string
@@ -56,9 +56,31 @@ class GestionRoles extends Component
         return Str::lower(preg_replace('/\s+/', ' ', trim($nombre)) ?? '');
     }
 
-    public function esRolProtegido(string $nombre): bool
+    public function esRolSuperAdmin(string $nombre): bool
     {
-        return in_array($this->normalizarNombre($nombre), $this->rolesProtegidos(), true);
+        return in_array($this->normalizarNombre($nombre), $this->nombresRolSuperAdmin(), true);
+    }
+
+    /**
+     * Un rol solo queda bloqueado como medida de seguridad extrema si es el rol
+     * Super Admin principal o si está asignado al propio usuario en sesión.
+     */
+    public function esRolNoEliminable(string $nombre, ?int $roleId = null): bool
+    {
+        if ($this->esRolSuperAdmin($nombre)) {
+            return true;
+        }
+
+        return $roleId !== null && (bool) auth()->user()?->roles()->whereKey($roleId)->exists();
+    }
+
+    public function motivoRolNoEliminable(string $nombre, ?int $roleId = null): string
+    {
+        if ($this->esRolSuperAdmin($nombre)) {
+            return 'El rol Super Admin es esencial para el sistema y no puede eliminarse.';
+        }
+
+        return 'Tienes asignado este rol en tu sesión actual, por lo que no puede eliminarse.';
     }
 
     /**
@@ -123,13 +145,6 @@ class GestionRoles extends Component
 
         $rol = Role::with('permissions')->findOrFail($roleId);
 
-        if ($this->esRolProtegido($rol->name)) {
-            $this->mensajeError = "El rol \"{$rol->name}\" es del sistema y no puede modificarse.";
-            $this->reset('mensajeExito');
-
-            return;
-        }
-
         $this->rolIdEditar = $rol->id;
         $this->nombre = $rol->name;
         $this->permisosSeleccionados = $rol->permissions->pluck('id')->map(fn (int $id): string => (string) $id)->all();
@@ -151,14 +166,6 @@ class GestionRoles extends Component
         abort_unless($this->esSuperAdmin(), 403);
 
         $rol = Role::findOrFail($this->rolIdEditar);
-
-        if ($this->esRolProtegido($rol->name)) {
-            $this->mensajeError = "El rol \"{$rol->name}\" es del sistema y no puede modificarse.";
-            $this->reset('mensajeExito');
-            $this->cerrarModalEditar();
-
-            return;
-        }
 
         $this->validate([
             'nombre' => ['required', 'string', 'max:255'],
@@ -194,6 +201,13 @@ class GestionRoles extends Component
 
         $rol = Role::findOrFail($roleId);
 
+        if ($this->esRolNoEliminable($rol->name, $rol->id)) {
+            $this->mensajeError = $this->motivoRolNoEliminable($rol->name, $rol->id);
+            $this->reset('mensajeExito');
+
+            return;
+        }
+
         $this->rolAEliminar = $rol->id;
         $this->nombreRolAEliminar = $rol->name;
         $this->mostrarModalEliminar = true;
@@ -215,8 +229,8 @@ class GestionRoles extends Component
 
         $rol = Role::findOrFail($roleId);
 
-        if ($this->esRolProtegido($rol->name)) {
-            $this->mensajeError = "El rol \"{$rol->name}\" es del sistema y no puede eliminarse.";
+        if ($this->esRolNoEliminable($rol->name, $rol->id)) {
+            $this->mensajeError = $this->motivoRolNoEliminable($rol->name, $rol->id);
             $this->reset('mensajeExito');
             $this->cerrarModalEliminar();
 

@@ -54,7 +54,9 @@
                 <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Rol</flux:table.column>
                 <flux:table.column class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Permisos asignados</flux:table.column>
                 <flux:table.column align="center" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Usuarios con este rol</flux:table.column>
-                <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
+                @if ($this->esSuperAdmin())
+                    <flux:table.column align="end" class="!text-slate-700 !font-semibold uppercase !text-xs tracking-wider">Acciones</flux:table.column>
+                @endif
             </flux:table.columns>
 
             <flux:table.rows>
@@ -79,29 +81,28 @@
                             </flux:badge>
                         </flux:table.cell>
 
-                        <flux:table.cell align="end">
-                            <div class="flex items-center justify-end gap-2">
-                                @if (! $this->esSuperAdmin())
-                                    <span class="inline-flex items-center text-zinc-400" title="Solo el Super Admin puede editar o eliminar roles">
-                                        <flux:icon.lock-closed class="size-4" />
-                                    </span>
-                                @elseif ($this->esRolProtegido($rol->name))
-                                    <span class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-500" title="Rol del sistema: no se puede modificar">
-                                        <flux:icon.lock-closed class="size-4" />
-                                        Protegido
-                                    </span>
-                                @else
+                        @if ($this->esSuperAdmin())
+                            <flux:table.cell align="end">
+                                <div class="flex items-center justify-end gap-2">
                                     <flux:button type="button" size="sm" variant="outline" wire:click="abrirModalEditar({{ $rol->id }})">
                                         <flux:icon.pencil-square class="size-4" />
                                         Editar
                                     </flux:button>
-                                    <flux:button type="button" size="sm" variant="danger" wire:click="seleccionarRolAEliminar({{ $rol->id }})">
-                                        <flux:icon.trash class="size-4" />
-                                        Eliminar
-                                    </flux:button>
-                                @endif
-                            </div>
-                        </flux:table.cell>
+
+                                    @if ($this->esRolNoEliminable($rol->name, $rol->id))
+                                        <span class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-500" title="{{ $this->motivoRolNoEliminable($rol->name, $rol->id) }}">
+                                            <flux:icon.lock-closed class="size-4" />
+                                            Protegido
+                                        </span>
+                                    @else
+                                        <flux:button type="button" size="sm" variant="danger" wire:click="seleccionarRolAEliminar({{ $rol->id }})">
+                                            <flux:icon.trash class="size-4" />
+                                            Eliminar
+                                        </flux:button>
+                                    @endif
+                                </div>
+                            </flux:table.cell>
+                        @endif
                     </flux:table.row>
                 @empty
                     <flux:table.row>

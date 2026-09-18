@@ -32,7 +32,6 @@
                 <span class="text-slate-700 font-medium">{{ auth()->user()->name }}</span>
             @else
                 <a href="{{ route('login') }}" class="text-slate-700 font-medium hover:text-slate-900 transition">Iniciar sesión</a>
-                <a href="{{ route('register') }}" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition">Crear cuenta</a>
             @endauth
             <a href="#reservar" class="bg-slate-900 text-white px-5 py-2 rounded-lg hover:bg-slate-800 transition">Reservar</a>
         </div>

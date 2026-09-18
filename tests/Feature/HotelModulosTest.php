@@ -598,6 +598,96 @@ test('only the super-admin can edit or delete roles from the component', functio
         ->assertStatus(403);
 });
 
+test('a super-admin can open the edit modal for the super-admin role itself', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $rolSuperAdmin = Role::where('name', 'super-admin')->firstOrFail();
+
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('abrirModalEditar', $rolSuperAdmin->id)
+        ->assertSet('nombre', 'super-admin')
+        ->assertSet('rolIdEditar', $rolSuperAdmin->id);
+});
+
+test('a super-admin can edit the name and permissions of a system role', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $rolGerente = Role::where('name', 'gerente')->firstOrFail();
+    $permiso = Permission::findByName('roles_permisos.ver');
+
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('abrirModalEditar', $rolGerente->id)
+        ->assertSet('nombre', 'gerente')
+        ->set('nombre', 'gerente general')
+        ->set('permisosSeleccionados', [(string) $permiso->id])
+        ->call('actualizarRol')
+        ->assertHasNoErrors()
+        ->assertSee('actualizado correctamente');
+
+    $rolGerente->refresh();
+
+    expect($rolGerente->name)->toBe('gerente general')
+        ->and($rolGerente->hasPermissionTo('roles_permisos.ver'))->toBeTrue();
+});
+
+test('the super-admin role cannot be deleted from the component', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $rol = Role::where('name', 'super-admin')->firstOrFail();
+
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('eliminarRol', $rol->id)
+        ->assertSee('no puede eliminarse');
+
+    expect(Role::where('name', 'super-admin')->exists())->toBeTrue();
+});
+
+test('a role assigned to the current session user cannot be deleted', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $rol = Role::where('name', 'super-admin')->firstOrFail();
+
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('seleccionarRolAEliminar', $rol->id)
+        ->assertSee('no puede eliminarse');
+
+    expect(Role::where('name', 'super-admin')->exists())->toBeTrue();
+});
+
+test('a super-admin can delete the cliente role', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $rol = Role::where('name', 'cliente')->firstOrFail();
+
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('seleccionarRolAEliminar', $rol->id)
+        ->assertSet('mostrarModalEliminar', true)
+        ->call('eliminarRol')
+        ->assertSee('eliminado correctamente');
+
+    expect(Role::where('name', 'cliente')->exists())->toBeFalse();
+});
+
 test('a super-admin can assign direct permissions to an employee from the granular matrix', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -1063,4 +1153,56 @@ test('guests who choose to create an account are sent to the registration page',
 
     expect(session('reserva.pendiente'))->not->toBeNull()
         ->and(session('reserva.pendiente.habitacion_id'))->toBe($habitacion->id);
+});
+
+test('the personal login page does not offer public registration', function () {
+    $this->get(route('login'))
+        ->assertOk()
+        ->assertDontSee('Crea una cuenta')
+        ->assertDontSee('Crear cuenta y continuar')
+        ->assertDontSee('Registrarse');
+});
+
+test('the employees table shows the system role assigned to the user', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $usuario = User::factory()->create(['email' => 'rol.visible@example.com']);
+    $usuario->assignRole('recepcionista');
+
+    $empleado = Empleado::create([
+        'nombre' => 'Rol',
+        'apellidos' => 'Visible',
+        'correo_electronico' => 'rol.visible@example.com',
+        'id_usuario' => $usuario->id,
+        'puesto' => 'Recepcionista',
+        'esta_activo' => true,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->assertSee('Recepcionista');
+});
+
+test('the roles table hides the actions column for non-super-admin users', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $usuario = User::factory()->create();
+    $usuario->givePermissionTo('roles_permisos.ver');
+
+    Livewire::actingAs($usuario)
+        ->test(GestionRoles::class)
+        ->assertDontSee('Acciones');
+});
+
+test('the public services page shows prices in MXN', function () {
+    $this->get(route('servicios.public'))
+        ->assertOk()
+        ->assertSee('$900.00 MXN')
+        ->assertSee('$2,400.00 MXN')
+        ->assertSee('$1,700.00 MXN')
+        ->assertSee('$1,200.00 MXN')
+        ->assertDontSee('USD');
 });

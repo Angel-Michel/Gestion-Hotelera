@@ -71,7 +71,7 @@
                 </button>
 
                 <div id="extra-clientes" class="text-center mt-6 hidden">
-                    <p class="text-sm text-slate-600">¿Primera vez aquí? <a href="#" class="text-amber-600 font-semibold hover:underline">Crear cuenta</a></p>
+                    <p class="text-sm text-slate-600">¿Primera vez aquí? <a href="{{ route('register') }}" class="text-amber-600 font-semibold hover:underline">Crear cuenta</a></p>
                 </div>
             </form>
             

@@ -31,7 +31,6 @@
                 <span class="text-slate-700 font-medium">{{ auth()->user()->name }}</span>
             @else
                 <a href="{{ route('login') }}" class="text-slate-700 font-medium hover:text-slate-900 transition">Iniciar sesión</a>
-                <a href="{{ route('register') }}" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition">Crear cuenta</a>
             @endauth
             <a href="/#reservar" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">Reservar</a>
         </div>
@@ -62,7 +61,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
                     
                     <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-sm font-bold z-10 shadow-sm">
-                        $45.00 USD
+                        $900.00 MXN
                     </div>
 
                     <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
@@ -87,7 +86,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
                     
                     <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-sm font-bold z-10 shadow-sm">
-                        $120.00 USD
+                        $2,400.00 MXN
                     </div>
 
                     <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
@@ -162,7 +161,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
                     
                     <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-sm font-bold z-10 shadow-sm">
-                        $85.00 USD
+                        $1,700.00 MXN
                     </div>
 
                     <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
@@ -211,7 +210,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
                     
                     <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-sm font-bold z-10 shadow-sm">
-                        $60.00 USD
+                        $1,200.00 MXN
                     </div>
 
                     <div class="absolute inset-0 p-8 flex flex-col justify-end z-10">
