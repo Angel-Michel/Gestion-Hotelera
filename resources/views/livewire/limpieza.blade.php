@@ -40,14 +40,8 @@
                         <flux:table.cell>{{ $tarea->notas ?? '—' }}</flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
-                                <flux:button type="button" size="sm" variant="outline" wire:click="editar({{ $tarea->id }})">
-                                    <flux:icon.pencil-square class="size-4" />
-                                    Editar
-                                </flux:button>
-                                <flux:button type="button" size="sm" variant="danger" wire:click="eliminar({{ $tarea->id }})" wire:confirm="¿Eliminar esta tarea?">
-                                    <flux:icon.trash class="size-4" />
-                                    Eliminar
-                                </flux:button>
+                                <flux:button type="button" size="sm" variant="outline" color="blue" icon="pencil-square" tooltip="Editar tarea" aria-label="Editar tarea" wire:click="editar({{ $tarea->id }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
+                                <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Eliminar tarea" aria-label="Eliminar tarea" wire:click="eliminar({{ $tarea->id }})" wire:confirm="¿Eliminar esta tarea?" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                             </div>
                         </flux:table.cell>
                     </flux:table.row>

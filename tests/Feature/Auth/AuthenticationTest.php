@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Volt\Volt as LivewireVolt;
 
 test('login screen can be rendered', function () {
@@ -33,6 +34,54 @@ test('users can not authenticate with invalid password', function () {
     ]);
 
     $this->assertGuest();
+});
+
+test('clientes cannot authenticate through the personal login section', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $cliente = User::factory()->create();
+    $cliente->assignRole('cliente');
+
+    $response = $this->post('/login', [
+        'email' => $cliente->email,
+        'password' => 'password',
+        'role' => 'personal',
+    ]);
+
+    $this->assertGuest();
+    $response->assertSessionHasErrors(['email' => 'El usuario no está registrado']);
+});
+
+test('personal employees can authenticate through the personal login section', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $gerente = User::factory()->create();
+    $gerente->assignRole('gerente');
+
+    $response = $this->post('/login', [
+        'email' => $gerente->email,
+        'password' => 'password',
+        'role' => 'personal',
+    ]);
+
+    $this->assertAuthenticatedAs($gerente);
+    $response->assertRedirect('/dashboard');
+});
+
+test('clientes can authenticate through the clientes login section', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $cliente = User::factory()->create();
+    $cliente->assignRole('cliente');
+
+    $response = $this->post('/login', [
+        'email' => $cliente->email,
+        'password' => 'password',
+        'role' => 'clientes',
+    ]);
+
+    $this->assertAuthenticatedAs($cliente);
+    $response->assertRedirect(route('mis-reservaciones', absolute: false));
 });
 
 test('users can logout', function () {

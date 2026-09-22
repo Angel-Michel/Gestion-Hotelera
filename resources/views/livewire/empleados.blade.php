@@ -212,14 +212,16 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 text-center">
                                 @if ($this->esSuperAdmin())
-                                    <button
+                                    <flux:button
                                         type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        icon="cog-6-tooth"
+                                        tooltip="Configurar permisos"
+                                        aria-label="Configurar permisos del empleado {{ $empleado->nombre }} {{ $empleado->apellidos }}"
                                         wire:click="abrirModalPermisos({{ $empleado->id_empleado }})"
-                                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-amber-700 shadow-sm transition-all duration-200 ease-out hover:scale-[1.02] hover:border-amber-300 hover:bg-amber-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-500/40 dark:border-slate-600 dark:bg-slate-800 dark:text-amber-400 dark:hover:border-amber-500/60 dark:hover:bg-amber-500/10"
-                                    >
-                                        <flux:icon.key class="size-3.5 text-amber-600 transition-colors duration-200 dark:text-amber-400" />
-                                        Configurar
-                                    </button>
+                                        class="transition-all duration-200 hover:scale-105 active:scale-95"
+                                    />
                                 @else
                                     <span class="inline-flex items-center text-slate-400 dark:text-slate-600" title="Solo el Super Admin puede configurar permisos">
                                         <flux:icon.lock-closed class="size-4" />
@@ -230,20 +232,11 @@
                             @if ($this->esSuperAdmin())
                                 <td class="whitespace-nowrap px-5 py-4">
                                     <div class="flex items-center justify-end gap-2">
-                                        <flux:button type="button" size="sm" variant="outline" wire:click="editar({{ $empleado->id_empleado }})" class="transition-all duration-200 hover:scale-[1.02] active:scale-95">
-                                            <flux:icon.pencil-square class="size-4 text-slate-500 transition-colors duration-200 dark:text-slate-400" />
-                                            Editar
-                                        </flux:button>
+                                        <flux:button type="button" size="sm" variant="outline" color="blue" icon="pencil-square" tooltip="Editar empleado" aria-label="Editar empleado" wire:click="editar({{ $empleado->id_empleado }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
 
-                                        <flux:button type="button" size="sm" variant="outline" wire:click="toggleActivo({{ $empleado->id_empleado }})" class="transition-all duration-200 hover:scale-[1.02] active:scale-95">
-                                            <flux:icon.power class="size-4 text-slate-500 transition-colors duration-200 dark:text-slate-400" />
-                                            {{ $empleado->esta_activo ? 'Desactivar' : 'Activar' }}
-                                        </flux:button>
+                                        <flux:button type="button" size="sm" variant="outline" color="emerald" icon="power" tooltip="{{ $empleado->esta_activo ? 'Desactivar empleado' : 'Activar empleado' }}" aria-label="{{ $empleado->esta_activo ? 'Desactivar empleado' : 'Activar empleado' }}" wire:click="toggleActivo({{ $empleado->id_empleado }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
 
-                                        <flux:button type="button" size="sm" variant="danger" wire:click="eliminar({{ $empleado->id_empleado }})" wire:confirm="¿Eliminar este empleado?" class="transition-all duration-200 hover:scale-[1.02] active:scale-95">
-                                            <flux:icon.trash class="size-4" />
-                                            Eliminar
-                                        </flux:button>
+                                        <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Eliminar empleado" aria-label="Eliminar empleado" wire:click="eliminar({{ $empleado->id_empleado }})" wire:confirm="¿Eliminar este empleado?" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                                     </div>
                                 </td>
                             @endif

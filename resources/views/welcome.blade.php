@@ -11,28 +11,29 @@
 <body class="bg-slate-50 font-sans antialiased">
 
     <!-- Barra de Navegación Superior -->
-    <nav class="flex items-center justify-between px-8 py-4 bg-white/90 backdrop-blur-md shadow-sm fixed w-full top-0 z-50">
-        <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold text-slate-900">NovaStay</span>
-            <span class="text-xs text-slate-500 uppercase tracking-wider">Hotel Management</span>
-        </div>
+    <nav class="fixed top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 transition-colors duration-200">
+                <span class="font-serif text-xl font-bold tracking-wide text-slate-900">NovaStay</span>
+                <span class="hidden text-[10px] font-semibold uppercase tracking-widest text-amber-600 md:block">Hotel Management</span>
+            </a>
 
-        <div class="hidden md:flex items-center space-x-8">
-            <a href="{{ route('home') }}" class="text-amber-600 font-medium hover:text-amber-700 transition">Inicio</a>
-            <!-- Enlace corregido hacia la ruta pública de habitaciones -->
-            <a href="{{ route('habitaciones.public') }}" class="text-slate-600 hover:text-slate-900 transition">Habitaciones</a>
-            <a href="{{ route('servicios.public') }}" class="text-slate-600 hover:text-slate-900 transition">Servicios</a>
-        </div>
+            <div class="hidden items-center gap-8 text-sm font-medium md:flex">
+                <a href="{{ route('home') }}" class="text-amber-600 transition-colors duration-200 hover:text-amber-700">Inicio</a>
+                <a href="{{ route('habitaciones.public') }}" class="text-slate-600 transition-colors duration-200 hover:text-amber-600">Habitaciones</a>
+                <a href="{{ route('servicios.public') }}" class="text-slate-600 transition-colors duration-200 hover:text-amber-600">Servicios</a>
+            </div>
 
-        <div class="flex items-center space-x-4">
-            @auth
-                @if (auth()->user()->hasRole('cliente'))
-                    <a href="{{ route('mis-reservaciones') }}" class="text-amber-600 font-semibold hover:text-amber-700 transition">Mis reservaciones</a>
-                @endif
-                <span class="text-slate-700 font-medium">{{ auth()->user()->name }}</span>
-            @else
-                <a href="{{ route('login') }}" class="text-slate-700 font-medium hover:text-slate-900 transition">Iniciar sesión</a>
-            @endauth
+            <div class="flex items-center gap-4 text-sm font-medium">
+                @auth
+                    @if (auth()->user()->hasRole('cliente'))
+                        <a href="{{ route('mis-reservaciones') }}" class="text-amber-600 transition-colors duration-200 hover:text-amber-700">Mis reservaciones</a>
+                    @endif
+                    <span class="text-slate-700">{{ auth()->user()->name }}</span>
+                @else
+                    <a href="{{ route('login') }}" class="text-slate-700 transition-colors duration-200 hover:text-amber-600">Iniciar sesión</a>
+                @endauth
+            </div>
         </div>
     </nav>
 
@@ -50,7 +51,7 @@
 
         <div class="relative max-w-5xl mx-auto px-6 text-center py-20">
             <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-                ... se convierte en recuerdo.
+                ... igual que un hogar.
             </h1>
             <p class="text-slate-300 text-lg md:text-xl mb-8">
                 Habitaciones de lujo, servicio personalizado y experiencias únicas para cada huésped.

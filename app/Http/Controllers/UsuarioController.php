@@ -61,8 +61,8 @@ class UsuarioController extends Controller
     {
         $datos = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
-            'codigo_empleado' => 'nullable|string|max:255|unique:users,codigo_empleado,' . $usuario->id,
+            'email' => 'required|email|max:255|unique:users,email,'.$usuario->id,
+            'codigo_empleado' => 'nullable|string|max:255|unique:users,codigo_empleado,'.$usuario->id,
             'role' => 'required|exists:roles,name',
             'activo' => 'required|boolean',
             'password' => 'nullable|string|min:8|confirmed',
@@ -73,7 +73,7 @@ class UsuarioController extends Controller
         $usuario->codigo_empleado = $datos['codigo_empleado'] ?? null;
         $usuario->activo = $datos['activo'];
 
-        if (!empty($datos['password'])) {
+        if (! empty($datos['password'])) {
             $usuario->password = Hash::make($datos['password']);
         }
 

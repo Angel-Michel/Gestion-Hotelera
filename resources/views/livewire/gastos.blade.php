@@ -40,14 +40,8 @@
                         <flux:table.cell>{{ $gasto->fecha_gasto->format('d/m/Y') }}</flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
-                                <flux:button type="button" size="sm" variant="outline" wire:click="editar({{ $gasto->id }})">
-                                    <flux:icon.pencil-square class="size-4" />
-                                    Editar
-                                </flux:button>
-                                <flux:button type="button" size="sm" variant="danger" wire:click="eliminar({{ $gasto->id }})" wire:confirm="¿Eliminar este gasto?">
-                                    <flux:icon.trash class="size-4" />
-                                    Eliminar
-                                </flux:button>
+                                <flux:button type="button" size="sm" variant="outline" color="blue" icon="pencil-square" tooltip="Editar gasto" aria-label="Editar gasto" wire:click="editar({{ $gasto->id }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
+                                <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Eliminar gasto" aria-label="Eliminar gasto" wire:click="eliminar({{ $gasto->id }})" wire:confirm="¿Eliminar este gasto?" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                             </div>
                         </flux:table.cell>
                     </flux:table.row>

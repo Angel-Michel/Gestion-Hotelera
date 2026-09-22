@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller implements HasMiddleware
 {
@@ -17,6 +19,32 @@ class LoginController extends Controller implements HasMiddleware
             new Middleware('guest', except: ['logout']),
             new Middleware('auth', only: ['logout']),
         ];
+    }
+
+    /**
+     * The user has been authenticated.
+     *
+     * Block clients who try to sign in through the Personal/Staff login section:
+     * the session is invalidated and an error is shown on the email field.
+     *
+     * @return mixed
+     *
+     * @throws ValidationException
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        $apartado = $request->input('role', 'personal');
+
+        if ($apartado === 'personal' && $user->hasRole('cliente')) {
+            $this->guard()->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                $this->username() => 'El usuario no está registrado',
+            ]);
+        }
     }
 
     protected function redirectTo(): string

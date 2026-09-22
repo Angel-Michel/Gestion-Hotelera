@@ -38,11 +38,11 @@
         </div>
 
         @if ($this->esSuperAdmin())
-            <flux:button type="button" variant="primary" wire:click="abrirModalCrear" class="group shrink-0 transition-all duration-200 ease-out hover:scale-[1.02] active:scale-95">
-                <span class="flex size-5 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 ease-out group-hover:rotate-90">
+            <flux:button type="button" variant="primary" wire:click="abrirModalCrear" class="group shrink-0 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 hover:shadow-lg active:scale-95">
+                <span class="flex size-5 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 ease-in-out group-hover:rotate-90">
                     <flux:icon.plus class="size-3.5" />
                 </span>
-                Nuevo puesto
+                Crear nuevo rol
             </flux:button>
         @endif
     </div>
@@ -92,10 +92,7 @@
                         @if ($this->esSuperAdmin())
                             <flux:table.cell align="end">
                                 <div class="flex items-center justify-end gap-2">
-                                    <flux:button type="button" size="sm" variant="outline" wire:click="abrirModalEditar({{ $rol->id }})" class="transition-all duration-200 ease-out hover:scale-[1.02] active:scale-95">
-                                        <flux:icon.pencil-square class="size-4 text-slate-500 transition-colors duration-200 dark:text-slate-400" />
-                                        Editar
-                                    </flux:button>
+                                    <flux:button type="button" size="sm" variant="outline" color="blue" icon="pencil-square" tooltip="Editar rol" aria-label="Editar rol" wire:click="abrirModalEditar({{ $rol->id }})" class="transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-lg active:scale-95" />
 
                                     @if ($this->esRolNoEliminable($rol->name, $rol->id))
                                         <span class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-500 dark:bg-slate-700/50 dark:text-slate-400" title="{{ $this->motivoRolNoEliminable($rol->name, $rol->id) }}">
@@ -103,10 +100,7 @@
                                             Protegido
                                         </span>
                                     @else
-                                        <flux:button type="button" size="sm" variant="danger" wire:click="seleccionarRolAEliminar({{ $rol->id }})" class="transition-all duration-200 ease-out hover:scale-[1.02] active:scale-95">
-                                            <flux:icon.trash class="size-4" />
-                                            Eliminar
-                                        </flux:button>
+                                        <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Eliminar rol" aria-label="Eliminar rol" wire:click="seleccionarRolAEliminar({{ $rol->id }})" class="transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-lg active:scale-95" />
                                     @endif
                                 </div>
                             </flux:table.cell>

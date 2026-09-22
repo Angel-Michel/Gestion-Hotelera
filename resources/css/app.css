@@ -106,6 +106,106 @@ select:focus[data-flux-control] {
 /* NovaStay: tarjetas de contenido con borde sutil y sombra ligera */
 [data-flux-card] {
     @apply border-slate-100 shadow-sm dark:border-white/15;
+
+    transition:
+        transform 200ms ease-in-out,
+        box-shadow 200ms ease-in-out,
+        background-color 200ms ease-in-out,
+        border-color 200ms ease-in-out;
+}
+
+[data-flux-card]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+}
+
+/* ==========================================================
+   NovaStay: transiciones suaves de modales (fade + escala)
+   ========================================================== */
+[data-flux-modal] > dialog {
+    transition:
+        opacity 300ms cubic-bezier(0.22, 1, 0.36, 1) allow-discrete,
+        transform 300ms cubic-bezier(0.22, 1, 0.36, 1) allow-discrete,
+        display 300ms allow-discrete,
+        overlay 300ms allow-discrete;
+}
+
+/* Fondo semitransparente con desenfoque y transición de opacidad */
+[data-flux-modal] > dialog::backdrop {
+    background-color: rgb(15 23 42 / 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1) allow-discrete;
+}
+
+[data-flux-modal] > dialog[open],
+[data-flux-modal] > dialog[open]::backdrop {
+    opacity: 1;
+}
+
+[data-flux-modal] > dialog[open] {
+    transform: translateX(0) scale(1);
+}
+
+dialog[open] [data-flux-modal-content] {
+    transform: scale(1);
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1) allow-discrete;
+}
+
+@starting-style {
+    [data-flux-modal] > dialog[open],
+    [data-flux-modal] > dialog[open]::backdrop {
+        opacity: 0;
+    }
+
+    [data-flux-modal] > dialog[open] {
+        transform: scale(0.95);
+    }
+
+    [data-flux-modal] > dialog[open][data-flux-flyout] {
+        transform: scale(1) var(--flux-flyout-translate, var(--fx-flyout-translate, translateX(50px)));
+    }
+
+    dialog[open] [data-flux-modal-content] {
+        transform: scale(0.95);
+    }
+}
+
+/* ==========================================================
+   NovaStay: menús desplegables (popovers) con fade + deslizamiento
+   ========================================================== */
+ui-menu[popover] {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    transform-origin: top;
+    transition:
+        opacity 200ms ease-in-out allow-discrete,
+        transform 200ms ease-in-out allow-discrete,
+        display 200ms allow-discrete,
+        overlay 200ms allow-discrete;
+}
+
+ui-menu[popover]:popover-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+@starting-style {
+    ui-menu[popover]:popover-open {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+}
+
+/* ==========================================================
+   NovaStay: navegación lateral con cambio de color suave
+   ========================================================== */
+[data-flux-navlist-item] {
+    transition:
+        color 200ms ease-in-out,
+        background-color 200ms ease-in-out,
+        border-color 200ms ease-in-out,
+        box-shadow 200ms ease-in-out;
 }
 
 /* NovaStay: encabezados de sección del menú lateral en texto tenue */

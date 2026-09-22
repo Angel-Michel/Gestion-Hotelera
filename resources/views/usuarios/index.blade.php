@@ -197,19 +197,11 @@
 
                                             <a
                                                 href="{{ route('usuarios.edit', $usuario) }}"
-                                                style="
-                                                    display: inline-block;
-                                                    padding: 7px 12px;
-                                                    border: 1px solid #d1d5db;
-                                                    border-radius: 8px;
-                                                    color: #374151;
-                                                    font-size: 12px;
-                                                    font-weight: 600;
-                                                    text-decoration: none;
-                                                    background: white;
-                                                "
+                                                title="Editar usuario"
+                                                aria-label="Editar usuario de {{ $usuario->name }}"
+                                                class="inline-flex size-8 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-all duration-200 hover:scale-105 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 active:scale-95 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-blue-500/60 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
                                             >
-                                                Editar
+                                                <flux:icon.pencil-square class="size-4" />
                                             </a>
 
                                         @endcan
@@ -219,19 +211,11 @@
 
                                             <button
                                                 type="button"
-                                                style="
-                                                    display: inline-block;
-                                                    padding: 7px 12px;
-                                                    border: 1px solid #d1d5db;
-                                                    border-radius: 8px;
-                                                    color: #374151;
-                                                    font-size: 12px;
-                                                    font-weight: 600;
-                                                    background: white;
-                                                    cursor: pointer;
-                                                "
+                                                title="Configurar roles y permisos"
+                                                aria-label="Configurar roles y permisos de {{ $usuario->name }}"
+                                                class="inline-flex size-8 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 shadow-sm transition-all duration-200 hover:scale-105 hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-700 active:scale-95 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
                                             >
-                                                Roles y permisos
+                                                <flux:icon.cog-6-tooth class="size-4" />
                                             </button>
 
                                         @endcan
@@ -241,19 +225,11 @@
 
                                             <button
                                                 type="button"
-                                                style="
-                                                    display: inline-block;
-                                                    padding: 7px 12px;
-                                                    border: 1px solid #fecaca;
-                                                    border-radius: 8px;
-                                                    color: #dc2626;
-                                                    font-size: 12px;
-                                                    font-weight: 600;
-                                                    background: white;
-                                                    cursor: pointer;
-                                                "
+                                                title="Eliminar usuario"
+                                                aria-label="Eliminar usuario de {{ $usuario->name }}"
+                                                class="inline-flex size-8 items-center justify-center rounded-lg border border-red-200 bg-white text-red-500 shadow-sm transition-all duration-200 hover:scale-105 hover:border-red-300 hover:bg-red-50 hover:text-red-600 active:scale-95 dark:border-red-500/40 dark:bg-neutral-800 dark:text-red-400 dark:hover:border-red-500/60 dark:hover:bg-red-500/10 dark:hover:text-red-400"
                                             >
-                                                Eliminar
+                                                <flux:icon.trash class="size-4" />
                                             </button>
 
                                         @endcan

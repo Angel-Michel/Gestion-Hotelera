@@ -9,30 +9,32 @@
 <body class="bg-slate-50 font-sans antialiased pt-24">
 
     <!-- ==========================================
-         1. BARRA DE NAVEGACIÓN (Restaurada)
+         1. BARRA DE NAVEGACIÓN
          ========================================== -->
-    <nav class="flex items-center justify-between px-8 py-4 bg-white shadow-sm fixed w-full top-0 z-50">
-        <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold text-slate-900">NovaStay</span>
-            <span class="text-xs text-slate-500 uppercase tracking-wider">Hotel Management</span>
-        </div>
+    <nav class="fixed top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+            <a href="/" class="flex items-center gap-2.5 transition-colors duration-200">
+                <span class="font-serif text-xl font-bold tracking-wide text-slate-900">NovaStay</span>
+                <span class="hidden text-[10px] font-semibold uppercase tracking-widest text-amber-600 md:block">Hotel Management</span>
+            </a>
 
-        <div class="hidden md:flex items-center space-x-8">
-            <a href="/" class="text-slate-600 hover:text-slate-900 transition">Inicio</a>
-            <a href="/#habitaciones" class="text-slate-600 hover:text-slate-900 transition">Habitaciones</a>
-            <a href="{{ route('servicios.public') }}" class="text-amber-600 font-medium transition">Servicios</a>
-        </div>
+            <div class="hidden items-center gap-8 text-sm font-medium md:flex">
+                <a href="/" class="text-slate-600 transition-colors duration-200 hover:text-amber-600">Inicio</a>
+                <a href="/#habitaciones" class="text-slate-600 transition-colors duration-200 hover:text-amber-600">Habitaciones</a>
+                <a href="{{ route('servicios.public') }}" class="text-amber-600 transition-colors duration-200 hover:text-amber-700">Servicios</a>
+            </div>
 
-        <div class="flex items-center space-x-4">
-            @auth
-                @if (auth()->user()->hasRole('cliente'))
-                    <a href="{{ route('mis-reservaciones') }}" class="text-amber-600 font-semibold hover:text-amber-700 transition">Mis reservaciones</a>
-                @endif
-                <span class="text-slate-700 font-medium">{{ auth()->user()->name }}</span>
-            @else
-                <a href="{{ route('login') }}" class="text-slate-700 font-medium hover:text-slate-900 transition">Iniciar sesión</a>
-            @endauth
-            <a href="/#reservar" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition">Reservar</a>
+            <div class="flex items-center gap-4 text-sm font-medium">
+                @auth
+                    @if (auth()->user()->hasRole('cliente'))
+                        <a href="{{ route('mis-reservaciones') }}" class="text-amber-600 transition-colors duration-200 hover:text-amber-700">Mis reservaciones</a>
+                    @endif
+                    <span class="text-slate-700">{{ auth()->user()->name }}</span>
+                @else
+                    <a href="{{ route('login') }}" class="text-slate-700 transition-colors duration-200 hover:text-amber-600">Iniciar sesión</a>
+                @endauth
+                <a href="/#reservar" class="rounded-lg bg-slate-900 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-slate-800">Reservar</a>
+            </div>
         </div>
     </nav>
 

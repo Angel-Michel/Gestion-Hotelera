@@ -38,20 +38,14 @@
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
                                 @if ($reserva->estado === 'Pendiente')
-                                    <flux:button type="button" size="sm" variant="primary" wire:click="checkIn({{ $reserva->id }})">
-                                        Check-in
-                                    </flux:button>
+                                    <flux:button type="button" size="sm" variant="outline" color="emerald" icon="arrow-down-on-square" tooltip="Realizar check-in" aria-label="Realizar check-in de {{ $reserva->cliente?->nombreCompleto() }}" wire:click="checkIn({{ $reserva->id }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                                 @endif
 
                                 @if ($reserva->estado === 'Confirmada')
-                                    <flux:button type="button" size="sm" variant="primary" wire:click="checkOut({{ $reserva->id }})">
-                                        Check-out
-                                    </flux:button>
+                                    <flux:button type="button" size="sm" variant="outline" color="blue" icon="arrow-up-on-square" tooltip="Realizar check-out" aria-label="Realizar check-out de {{ $reserva->cliente?->nombreCompleto() }}" wire:click="checkOut({{ $reserva->id }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                                 @endif
 
-                                <flux:button type="button" size="sm" variant="danger" wire:click="cancelar({{ $reserva->id }})" wire:confirm="¿Cancelar esta reservación?">
-                                    Cancelar
-                                </flux:button>
+                                <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Cancelar reservación" aria-label="Cancelar reservación" wire:click="cancelar({{ $reserva->id }})" wire:confirm="¿Cancelar esta reservación?" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                             </div>
                         </flux:table.cell>
                     </flux:table.row>

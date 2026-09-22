@@ -46,14 +46,8 @@
                         <flux:table.cell>${{ number_format($reserva->monto_total, 2) }}</flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
-                                <flux:button type="button" size="sm" variant="outline" wire:click="editar({{ $reserva->id }})">
-                                    <flux:icon.pencil-square class="size-4" />
-                                    Editar
-                                </flux:button>
-                                <flux:button type="button" size="sm" variant="danger" wire:click="eliminar({{ $reserva->id }})" wire:confirm="¿Eliminar esta reservación?">
-                                    <flux:icon.trash class="size-4" />
-                                    Eliminar
-                                </flux:button>
+                                <flux:button type="button" size="sm" variant="outline" color="blue" icon="pencil-square" tooltip="Editar reservación" aria-label="Editar reservación" wire:click="editar({{ $reserva->id }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
+                                <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Eliminar reservación" aria-label="Eliminar reservación" wire:click="eliminar({{ $reserva->id }})" wire:confirm="¿Eliminar esta reservación?" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                             </div>
                         </flux:table.cell>
                     </flux:table.row>

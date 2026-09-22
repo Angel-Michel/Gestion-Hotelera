@@ -409,7 +409,7 @@
              MENÚ DEL USUARIO - MÓVIL
              ========================================================== --}}
 
-        <flux:header class="lg:hidden border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+        <flux:header class="lg:hidden border-b border-slate-200/60 bg-white/80 backdrop-blur-md dark:border-slate-700/60 dark:bg-slate-900/80">
 
             <flux:sidebar.toggle
                 class="lg:hidden !text-slate-500 hover:!text-slate-900 dark:!text-slate-400 dark:hover:!text-slate-100"

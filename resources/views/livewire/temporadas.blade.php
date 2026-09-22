@@ -40,14 +40,8 @@
                         </flux:table.cell>
                         <flux:table.cell align="end">
                             <div class="flex items-center justify-end gap-2">
-                                <flux:button type="button" size="sm" variant="outline" wire:click="editar({{ $temporada->id }})">
-                                    <flux:icon.pencil-square class="size-4" />
-                                    Editar
-                                </flux:button>
-                                <flux:button type="button" size="sm" variant="danger" wire:click="eliminar({{ $temporada->id }})" wire:confirm="¿Eliminar esta temporada?">
-                                    <flux:icon.trash class="size-4" />
-                                    Eliminar
-                                </flux:button>
+                                <flux:button type="button" size="sm" variant="outline" color="blue" icon="pencil-square" tooltip="Editar temporada" aria-label="Editar temporada" wire:click="editar({{ $temporada->id }})" class="transition-all duration-200 hover:scale-105 active:scale-95" />
+                                <flux:button type="button" size="sm" variant="outline" color="red" icon="trash" tooltip="Eliminar temporada" aria-label="Eliminar temporada" wire:click="eliminar({{ $temporada->id }})" wire:confirm="¿Eliminar esta temporada?" class="transition-all duration-200 hover:scale-105 active:scale-95" />
                             </div>
                         </flux:table.cell>
                     </flux:table.row>
