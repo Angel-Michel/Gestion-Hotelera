@@ -30,7 +30,7 @@ class Clientes extends Component
 
     public function render(): View
     {
-        return view('livewire.clientes', [
+        return view('clientes.index', [
             'clientes' => Cliente::withCount('reservas')->orderBy('nombre')->get(),
         ]);
     }

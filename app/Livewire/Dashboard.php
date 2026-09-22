@@ -40,7 +40,7 @@ class Dashboard extends Component
             ->limit(5)
             ->get();
 
-        return view('livewire.dashboard', [
+        return view('dashboard.index', [
             'totalHabitaciones' => $totalHabitaciones,
             'habitacionesOcupadas' => $habitacionesOcupadas,
             'reservasActivas' => $reservasActivas,

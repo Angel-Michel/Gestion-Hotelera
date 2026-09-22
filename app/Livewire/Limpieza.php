@@ -28,7 +28,7 @@ class Limpieza extends Component
 
     public function render(): View
     {
-        return view('livewire.limpieza', [
+        return view('limpieza.index', [
             'tareas' => TareaLimpieza::with(['habitacion', 'usuario'])->latest()->get(),
             'habitaciones' => Habitacion::orderBy('numero_habitacion')->get(),
             'usuarios' => User::orderBy('name')->get(),

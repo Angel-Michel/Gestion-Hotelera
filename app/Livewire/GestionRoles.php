@@ -32,7 +32,7 @@ class GestionRoles extends Component
 
     public function render(): View
     {
-        return view('livewire.gestion-roles');
+        return view('roles.index');
     }
 
     /**

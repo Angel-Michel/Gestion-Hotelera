@@ -14,7 +14,7 @@ class CheckInOut extends Component
 
     public function render(): View
     {
-        return view('livewire.check-in-out', [
+        return view('checkin-checkout.index', [
             'porAtender' => Reserva::with(['cliente', 'habitaciones'])
                 ->whereIn('estado', ['Pendiente', 'Confirmada'])
                 ->orderBy('check_in')

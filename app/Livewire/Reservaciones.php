@@ -34,7 +34,7 @@ class Reservaciones extends Component
 
     public function render(): View
     {
-        return view('livewire.reservaciones', [
+        return view('reservaciones.index', [
             'reservas' => Reserva::with(['cliente', 'habitaciones'])->latest()->get(),
             'clientes' => Cliente::orderBy('nombre')->get(),
             'habitaciones' => Habitacion::with('tipo')->orderBy('numero_habitacion')->get(),

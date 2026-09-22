@@ -29,7 +29,7 @@ class Pagos extends Component
 
     public function render(): View
     {
-        return view('livewire.pagos', [
+        return view('pagos.index', [
             'pagos' => Pago::with(['reserva.cliente'])->latest()->get(),
             'reservas' => Reserva::with('cliente')->latest()->get(),
             'metodos' => ['Efectivo', 'Tarjeta', 'Transferencia'],

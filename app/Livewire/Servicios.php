@@ -22,7 +22,7 @@ class Servicios extends Component
 
     public function render(): View
     {
-        return view('livewire.servicios', [
+        return view('servicios.index', [
             'servicios' => Servicio::withCount('reservasServicio')->orderBy('nombre')->get(),
         ]);
     }

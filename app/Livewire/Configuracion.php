@@ -25,7 +25,7 @@ class Configuracion extends Component
             ->orderBy('fecha_inicio')
             ->first();
 
-        return view('livewire.configuracion', [
+        return view('configuracion.index', [
             'nombreApp' => config('app.name'),
             'entorno' => config('app.env'),
             'temporadaVigente' => $temporadaVigente,

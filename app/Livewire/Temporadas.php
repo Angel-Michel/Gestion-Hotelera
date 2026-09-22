@@ -26,7 +26,7 @@ class Temporadas extends Component
 
     public function render(): View
     {
-        return view('livewire.temporadas', [
+        return view('temporadas.index', [
             'temporadas' => Temporada::orderBy('fecha_inicio')->get(),
         ]);
     }

@@ -19,7 +19,7 @@ class MatrizPermisos extends Component
 
     public function render(): View
     {
-        return view('livewire.matriz-permisos');
+        return view('matriz-permisos.index');
     }
 
     /**

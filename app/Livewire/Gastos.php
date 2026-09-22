@@ -26,7 +26,7 @@ class Gastos extends Component
 
     public function render(): View
     {
-        return view('livewire.gastos', [
+        return view('gastos.index', [
             'gastos' => Gasto::orderBy('fecha_gasto', 'desc')->get(),
             'total' => (float) Gasto::sum('monto'),
             'categorias' => ['Mantenimiento', 'Limpieza', 'Servicios', 'Personal', 'Insumos', 'Otros'],

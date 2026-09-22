@@ -27,7 +27,7 @@ class Habitaciones extends Component
 
     public function render(): View
     {
-        return view('livewire.habitaciones', [
+        return view('habitaciones.index', [
             'habitaciones' => Habitacion::with('tipo')->orderBy('numero_habitacion')->get(),
             'tipos' => TipoHabitacion::orderBy('nombre')->get(),
             'estados' => ['Disponible', 'Ocupada', 'Mantenimiento', 'Limpieza'],

@@ -98,7 +98,7 @@ class Empleados extends Component
             ->orderBy('nombre')
             ->paginate(10);
 
-        return view('livewire.empleados', [
+        return view('empleados.index', [
             'empleados' => $empleados,
             'turnos' => self::TURNOS,
         ]);

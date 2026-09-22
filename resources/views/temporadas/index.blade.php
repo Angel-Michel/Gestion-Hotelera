@@ -1,0 +1,13 @@
+<div>
+    @if ($mensajeExito)
+        <flux:callout variant="success" icon="check-circle" class="mb-4">
+            <p>{{ $mensajeExito }}</p>
+        </flux:callout>
+    @endif
+
+    @include('temporadas.partials.header')
+
+    @include('temporadas.partials.table')
+
+    @include('temporadas.partials.modal-form')
+</div>

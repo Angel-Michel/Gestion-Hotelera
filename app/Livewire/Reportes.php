@@ -40,7 +40,7 @@ class Reportes extends Component
             ->limit(8)
             ->get();
 
-        return view('livewire.reportes', [
+        return view('reportes.index', [
             'reservasPorEstado' => $reservasPorEstado,
             'pagosPorMetodo' => $pagosPorMetodo,
             'gastosPorCategoria' => $gastosPorCategoria,
