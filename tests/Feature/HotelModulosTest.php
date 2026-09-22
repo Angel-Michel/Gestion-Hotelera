@@ -14,6 +14,7 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -178,23 +179,43 @@ test('a super-admin can create roles from the livewire component', function () {
     expect(Role::where('name', 'contabilidad')->exists())->toBeTrue();
 });
 
-test('a super-admin can create a role with initial permissions assigned', function () {
+test('the simple create flow only requires the name and does not assign permissions', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $admin = User::factory()->create();
     $admin->assignRole('super-admin');
 
-    $permiso = Permission::findByName('reportes.ver');
+    Livewire::actingAs($admin)
+        ->test(GestionRoles::class)
+        ->call('abrirModalCrear')
+        ->assertSee('Crear nuevo puesto')
+        ->assertDontSee('El Super Admin ya posee todos los permisos del sistema')
+        ->assertDontSee('Permisos iniciales')
+        ->set('nombre', 'auditor')
+        ->call('guardarRol')
+        ->assertHasNoErrors()
+        ->assertSee('creado correctamente');
+
+    expect(Role::findByName('auditor')->permissions()->count())->toBe(0);
+});
+
+test('a super-admin cannot create two roles with the same name', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    Role::create(['name' => 'contabilidad', 'guard_name' => 'web']);
 
     Livewire::actingAs($admin)
         ->test(GestionRoles::class)
         ->call('abrirModalCrear')
-        ->set('nombre', 'auditor')
-        ->set('permisosSeleccionados', [(string) $permiso->id])
+        ->set('nombre', 'Contabilidad')
         ->call('guardarRol')
-        ->assertHasNoErrors();
+        ->assertHasErrors(['nombre'])
+        ->assertSee('Ya existe un rol con ese nombre');
 
-    expect(Role::findByName('auditor')->hasPermissionTo('reportes.ver'))->toBeTrue();
+    expect(Role::where('name', 'contabilidad')->count())->toBe(1);
 });
 
 test('employees can be searched and filtered by status', function () {
@@ -554,21 +575,22 @@ test('the sidebar displays the NovaStay wordmark', function () {
         ->assertSee('NovaStay');
 });
 
-test('a super-admin can update a role name and its permissions from the edit modal', function () {
+test('a super-admin can rename a role from the simplified edit modal', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $admin = User::factory()->create();
     $admin->assignRole('super-admin');
 
     $rol = Role::create(['name' => 'contabilidad', 'guard_name' => 'web']);
-    $permiso = Permission::findByName('reportes.ver');
+    $rol->givePermissionTo('reportes.ver');
 
     Livewire::actingAs($admin)
         ->test(GestionRoles::class)
         ->call('abrirModalEditar', $rol->id)
         ->assertSet('nombre', 'contabilidad')
+        ->assertSee('Editar rol')
+        ->assertDontSee('Permisos del rol')
         ->set('nombre', 'finanzas')
-        ->set('permisosSeleccionados', [(string) $permiso->id])
         ->call('actualizarRol')
         ->assertHasNoErrors()
         ->assertSee('actualizado correctamente');
@@ -613,21 +635,19 @@ test('a super-admin can open the edit modal for the super-admin role itself', fu
         ->assertSet('rolIdEditar', $rolSuperAdmin->id);
 });
 
-test('a super-admin can edit the name and permissions of a system role', function () {
+test('a super-admin can rename a system role without altering its permissions', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $admin = User::factory()->create();
     $admin->assignRole('super-admin');
 
     $rolGerente = Role::where('name', 'gerente')->firstOrFail();
-    $permiso = Permission::findByName('roles_permisos.ver');
 
     Livewire::actingAs($admin)
         ->test(GestionRoles::class)
         ->call('abrirModalEditar', $rolGerente->id)
         ->assertSet('nombre', 'gerente')
         ->set('nombre', 'gerente general')
-        ->set('permisosSeleccionados', [(string) $permiso->id])
         ->call('actualizarRol')
         ->assertHasNoErrors()
         ->assertSee('actualizado correctamente');
@@ -635,7 +655,8 @@ test('a super-admin can edit the name and permissions of a system role', functio
     $rolGerente->refresh();
 
     expect($rolGerente->name)->toBe('gerente general')
-        ->and($rolGerente->hasPermissionTo('roles_permisos.ver'))->toBeTrue();
+        ->and($rolGerente->hasPermissionTo('reservaciones.ver'))->toBeTrue()
+        ->and($rolGerente->hasPermissionTo('roles_permisos.ver'))->toBeFalse();
 });
 
 test('the super-admin role cannot be deleted from the component', function () {
@@ -718,6 +739,43 @@ test('a super-admin can assign direct permissions to an employee from the granul
         ->and($usuario->fresh()->hasDirectPermission('gastos.ver'))->toBeFalse();
 });
 
+test('the permissions modal always opens for the exact employee clicked and resets its state', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $usuarioSeguridad = User::factory()->create(['email' => 'seguridad@example.com']);
+    $usuarioRecepcion = User::factory()->create(['email' => 'recepcion@example.com']);
+
+    $seguridad = Empleado::create([
+        'nombre' => 'Seguridad',
+        'apellidos' => 'Noche',
+        'correo_electronico' => 'seguridad@example.com',
+        'id_usuario' => $usuarioSeguridad->id,
+    ]);
+
+    $recepcion = Empleado::create([
+        'nombre' => 'Recepcionista',
+        'apellidos' => 'Día',
+        'correo_electronico' => 'recepcion@example.com',
+        'id_usuario' => $usuarioRecepcion->id,
+    ]);
+
+    $usuarioSeguridad->givePermissionTo('reportes.ver');
+    $usuarioRecepcion->givePermissionTo('pagos.ver');
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->call('abrirModalPermisos', $recepcion->id_empleado)
+        ->assertSet('empleadoIdPermisos', $recepcion->id_empleado)
+        ->assertSet('permisosUsuario', ['pagos.ver'])
+        ->call('abrirModalPermisos', $seguridad->id_empleado)
+        ->assertSet('empleadoIdPermisos', $seguridad->id_empleado)
+        ->assertSet('permisosUsuario', ['reportes.ver'])
+        ->assertSet('mostrarModalPermisos', true);
+});
+
 test('only the super-admin can open the granular permissions matrix', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -735,6 +793,101 @@ test('only the super-admin can open the granular permissions matrix', function (
     Livewire::actingAs($recepcionista)
         ->test(Empleados::class)
         ->call('abrirModalPermisos', $empleado->id_empleado)
+        ->assertStatus(403);
+});
+
+test('the granular permissions modal renders the module matrix with a TODOS column', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $usuario = User::factory()->create(['email' => 'matriz.vista@example.com']);
+    $empleado = Empleado::create([
+        'nombre' => 'Vista',
+        'apellidos' => 'Matriz',
+        'correo_electronico' => 'matriz.vista@example.com',
+        'id_usuario' => $usuario->id,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->call('abrirModalPermisos', $empleado->id_empleado)
+        ->assertSee('Seguridad Granular')
+        ->assertSee('TODOS')
+        ->assertSee('Mostrar')
+        ->assertSee('Crear')
+        ->assertSee('Editar')
+        ->assertSee('Eliminar')
+        ->assertSee('Pagos')
+        ->assertSee('Empleados');
+});
+
+test('a super-admin can select all permissions of a module from the matrix', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $usuario = User::factory()->create(['email' => 'matriz.todos@example.com']);
+    $usuario->assignRole('recepcionista');
+
+    $empleado = Empleado::create([
+        'nombre' => 'Todos',
+        'apellidos' => 'Matriz',
+        'correo_electronico' => 'matriz.todos@example.com',
+        'id_usuario' => $usuario->id,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->call('abrirModalPermisos', $empleado->id_empleado)
+        ->call('alternarTodosDelModulo', 'pagos')
+        ->call('guardarPermisosGranulares')
+        ->assertHasNoErrors()
+        ->assertSee('Permisos del empleado actualizados correctamente.');
+
+    expect($usuario->fresh()->getDirectPermissions()->pluck('name')->sort()->values()->all())
+        ->toBe(['pagos.crear', 'pagos.editar', 'pagos.eliminar', 'pagos.ver'])
+        ->and($usuario->fresh()->hasDirectPermission('gastos.ver'))->toBeFalse();
+});
+
+test('a super-admin can deselect all permissions of a module from the matrix', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    $usuario = User::factory()->create(['email' => 'matriz.vacio@example.com']);
+    $usuario->givePermissionTo(['pagos.ver', 'pagos.crear', 'pagos.editar', 'pagos.eliminar']);
+
+    $empleado = Empleado::create([
+        'nombre' => 'Vacío',
+        'apellidos' => 'Matriz',
+        'correo_electronico' => 'matriz.vacio@example.com',
+        'id_usuario' => $usuario->id,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(Empleados::class)
+        ->call('abrirModalPermisos', $empleado->id_empleado)
+        ->call('alternarTodosDelModulo', 'pagos')
+        ->call('guardarPermisosGranulares')
+        ->assertHasNoErrors();
+
+    expect($usuario->fresh()->hasDirectPermission('pagos.ver'))->toBeFalse()
+        ->and($usuario->fresh()->hasDirectPermission('pagos.eliminar'))->toBeFalse();
+});
+
+test('only the super-admin can toggle all permissions of a module in the matrix', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $recepcionista = User::factory()->create();
+    $recepcionista->assignRole('recepcionista');
+
+    Livewire::actingAs($recepcionista)
+        ->test(Empleados::class)
+        ->call('alternarTodosDelModulo', 'pagos')
         ->assertStatus(403);
 });
 
@@ -767,6 +920,55 @@ test('the employee form no longer shows the Puesto field', function () {
         ->test(Empleados::class)
         ->call('crear')
         ->assertDontSee('Puesto');
+});
+
+test('the employees module shows dynamic KPI cards grouped by position', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('super-admin');
+
+    foreach (['recep.uno@example.com', 'recep.dos@example.com'] as $email) {
+        $usuario = User::factory()->create(['email' => $email]);
+        $usuario->assignRole('recepcionista');
+        Empleado::create([
+            'nombre' => 'Recepcionista',
+            'apellidos' => Str::after($email, '@'),
+            'correo_electronico' => $email,
+            'id_usuario' => $usuario->id,
+            'esta_activo' => true,
+        ]);
+    }
+
+    $limpieza = User::factory()->create(['email' => 'clean.team@example.com']);
+    $limpieza->assignRole('limpieza');
+    Empleado::create([
+        'nombre' => 'Limpieza',
+        'apellidos' => 'Turno',
+        'correo_electronico' => $limpieza->email,
+        'id_usuario' => $limpieza->id,
+        'esta_activo' => true,
+    ]);
+
+    Empleado::create([
+        'nombre' => 'Sín',
+        'apellidos' => 'Rol',
+        'correo_electronico' => 'sin.rol@example.com',
+        'esta_activo' => true,
+    ]);
+
+    $componente = Livewire::actingAs($admin)->test(Empleados::class);
+
+    $componente
+        ->assertSee('Personal por puesto')
+        ->assertSee('Recepción')
+        ->assertSee('Limpieza')
+        ->assertSee('Sin asignar');
+
+    $html = $componente->html();
+
+    expect(substr_count($html, '>2<'))->toBeGreaterThanOrEqual(1)
+        ->and(substr_count($html, '>1<'))->toBeGreaterThanOrEqual(2);
 });
 
 test('guests can visit the public registration page', function () {

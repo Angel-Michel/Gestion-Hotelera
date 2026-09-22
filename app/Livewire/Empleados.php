@@ -114,6 +114,62 @@ class Empleados extends Component
     }
 
     /**
+     * Conteo dinámico de empleados según su puesto, para las tarjetas KPI.
+     *
+     * @return array<int, array{etiqueta: string, icono: string, conteo: int, color_fondo: string, color_texto: string}>
+     */
+    #[Computed]
+    public function kpisPuestos(): array
+    {
+        $definiciones = collect([
+            ['clave' => 'recepcionista', 'etiqueta' => 'Recepción', 'icono' => 'building-office-2', 'color_fondo' => 'bg-sky-500/10 dark:bg-sky-500/20', 'color_texto' => 'text-sky-600 dark:text-sky-400'],
+            ['clave' => 'gerente', 'etiqueta' => 'Gerencia', 'icono' => 'briefcase', 'color_fondo' => 'bg-violet-500/10 dark:bg-violet-500/20', 'color_texto' => 'text-violet-600 dark:text-violet-400'],
+            ['clave' => 'limpieza', 'etiqueta' => 'Limpieza', 'icono' => 'sparkles', 'color_fondo' => 'bg-emerald-500/10 dark:bg-emerald-500/20', 'color_texto' => 'text-emerald-600 dark:text-emerald-400'],
+            ['clave' => 'seguridad', 'etiqueta' => 'Seguridad', 'icono' => 'shield-check', 'color_fondo' => 'bg-red-500/10 dark:bg-red-500/20', 'color_texto' => 'text-red-600 dark:text-red-400'],
+            ['clave' => 'mantenimiento', 'etiqueta' => 'Mantenimiento', 'icono' => 'wrench-screwdriver', 'color_fondo' => 'bg-amber-500/10 dark:bg-amber-500/20', 'color_texto' => 'text-amber-600 dark:text-amber-400'],
+        ]);
+
+        $porRol = Empleado::with('usuario.roles')->get()
+            ->groupBy(fn (Empleado $empleado) => Str::lower((string) ($empleado->usuario?->roles->first()?->name ?? '')));
+
+        $kpis = $definiciones
+            ->map(function (array $definicion) use ($porRol): array {
+                $definicion['conteo'] = $porRol->get($definicion['clave'])?->count() ?? 0;
+                unset($definicion['clave']);
+
+                return $definicion;
+            });
+
+        $otros = $porRol
+            ->filter(fn ($empleados, string $clave) => $clave !== '' && ! $definiciones->contains('clave', $clave))
+            ->sum->count();
+
+        if ($otros > 0) {
+            $kpis->push([
+                'etiqueta' => 'Otros puestos',
+                'icono' => 'users',
+                'conteo' => $otros,
+                'color_fondo' => 'bg-slate-500/10 dark:bg-slate-500/20',
+                'color_texto' => 'text-slate-600 dark:text-slate-400',
+            ]);
+        }
+
+        $sinAsignar = $porRol->get('')?->count() ?? 0;
+
+        if ($sinAsignar > 0) {
+            $kpis->push([
+                'etiqueta' => 'Sin asignar',
+                'icono' => 'user-minus',
+                'conteo' => $sinAsignar,
+                'color_fondo' => 'bg-zinc-400/10 dark:bg-zinc-400/20',
+                'color_texto' => 'text-zinc-500 dark:text-zinc-400',
+            ]);
+        }
+
+        return $kpis->values()->all();
+    }
+
+    /**
      * Permisos del sistema agrupados por módulo para la matriz granular.
      */
     #[Computed]
@@ -144,6 +200,93 @@ class Empleados extends Component
             'eliminar' => 'Eliminar',
             default => Str::headline($accion),
         };
+    }
+
+    /**
+     * Acciones canónicas de la matriz de seguridad granular.
+     *
+     * @return array<int, array{clave: string, etiqueta: string}>
+     */
+    public function accionesMatriz(): array
+    {
+        return [
+            ['clave' => 'ver', 'etiqueta' => 'Mostrar'],
+            ['clave' => 'crear', 'etiqueta' => 'Crear'],
+            ['clave' => 'editar', 'etiqueta' => 'Editar'],
+            ['clave' => 'eliminar', 'etiqueta' => 'Eliminar'],
+            ['clave' => 'gestionar', 'etiqueta' => 'Gestionar'],
+        ];
+    }
+
+    /**
+     * Icono de la interfaz para cada módulo de la matriz.
+     */
+    public function iconoModulo(string $modulo): string
+    {
+        return match ($modulo) {
+            'dashboard' => 'home',
+            'reservaciones' => 'calendar-days',
+            'habitaciones' => 'building-office-2',
+            'clientes' => 'users',
+            'checkin_checkout' => 'arrow-right-start-on-rectangle',
+            'limpieza' => 'sparkles',
+            'pagos' => 'credit-card',
+            'servicios' => 'wrench-screwdriver',
+            'gastos' => 'banknotes',
+            'empleados' => 'identification',
+            'temporadas' => 'sun',
+            'reportes' => 'chart-bar',
+            'usuarios' => 'user-group',
+            'roles_permisos' => 'shield-check',
+            'configuracion' => 'cog-6-tooth',
+            default => 'puzzle-piece',
+        };
+    }
+
+    /**
+     * El usuario ya posee todas las acciones del módulo.
+     */
+    public function todosSeleccionadosDelModulo(string $modulo): bool
+    {
+        $nombres = $this->permisosPorModulo->get($modulo)?->pluck('name')->all() ?? [];
+
+        if ($nombres === []) {
+            return false;
+        }
+
+        return count(array_intersect($nombres, $this->permisosUsuario)) === count($nombres);
+    }
+
+    /**
+     * Marca o desmarca todas las acciones de un módulo de la matriz.
+     */
+    public function alternarTodosDelModulo(string $modulo): void
+    {
+        abort_unless($this->esSuperAdmin(), 403);
+
+        $nombres = $this->permisosPorModulo->get($modulo)?->pluck('name')->all() ?? [];
+
+        if ($nombres === []) {
+            return;
+        }
+
+        $todosActivos = $this->todosSeleccionadosDelModulo($modulo);
+
+        $this->permisosUsuario = $todosActivos
+            ? array_values(array_diff($this->permisosUsuario, $nombres))
+            : array_values(array_unique(array_merge($this->permisosUsuario, $nombres)));
+    }
+
+    /**
+     * Clases del input del formulario con su estado de validación visual.
+     */
+    public function claseInput(string $campo): string
+    {
+        $base = 'block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset transition-all duration-300 ease-out placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-inset dark:bg-zinc-900 dark:text-white';
+
+        return $this->getErrorBag()->has($campo)
+            ? $base.' !ring-red-400 focus:!ring-red-500'
+            : $base.' !ring-slate-300 focus:!ring-amber-500';
     }
 
     public function crear(): void
@@ -389,6 +532,9 @@ class Empleados extends Component
     public function abrirModalPermisos(int $id): void
     {
         abort_unless($this->esSuperAdmin(), 403);
+
+        // Estado limpio antes de abrir el modal: evita heredar permisos de otro empleado.
+        $this->cerrarModalPermisos();
 
         $empleado = Empleado::with('usuario')->where('id_empleado', $id)->firstOrFail();
 

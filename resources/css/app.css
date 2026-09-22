@@ -39,6 +39,31 @@
     --color-accent: #f59e0b;
     --color-accent-content: #d97706;
     --color-accent-foreground: #ffffff;
+
+    --animate-fade-in: fade-in 0.45s ease-out both;
+    --animate-fade-in-up: fade-in-up 0.55s ease-out both;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fade-in-up {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 }
 
 @layer theme {
@@ -58,6 +83,10 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+}
+
+[x-cloak] {
+    display: none !important;
 }
 
 [data-flux-field] {
@@ -81,7 +110,7 @@ select:focus[data-flux-control] {
 
 /* NovaStay: encabezados de sección del menú lateral en texto tenue */
 [data-flux-sidebar] [data-flux-navlist] > div > div > .text-sm.text-zinc-400 {
-    @apply text-xs font-semibold uppercase tracking-widest text-slate-400;
+    @apply text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500;
 }
 
 /* \[:where(&)\]:size-4 {

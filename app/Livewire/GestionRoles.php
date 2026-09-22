@@ -7,7 +7,6 @@ use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 #[Layout('components.layouts.app')]
@@ -25,12 +24,7 @@ class GestionRoles extends Component
 
     public ?string $nombreRolAEliminar = null;
 
-    public bool $seleccionarTodos = false;
-
     public string $nombre = '';
-
-    /** @var list<string> */
-    public array $permisosSeleccionados = [];
 
     public ?string $mensajeExito = null;
 
@@ -93,7 +87,7 @@ class GestionRoles extends Component
 
     public function abrirModalCrear(): void
     {
-        $this->reset('nombre', 'permisosSeleccionados', 'seleccionarTodos');
+        $this->reset('nombre');
         $this->resetValidation();
         $this->mostrarModalCrear = true;
     }
@@ -101,7 +95,7 @@ class GestionRoles extends Component
     public function cerrarModalCrear(): void
     {
         $this->mostrarModalCrear = false;
-        $this->reset('nombre', 'permisosSeleccionados', 'seleccionarTodos');
+        $this->reset('nombre');
         $this->resetValidation();
     }
 
@@ -123,14 +117,6 @@ class GestionRoles extends Component
 
         $rol = Role::create(['name' => $nombreRol]);
 
-        if (! empty($this->permisosSeleccionados)) {
-            $nombresPermisos = Permission::whereIn('id', $this->permisosSeleccionados)
-                ->pluck('name')
-                ->all();
-
-            $rol->syncPermissions($nombresPermisos);
-        }
-
         unset($this->roles);
 
         $nombreCreado = $rol->name;
@@ -143,12 +129,10 @@ class GestionRoles extends Component
     {
         abort_unless($this->esSuperAdmin(), 403);
 
-        $rol = Role::with('permissions')->findOrFail($roleId);
+        $rol = Role::findOrFail($roleId);
 
         $this->rolIdEditar = $rol->id;
         $this->nombre = $rol->name;
-        $this->permisosSeleccionados = $rol->permissions->pluck('id')->map(fn (int $id): string => (string) $id)->all();
-        $this->seleccionarTodos = count($this->permisosSeleccionados) === count($this->todosLosPermisosIds());
         $this->resetValidation();
         $this->mostrarModalEditar = true;
         $this->reset('mensajeError');
@@ -157,7 +141,7 @@ class GestionRoles extends Component
     public function cerrarModalEditar(): void
     {
         $this->mostrarModalEditar = false;
-        $this->reset('rolIdEditar', 'nombre', 'permisosSeleccionados', 'seleccionarTodos');
+        $this->reset('rolIdEditar', 'nombre');
         $this->resetValidation();
     }
 
@@ -180,12 +164,6 @@ class GestionRoles extends Component
         }
 
         $rol->update(['name' => $nombreRol]);
-
-        $nombresPermisos = Permission::whereIn('id', $this->permisosSeleccionados)
-            ->pluck('name')
-            ->all();
-
-        $rol->syncPermissions($nombresPermisos);
 
         unset($this->roles);
 
@@ -246,52 +224,6 @@ class GestionRoles extends Component
         $this->cerrarModalEliminar();
     }
 
-    public function updatedSeleccionarTodos(): void
-    {
-        $this->permisosSeleccionados = $this->seleccionarTodos ? $this->todosLosPermisosIds() : [];
-    }
-
-    public function updatedPermisosSeleccionados(): void
-    {
-        $seleccionados = array_intersect($this->permisosSeleccionados, $this->todosLosPermisosIds());
-
-        $this->seleccionarTodos = count($seleccionados) === count($this->todosLosPermisosIds());
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected function todosLosPermisosIds(): array
-    {
-        return $this->permisosPorModulo
-            ->flatten()
-            ->pluck('id')
-            ->map(fn (int $id): string => (string) $id)
-            ->all();
-    }
-
-    public function etiquetaModulo(string $modulo): string
-    {
-        return match ($modulo) {
-            'dashboard' => 'Dashboard',
-            'checkin_checkout' => 'Check-in / Check-out',
-            'roles_permisos' => 'Roles y permisos',
-            'configuracion' => 'Configuración',
-            default => Str::headline($modulo),
-        };
-    }
-
-    public function etiquetaAccion(string $accion): string
-    {
-        return match ($accion) {
-            'ver' => 'Ver',
-            'crear' => 'Crear',
-            'editar' => 'Editar',
-            'eliminar' => 'Eliminar',
-            default => Str::headline($accion),
-        };
-    }
-
     /**
      * Roles registrados en el sistema.
      */
@@ -311,16 +243,5 @@ class GestionRoles extends Component
             ")
             ->orderBy('name')
             ->get();
-    }
-
-    /**
-     * Permisos agrupados por módulo.
-     */
-    #[Computed]
-    public function permisosPorModulo()
-    {
-        return Permission::orderBy('name')
-            ->get()
-            ->groupBy(fn (Permission $permiso) => Str::before($permiso->name, '.'));
     }
 }
