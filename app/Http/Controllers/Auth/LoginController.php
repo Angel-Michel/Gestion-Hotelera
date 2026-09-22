@@ -33,7 +33,7 @@ class LoginController extends Controller implements HasMiddleware
      */
     protected function authenticated(Request $request, $user)
     {
-        $apartado = $request->input('role', 'personal');
+        $apartado = $request->input('role');
 
         if ($apartado === 'personal' && $user->hasRole('cliente')) {
             $this->guard()->logout();
