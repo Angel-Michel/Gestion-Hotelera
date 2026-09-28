@@ -149,8 +149,8 @@
             <td>
                 @forelse ($asignaciones as $asignacion)
                     {{ $asignacion->habitacion?->numero_habitacion }}
-                    @if ($asignacion->habitacion?->tipo)
-                        ({{ $asignacion->habitacion->tipo->nombre }}{{ $asignacion->habitacion->piso ? ', Piso '.$asignacion->habitacion->piso : '' }})
+                    @if ($asignacion->habitacion?->tipoHabitacion)
+                        ({{ $asignacion->habitacion->tipoHabitacion->nombre }}{{ $asignacion->habitacion->piso ? ', Piso '.$asignacion->habitacion->piso : '' }})
                     @endif
                     @if (! $loop->last), @endif
                 @empty

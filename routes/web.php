@@ -11,7 +11,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Empleados;
 use App\Livewire\Gastos;
 use App\Livewire\GestionRoles;
-use App\Livewire\Habitaciones;
+use App\Livewire\Habitaciones\Index as HabitacionesIndex;
 use App\Livewire\Limpieza;
 use App\Livewire\Pagos;
 use App\Livewire\Reportes;
@@ -75,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('permission:reservaciones.ver')
         ->name('reservaciones');
 
-    Route::get('/habitaciones', Habitaciones::class)
+    Route::get('/habitaciones', HabitacionesIndex::class)
         ->middleware('permission:habitaciones.ver')
         ->name('habitaciones');
 

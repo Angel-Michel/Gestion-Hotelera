@@ -97,8 +97,8 @@
                             <p class="font-semibold text-slate-800">
                                 @forelse ($estancia['asignaciones'] as $asignacion)
                                     #{{ $asignacion->habitacion?->numero_habitacion }}
-                                    @if ($asignacion->habitacion?->tipo)
-                                        · {{ $asignacion->habitacion->tipo->nombre }}
+                                    @if ($asignacion->habitacion?->tipoHabitacion)
+                                        · {{ $asignacion->habitacion->tipoHabitacion->nombre }}
                                     @endif
                                 @empty
                                     —
