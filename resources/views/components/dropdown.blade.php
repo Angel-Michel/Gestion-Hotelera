@@ -3,25 +3,30 @@
     'placeholder' => null,
     'options' => [],
     'variant' => 'solid',
+    'clave' => null,
 ])
 
 @php
     /*
      | Normaliza cualquier forma de opciones a pares {value, label}: mapas
-     | clave => etiqueta, listas de objetos o de arrays con las mismas claves
+     | indice => etiqueta, listas de objetos o de arrays con las mismas claves
      | que usan los selects que este componente reemplaza.
+     |
+     | El índice del bucle se llama `$indice` y no `$clave`: cualquier variable
+     | que el bloque reutilice sobreescribe la propiedad del componente que
+     | comparta nombre, y `$clave` es la que decide la clave del control.
      */
     $opciones = [];
 
-    foreach ($options as $clave => $opcion) {
+    foreach ($options as $indice => $opcion) {
         if (is_array($opcion)) {
-            $valor = $opcion['value'] ?? $opcion['clave'] ?? $clave;
+            $valor = $opcion['value'] ?? $opcion['clave'] ?? $indice;
             $etiqueta = $opcion['label'] ?? $opcion['etiqueta'] ?? $valor;
         } elseif (is_object($opcion)) {
-            $valor = $opcion->value ?? $opcion->id ?? $opcion->clave ?? $clave;
+            $valor = $opcion->value ?? $opcion->id ?? $opcion->clave ?? $indice;
             $etiqueta = $opcion->label ?? $opcion->etiqueta ?? $opcion->nombre ?? $valor;
         } else {
-            $valor = $clave;
+            $valor = $indice;
             $etiqueta = (string) $opcion;
         }
 
@@ -59,7 +64,16 @@
     $atributosSelect = $attributes->except(['class', 'required', 'id', 'aria-label']);
 @endphp
 
+{{--
+    `clave` se ofrece para los desplegables que están enlazados a `wire:model`.
+    El morph de Livewire conserva el estado de Alpine aunque el servidor cambie
+    el valor, de modo que el botón puede seguir mostrando la etiqueta anterior
+    mientras el <select> ya vale otra cosa. Al atar la raíz a una clave que
+    depende del valor, Livewire reconstruye el control entero cuando ese valor
+    cambia y el botón vuelve a mostrar lo que el servidor devolvió.
+--}}
 <div
+    @if ($clave !== null) wire:key="{{ $clave }}" @endif
     x-data="{
         open: false,
         selected: @js((string) $selected),
@@ -77,12 +91,20 @@
         isSelected(value) {
             return String(value) === String(this.selected);
         },
-        toggle() {
+        /*
+         | El select oculto es la verdad: cuando el navegador lo haya movido
+         | (morph del servidor o un cambio externo) el botón se pone al día antes
+         | de mostrar el menú.
+         */
+        adoptarValorNativo() {
             const native = this.$el.querySelector('select');
 
             if (native && String(native.value) !== String(this.selected)) {
                 this.selected = native.value;
             }
+        },
+        toggle() {
+            this.adoptarValorNativo();
 
             this.open = !this.open;
         },
@@ -111,6 +133,11 @@
         select bloquearía el envío del formulario con un control inválido que el
         navegador no puede enfocar. La obligatoriedad la aplica la validación del
         servidor y se muestra con `flux:error`.
+
+        El <option> que corresponde a `$selected` va marcado con `selected` para
+        que el valor del control coincida con el del estado. Sin esa marca el
+        navegador se queda con la primera opción de la lista y, al llegar un
+        `change`, sobrescribe el valor real con ésa.
     --}}
     <select
         {{ $atributosSelect }}
@@ -120,10 +147,10 @@
         aria-hidden="true"
     >
         @if ($placeholder !== null)
-            <option value="">{{ $placeholder }}</option>
+            <option value="" @selected((string) $selected === '')>{{ $placeholder }}</option>
         @endif
         @foreach ($opciones as $opcion)
-            <option value="{{ $opcion['value'] }}">{{ $opcion['label'] }}</option>
+            <option value="{{ $opcion['value'] }}" @selected((string) $selected === $opcion['value'])>{{ $opcion['label'] }}</option>
         @endforeach
     </select>
 

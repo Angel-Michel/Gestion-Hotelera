@@ -49,13 +49,19 @@
 
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
+                                {{-- Un solo clic: el contenedor enruta al formulario, que
+                                     carga el servicio y abre el diálogo en la misma
+                                     petición. `wire:loading` avisa que el viaje está en
+                                     curso para que no se repita el clic. --}}
                                 <button
                                     type="button"
-                                    x-data
-                                    x-on:click="$dispatch('modal-show', { name: 'servicio-form' }); $dispatch('abrir-formulario', { id: {{ $servicio->id }} })"
+                                    wire:click="editar({{ $servicio->id }})"
+                                    wire:loading.attr="disabled"
+                                    wire:target="editar({{ $servicio->id }})"
+                                    wire:loading.class="opacity-60"
                                     aria-label="Editar servicio"
                                     title="Editar servicio"
-                                    class="inline-flex size-9 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-inset ring-slate-200 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 active:scale-95 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-700"
+                                    class="inline-flex size-9 items-center justify-center rounded-xl bg-white text-slate-500 shadow-sm ring-1 ring-inset ring-slate-200 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 active:scale-95 disabled:pointer-events-none disabled:opacity-60 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-700"
                                 >
                                     <flux:icon.pencil-square class="size-4" />
                                 </button>

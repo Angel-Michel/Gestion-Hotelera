@@ -56,7 +56,8 @@
             </div>
 
             {{-- El cierre lo resuelve Flux en el navegador; no requiere viaje al
-                 servidor. El formulario se prepara de nuevo al reabrirse. --}}
+                 servidor. El formulario se prepara de nuevo cada vez que se
+                 abre y al terminar de guardar. --}}
             <button
                 type="button"
                 x-data
@@ -69,10 +70,11 @@
         </div>
 
         {{-- Campos. `wire:loading` atenúa el formulario mientras llega la
-             preparación o el guardado, para que nunca se edite a ciegas. --}}
+             apertura, la preparación o el guardado, para que nunca se edite a
+             ciegas. --}}
         <div
             wire:loading.class="opacity-60"
-            wire:target="preparar,guardar"
+            wire:target="editar,crear,guardar"
             class="max-h-[65vh] space-y-5 overflow-y-auto px-6 py-6 transition-opacity duration-200"
         >
             <div class="grid gap-5 sm:grid-cols-2">
@@ -97,6 +99,7 @@
                     <x-dropdown
                         id="categoria"
                         wire:model="categoria"
+                        :clave="'categoria-'.$categoria"
                         variant="soft"
                         required
                         :selected="$categoria"

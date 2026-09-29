@@ -1,14 +1,24 @@
 {{-- ======================================================
      PANTALLA DEL MÓDULO DE SERVICIOS
 
-     El contenedor no lleva booleanos de visibilidad: los dos <dialog>
-     los abre Flux desde el navegador con `modal-show`, de modo que
-     ningún morph del contenedor puede cerrarlos por accidente.
+     El contenedor no lleva booleanos de visibilidad: el <dialog>
+     del catálogo lo abre el propio formulario al terminar de
+     cargar los datos, y el de cargos Flux desde el navegador
+     con `modal-show`. Ningún morph del contenedor puede cerrarlos
+     por accident porque viven bajo `wire:ignore`.
      ====================================================== --}}
 
 <div>
+    {{-- Los avisos se montan sobre `visible` para que Alpine los desvanzca a los
+         5 s, igual que las notificaciones de sesión de `x-flash-messages`. --}}
     @if ($mensajeExito)
-        <div class="mb-4 animate-fade-in">
+        <div
+            x-data="{ visible: true }"
+            x-init="setTimeout(() => visible = false, 5000)"
+            x-show="visible"
+            x-transition.duration.300ms
+            class="mb-4"
+        >
             <flux:callout variant="success" icon="check-circle">
                 <p>{{ $mensajeExito }}</p>
             </flux:callout>
@@ -16,7 +26,13 @@
     @endif
 
     @if ($mensajeError)
-        <div class="mb-4 animate-fade-in">
+        <div
+            x-data="{ visible: true }"
+            x-init="setTimeout(() => visible = false, 5000)"
+            x-show="visible"
+            x-transition.duration.300ms
+            class="mb-4"
+        >
             <flux:callout variant="danger" icon="exclamation-triangle">
                 <p>{{ $mensajeError }}</p>
             </flux:callout>
@@ -58,14 +74,16 @@
          propias peticiones. --}}
     <div wire:ignore>
         {{-- `variant="bare"` deja el <dialog> transparente: el cristal de fondo,
-             la tarjeta blanca y las animaciones se construyen en los parciales. --}}
+             la tarjeta blanca y las animaciones se construyen en los parciales.
+
+             El formulario no es diferido: sus listeners tienen que estar
+             registrados antes del primer clic, y el <dialog> solo se abre cuando
+             el servidor ya le devolvió los datos del servicio. --}}
         <flux:modal
             name="servicio-form"
             variant="bare"
             class="novastay-servicio-modal w-full max-w-2xl"
         >
-            {{-- `__lazyLoad` difiere la consulta del formulario hasta que el
-                 modal se abre. --}}
             <livewire:servicios.form-modal wire:key="formulario-servicio" />
         </flux:modal>
     </div>

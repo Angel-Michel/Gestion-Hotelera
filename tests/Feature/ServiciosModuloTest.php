@@ -16,6 +16,8 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Lazy;
 use Livewire\Livewire;
 
 beforeEach(function () {
@@ -246,31 +248,71 @@ test('el catalogo se pagina de diez en diez servicios', function () {
     expect($componente->html())->toContain('Servicio 12');
 });
 
-test('el contenedor no lleva estado de visibilidad ni prepara el formulario', function () {
+test('el contenedor no lleva estado de visibilidad y solo enruta el formulario', function () {
     $propiedades = (new ReflectionClass(ServiciosIndex::class))->getProperties();
 
-    // Ninguna propiedad booleana controla la visibilidad: el <dialog> lo abre
-    // Flux desde el navegador con el evento `modal-show`.
+    // Ninguna propiedad booleana controla la visibilidad: el <dialog> del
+    // catálogo lo abre el propio formulario con `modal-show` una vez cargados
+    // los datos, y el de cargos Flux desde el navegador.
     expect(array_map(fn ($p) => $p->getName(), $propiedades))
         ->not->toContain('mostrarModal')
+        ->not->toContain('isOpenEditModal')
         ->not->toContain('servicioId')
         ->and(array_filter($propiedades, fn ($p) => $p->getType()?->getName() === 'bool'))->toBeEmpty();
 
-    // Abrir el modal no pasa por el contenedor: si lo hiciera, su morph
-    // recrearía el <dialog> y el modal parpadearía.
-    expect(ServiciosIndex::class)->not->toHaveMethods(['crear', 'editar']);
+    // `crear` y `editar` no preparan nada: solo avisan al formulario, que es el
+    // dueño de los datos y de la apertura.
+    Livewire::actingAs($this->admin)
+        ->test(ServiciosIndex::class)
+        ->call('crear')
+        ->assertDispatched('servicio-crear')
+        ->assertSet('mensajeExito', null);
 });
 
-test('los modales se abren solo con Alpine y su raiz queda fuera del diffing', function () {
+test('el contenedor enruta la edicion al formulario con el identificador de la fila', function () {
+    $servicio = ($this->crearServicio)('Lavado exprés', 120.50, 'Lavandería');
+
+    Livewire::actingAs($this->admin)
+        ->test(ServiciosIndex::class)
+        ->call('editar', $servicio->id)
+        ->assertDispatched('servicio-editar', id: $servicio->id);
+});
+
+test('el dialogo del catalogo lo abre el servidor y el de cargos Flux en el navegador', function () {
     $html = Livewire::actingAs($this->admin)->test(ServiciosIndex::class)->html();
 
-    expect($html)->toContain("\$dispatch('modal-show', { name: 'servicio-form' })")
-        ->and($html)->toContain("\$dispatch('abrir-formulario', { id: null })")
-        ->and($html)->toContain("\$dispatch('modal-show', { name: 'servicio-cargo' })")
-        ->and($html)->toContain('novastay-servicio-modal')
-        ->and($html)->toMatch('/<dialog[^>]*class="[^"]*bg-transparent[^"]*"/s')
-        ->and($html)->toContain('<div wire:ignore>')
-        ->and($html)->not->toContain('wire:model="mostrarModal"');
+    // El de cargos no necesita datos del folio: lo abre Alpine.
+    expect($html)
+        ->toContain("\$dispatch('modal-show', { name: 'servicio-cargo' })")
+        ->toContain('novastay-servicio-modal')
+        ->toMatch('/<dialog[^>]*class="[^"]*bg-transparent[^"]*"/s')
+        ->toContain('<div wire:ignore>')
+        ->and($html)->not->toContain('wire:model="mostrarModal"')
+        // El del catálogo ya no se abre desde el navegador: lo abre el
+        // formulario cuando ya trae los datos del servicio.
+        ->and($html)->not->toContain("\$dispatch('modal-show', { name: 'servicio-form' })")
+        ->and($html)->toContain('wire:click="crear"')
+        ->and($html)->toContain("\$dispatch('modal-close', { name: 'servicio-form' })");
+});
+
+test('el formulario del catalogo vive dentro del dialogo sin carga diferida', function () {
+    ($this->crearServicio)('Minibar premium', 350.00);
+
+    $html = Livewire::actingAs($this->admin)->test(ServiciosIndex::class)->html();
+
+    $dialogo = Str::between($html, 'data-modal="servicio-form"', 'data-modal="servicio-cargo"');
+
+    /*
+     | Un componente `#[Lazy]` descarta los eventos dirigidos a él antes de
+     | cargarse, así que el primer clic sobre una fila abría el formulario de
+     | alta. El del catálogo se monta con la pantalla; el de cargos sí sigue
+     | diferido, porque no recibe datos del folio y no tiene eventos propios.
+     */
+    expect($dialogo)
+        ->toContain('Agregar servicio')
+        ->not->toContain('__lazyLoad')
+        ->and((new ReflectionClass(FormModal::class))->getAttributes(Lazy::class))->toBeEmpty()
+        ->and((new ReflectionClass(Cargos::class))->getAttributes(Lazy::class))->not->toBeEmpty();
 });
 
 test('el cristal de fondo de los modales vive en la hoja de estilos', function () {
@@ -307,20 +349,11 @@ test('cada fila de la tabla abre el formulario con su propio identificador', fun
     $html = Livewire::actingAs($this->admin)->test(ServiciosIndex::class)->html();
 
     expect($html)
-        ->toContain("\$dispatch('modal-show', { name: 'servicio-form' }); \$dispatch('abrir-formulario', { id: ".$servicio->id.' })')
+        ->toContain('wire:click="editar('.$servicio->id.')')
+        ->toContain('wire:target="editar('.$servicio->id.')')
         ->toContain('wire:click="eliminar('.$servicio->id.')')
         ->toContain('wire:confirm="¿Eliminar este servicio del catálogo?"')
         ->and(substr_count($html, 'aria-label="Editar servicio"'))->toBe(1);
-});
-
-test('el formulario del catalogo se carga de forma diferida dentro del dialogo', function () {
-    ($this->crearServicio)('Minibar premium', 350.00);
-
-    $html = Livewire::actingAs($this->admin)->test(ServiciosIndex::class)->html();
-
-    expect($html)->toContain('__lazyLoad')
-        ->and($html)->not->toContain('Agregar servicio')
-        ->and($html)->toMatch('/<dialog[^>]*>.*__lazyLoad.*<\/dialog>/s');
 });
 
 test('el formulario del modal se presenta como una tarjeta premium con los campos del sistema', function () {
@@ -453,7 +486,8 @@ test('el formulario actualiza el servicio en edicion y avisa al contenedor', fun
     $servicio = ($this->crearServicio)('Minibar premium', 350.00, 'Minibar', 'Vinos y snacks.');
 
     Livewire::actingAs($this->admin)
-        ->test(FormModal::class, ['servicioId' => $servicio->id])
+        ->test(FormModal::class)
+        ->call('editar', $servicio->id)
         ->assertSet('nombre', 'Minibar premium')
         ->assertSet('categoria', 'Minibar')
         ->assertSet('precio', '350.00')
@@ -470,22 +504,73 @@ test('el formulario actualiza el servicio en edicion y avisa al contenedor', fun
         ->and((float) $servicio->fresh()->precio)->toBe(399.00);
 });
 
-test('el formulario se vacia al recibir abrir-formulario en modo creacion', function () {
+test('un solo clic en la fila deja el formulario abierto con los datos del servicio', function () {
+    Livewire::withoutLazyLoading();
+
+    $servicio = ($this->crearServicio)('Lavado exprés', 120.50, 'Lavandería', 'Camisetas y trajes.');
+
+    // Es el camino que sigue el botón de la fila: una llamada, y el formulario
+    // ya está cargado y con el diálogo pedido. Antes, el evento se perdía por
+    // `#[Lazy]` y el diálogo se abría con el formulario de alta.
+    $componente = Livewire::actingAs($this->admin)->test(FormModal::class);
+
+    expect($componente->get('nombre'))->toBe('')
+        ->and($componente->get('isOpenEditModal'))->toBeFalse();
+
+    $componente->call('editar', $servicio->id)
+        ->assertSet('servicioId', $servicio->id)
+        ->assertSet('isOpenEditModal', true)
+        ->assertSet('nombre', 'Lavado exprés')
+        ->assertSet('categoria', 'Lavandería')
+        ->assertSet('precio', '120.50')
+        ->assertSet('descripcion', 'Camisetas y trajes.')
+        ->assertDispatched('modal-show', name: 'servicio-form')
+        ->assertSee('Editar servicio')
+        ->assertSee('Guardar cambios');
+
+    // Y la categoría que se acaba de abrir es la que se guarda si se vuelve a
+    // enviar sin tocarla.
+    $componente->call('guardar')
+        ->assertHasNoErrors();
+
+    expect($servicio->fresh()->categoria)->toBe('Lavandería');
+});
+
+test('el alta se abre vacia desde el mismo camino que el boton nuevo servicio', function () {
     Livewire::withoutLazyLoading();
 
     $servicio = ($this->crearServicio)('Minibar premium', 350.00, 'Minibar', 'Vinos.');
 
-    $componente = Livewire::actingAs($this->admin)->test(FormModal::class, ['servicioId' => $servicio->id]);
+    $componente = Livewire::actingAs($this->admin)->test(FormModal::class)
+        ->call('editar', $servicio->id)
+        ->assertSet('nombre', 'Minibar premium');
 
-    expect($componente->get('nombre'))->toBe('Minibar premium');
+    $componente->set('nombre', 'Otro')->call('crear')
+        ->assertSet('servicioId', null)
+        ->assertSet('isOpenEditModal', true)
+        ->assertSet('nombre', '')
+        ->assertSet('precio', '')
+        ->assertSet('categoria', Servicio::CATEGORIA_POR_DEFECTO)
+        ->assertDispatched('modal-show', name: 'servicio-form')
+        ->assertSee('Nuevo servicio')
+        ->assertSee('Agregar servicio');
+});
 
-    // Es el mismo camino que sigue el botón "Nuevo servicio".
-    $componente->set('nombre', 'Otro')->dispatch('abrir-formulario', id: null);
+test('tras guardar el formulario vuelve al modo alta con el dialogo cerrado', function () {
+    Livewire::withoutLazyLoading();
 
-    expect($componente->get('servicioId'))->toBeNull()
-        ->and($componente->get('nombre'))->toBe('')
-        ->and($componente->get('precio'))->toBe('')
-        ->and($componente->get('categoria'))->toBe(Servicio::CATEGORIA_POR_DEFECTO);
+    $servicio = ($this->crearServicio)('Minibar premium', 350.00, 'Minibar');
+
+    Livewire::actingAs($this->admin)
+        ->test(FormModal::class)
+        ->call('editar', $servicio->id)
+        ->set('categoria', 'Spa y Bienestar')
+        ->call('guardar')
+        ->assertHasNoErrors()
+        ->assertSet('isOpenEditModal', false)
+        ->assertSet('servicioId', null)
+        ->assertSet('categoria', Servicio::CATEGORIA_POR_DEFECTO)
+        ->assertSee('Nuevo servicio');
 });
 
 test('el formulario rechaza una categoria ajena al enumerado del hotel', function () {
@@ -516,7 +601,8 @@ test('el formulario rechaza un nombre duplicado y un precio invalido', function 
 
     // En edición el propio servicio no cuenta como duplicado.
     Livewire::actingAs($this->admin)
-        ->test(FormModal::class, ['servicioId' => $servicio->id])
+        ->test(FormModal::class)
+        ->call('editar', $servicio->id)
         ->set('precio', '0')
         ->call('guardar')
         ->assertHasErrors(['precio']);
@@ -892,4 +978,66 @@ test('la pantalla de servicios responde al super admin con el catalogo completo'
         ->assertSee('$350.00');
 
     expect($folio->serviciosAsignados()->count())->toBe(1);
+});
+
+test('el desplegable marca como seleccionada la categoria que tiene guardada el servicio', function () {
+    Livewire::withoutLazyLoading();
+
+    $servicio = ($this->crearServicio)('Lavado exprés', 120.50, 'Lavandería');
+
+    $html = Livewire::actingAs($this->admin)
+        ->test(FormModal::class)
+        ->call('editar', $servicio->id)
+        ->assertSet('categoria', 'Lavandería')
+        ->html();
+
+    /*
+     | El <select> oculto es el que alimenta a `wire:model`. Si ninguna de sus
+     | <option> va marcada, el navegador se queda con la primera de la lista
+     | ("Minibar") y ese es el valor que viaja al servidor y acaba en la base de
+     | datos, por más que el botón muestre otra categoría.
+     */
+    expect($html)->toContain('<option value="Lavandería" selected>')
+        ->and($html)->not->toContain('<option value="Minibar" selected');
+});
+
+test('el desplegable se reconstruye con el valor del servidor y no con el que quedo en el boton', function () {
+    Livewire::withoutLazyLoading();
+
+    $servicio = ($this->crearServicio)('Lavado exprés', 120.50, 'Lavandería');
+
+    $componente = Livewire::actingAs($this->admin)
+        ->test(FormModal::class)
+        ->call('editar', $servicio->id);
+
+    // El morph de Livewire conserva el estado de Alpine, así que el botón puede
+    // quedarse con la etiqueta anterior mientras el <select> ya vale otra cosa.
+    // La raíz del control lleva una clave que depende del valor: cuando este
+    // cambia, Livewire reconstruye el desplegable entero.
+    expect($componente->html())
+        ->toContain('wire:key="categoria-Lavandería"')
+        ->and($componente->html())->not->toContain('wire:key="categoria-Minibar"');
+
+    $componente->set('categoria', 'Restaurante');
+
+    expect($componente->html())
+        ->toContain('wire:key="categoria-Restaurante"')
+        ->toContain('<option value="Restaurante" selected>')
+        ->and($componente->html())->not->toContain('<option value="Lavandería" selected>');
+
+    // El botón del desplegable también se pone al día desde el <select> nativo.
+    expect($componente->html())->toContain('adoptarValorNativo()');
+});
+
+test('el mensaje del contenedor se oculta solo con Alpine', function () {
+    $html = Livewire::actingAs($this->admin)
+        ->test(ServiciosIndex::class)
+        ->dispatch('servicio-guardada', mensaje: 'Servicio creado correctamente.')
+        ->assertSet('mensajeExito', 'Servicio creado correctamente.')
+        ->html();
+
+    expect($html)->toContain('x-data="{ visible: true }"')
+        ->toContain('x-init="setTimeout(() => visible = false, 5000)"')
+        ->toContain('x-show="visible"')
+        ->toContain('x-transition.duration.300ms');
 });

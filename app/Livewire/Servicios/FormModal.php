@@ -4,20 +4,21 @@ namespace App\Livewire\Servicios;
 
 use App\Models\Servicio;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
- * Alta y edición de un servicio del catálogo dentro del diálogo. Se carga de
- * forma diferida y no lleva booleanos de visibilidad: el <dialog> de Flux lo abre
- * el navegador, así que el componente solo recibe el modo de la operación por el
- * evento `abrir-formulario` y avisa con `servicio-guardada` al terminar.
+ * Alta y edición de un servicio del catálogo dentro del diálogo.
+ *
+ * El componente se monta con la pantalla, nunca de forma diferida: Livewire
+ * descarta los eventos dirigidos a un componente `#[Lazy]` que todavía no se ha
+ * cargado, así que el primer clic sobre una fila abría el formulario de alta en
+ * lugar del servicio. Con el componente siempre presente, abrir y cargar son una
+ * sola ejecución de servidor.
  *
  * La misma vista sirve para los dos modos; lo que cambia es la cabecera y el
  * botón, y eso lo decide `render()`.
  */
-#[Lazy]
 class FormModal extends Component
 {
     public ?int $servicioId = null;
@@ -30,6 +31,13 @@ class FormModal extends Component
 
     public string $precio = '';
 
+    /**
+     * El diálogo del catálogo está abierto. La misma petición que carga los
+     * datos lo activa, de modo que el formulario jamás se presenta con los
+     * valores de otro servicio, y `render()` lo toma como modo en curso.
+     */
+    public bool $isOpenEditModal = false;
+
     public function mount(): void
     {
         $this->cargarFormulario();
@@ -41,22 +49,36 @@ class FormModal extends Component
      */
     public function render()
     {
-        return view($this->servicioId === null ? 'servicios.create' : 'servicios.edit');
+        return view($this->isOpenEditModal && $this->servicioId !== null ? 'servicios.edit' : 'servicios.create');
     }
 
     /**
-     * Prepara el formulario para creación o edición.
-     *
-     * Lo dispara el botón de la interfaz con un evento de Livewire. Solo este
-     * componente reacciona, así que el contenedor no se re-renderiza al abrir y
-     * el <dialog> conserva su estado nativo de `open`.
+     * Abre el formulario de alta. Lo dispara el botón "Nuevo servicio" de la
+     * pantalla.
      */
-    #[On('abrir-formulario')]
-    public function preparar(?int $id): void
+    #[On('servicio-crear')]
+    public function crear(): void
+    {
+        $this->servicioId = null;
+
+        $this->cargarFormulario();
+
+        $this->abrirDialogo();
+    }
+
+    /**
+     * Abre el formulario con los datos del servicio indicado. Cargar y mostrar
+     * ocurren en la misma petición, que es lo que exige el botón de la fila: un
+     * solo clic y el diálogo aparece con la categoría y el precio del servicio.
+     */
+    #[On('servicio-editar')]
+    public function editar(int $id): void
     {
         $this->servicioId = $id;
 
         $this->cargarFormulario();
+
+        $this->abrirDialogo();
     }
 
     public function guardar(): void
@@ -81,6 +103,10 @@ class FormModal extends Component
             'precio' => $this->precio,
         ])->save();
 
+        $this->servicioId = null;
+
+        $this->isOpenEditModal = false;
+
         $this->cargarFormulario();
 
         $this->dispatch(
@@ -89,6 +115,20 @@ class FormModal extends Component
                 ? 'Servicio creado correctamente.'
                 : 'Servicio actualizado correctamente.'
         );
+    }
+
+    /**
+     * Marca el diálogo como abierto y pide a Flux que lo muestre.
+     *
+     * Livewire entrega los eventos despachados después de aplicar el morph del
+     * componente, así que el <dialog> se abre cuando el formulario ya muestra
+     * los datos recién cargados.
+     */
+    private function abrirDialogo(): void
+    {
+        $this->isOpenEditModal = true;
+
+        $this->dispatch('modal-show', name: 'servicio-form');
     }
 
     private function cargarFormulario(): void

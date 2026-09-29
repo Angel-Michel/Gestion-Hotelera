@@ -92,6 +92,7 @@
                             <x-dropdown
                                 id="reserva_id"
                                 wire:model="reserva_id"
+                                :clave="'reserva_id-'.$reserva_id"
                                 variant="soft"
                                 required
                                 :selected="$reserva_id"
@@ -111,6 +112,7 @@
                             <x-dropdown
                                 id="servicio_id"
                                 wire:model="servicio_id"
+                                :clave="'servicio_id-'.$servicio_id"
                                 variant="soft"
                                 required
                                 :selected="$servicio_id"
@@ -167,6 +169,7 @@
                             <x-dropdown
                                 id="empleado_id"
                                 wire:model="empleado_id"
+                                :clave="'empleado_id-'.$empleado_id"
                                 variant="soft"
                                 required
                                 :selected="$empleado_id"

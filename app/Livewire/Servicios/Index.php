@@ -18,8 +18,9 @@ use Livewire\WithPagination;
  * Contenedor del módulo de servicios. Es el único dueño del estado global
  * (búsqueda, filtro de categoría, mensajes) y de los dos diálogos de la
  * pantalla: el alta y edición del catálogo, y el cargo de un consumo al folio
- * de una habitación ocupada. La presentación se delega en parciales y los
- * formularios viven en subcomponentes que se cargan de forma diferida.
+ * de una habitación ocupada. La presentación se delega en parciales, enruta los
+ * clics de la tabla al formulario del catálogo y el formulario de cargos se
+ * carga de forma diferida.
  */
 #[Layout('components.layouts.app')]
 class Index extends Component
@@ -61,6 +62,26 @@ class Index extends Component
             : self::FILTRO_TODAS;
 
         $this->resetPage();
+    }
+
+    /**
+     * Pide al formulario del catálogo que se abra en alta. El contenedor solo
+     * enruta: la carga de datos y la apertura ocurren en el formulario, dentro de
+     * una sola petición, y el <dialog> sigue fuera del diffing.
+     */
+    public function crear(): void
+    {
+        $this->dispatch('servicio-crear');
+    }
+
+    /**
+     * Pide al formulario del catálogo que se abra con los datos del servicio. Un
+     * solo clic en la fila: el formulario carga el servicio y abre el diálogo en
+     * la misma respuesta.
+     */
+    public function editar(int $id): void
+    {
+        $this->dispatch('servicio-editar', id: $id);
     }
 
     /**
