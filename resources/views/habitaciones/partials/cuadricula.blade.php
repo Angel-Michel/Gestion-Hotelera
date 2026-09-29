@@ -8,7 +8,7 @@
             <div class="relative h-52 shrink-0 overflow-hidden">
                 <img
                     src="{{ $this->imagenPara($habitacion) }}"
-                    alt="{{ $habitacion->tipo?->nombre ?? 'Habitación '.$habitacion->numero_habitacion }}"
+                    alt="{{ $habitacion->tipoHabitacion?->nombre ?? 'Habitación '.$habitacion->numero_habitacion }}"
                     class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     loading="lazy"
                 />
@@ -25,14 +25,14 @@
             </div>
 
             <div class="flex flex-1 flex-col p-5">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ $habitacion->tipo?->nombre ?? '—' }}</h3>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ $habitacion->tipoHabitacion?->nombre ?? '—' }}</h3>
                 <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                    Piso {{ $habitacion->piso }} &middot; {{ $habitacion->tipo?->capacidad ?? '—' }} personas
+                    Piso {{ $habitacion->piso }} &middot; {{ $habitacion->tipoHabitacion?->capacidad ?? '—' }} personas
                 </p>
 
                 <div class="mt-3 flex items-baseline gap-1">
                     <span class="text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-                        ${{ number_format((float) ($habitacion->tipo?->precio_base ?? 0), 0) }}
+                        ${{ number_format((float) ($habitacion->tipoHabitacion?->precio_base ?? 0), 0) }}
                     </span>
                     <span class="text-sm font-medium text-slate-400 dark:text-slate-500">/noche</span>
                 </div>

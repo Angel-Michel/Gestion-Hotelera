@@ -26,7 +26,7 @@ class EstadoCuentaController extends Controller
 
         $reservas = $cliente->reservas()
             ->with([
-                'habitacionesAsignadas.habitacion.tipo',
+                'habitacionesAsignadas.habitacion.tipoHabitacion',
                 'serviciosAsignados.servicio',
                 'pagos',
             ])
@@ -60,7 +60,7 @@ class EstadoCuentaController extends Controller
     private function datosEstadoCuenta(Reserva $reserva): array
     {
         $noches = $reserva->check_in->diffInDays($reserva->check_out);
-        $asignaciones = $reserva->habitacionesAsignadas()->with('habitacion.tipo')->get();
+        $asignaciones = $reserva->habitacionesAsignadas()->with('habitacion.tipoHabitacion')->get();
 
         $tarifa = (float) $asignaciones->reduce(
             fn (float $carry, $asignacion) => $carry + ((float) $asignacion->precio_por_noche * $noches),

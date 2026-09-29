@@ -96,26 +96,26 @@
                             'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
                             'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80',
                         ];
-                        $total = round((float) $habitacion->tipo->precio_base * $noches, 2);
+                        $total = round((float) $habitacion->tipoHabitacion->precio_base * $noches, 2);
                     @endphp
                     <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition duration-300 flex flex-col">
                         <div class="relative h-56 bg-slate-200">
-                            <img src="{{ $imagenes[$loop->index % 3] }}" alt="{{ $habitacion->tipo->nombre }}" class="w-full h-full object-cover">
+                            <img src="{{ $imagenes[$loop->index % 3] }}" alt="{{ $habitacion->tipoHabitacion->nombre }}" class="w-full h-full object-cover">
                             <div class="absolute top-4 left-4 bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">Disponible</div>
                             <div class="absolute top-4 right-4 bg-white text-slate-700 text-xs font-bold px-3 py-1 rounded-md shadow-sm">#{{ $habitacion->numero_habitacion }}</div>
                         </div>
                         <div class="p-5 flex flex-col flex-grow">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <h3 class="text-lg font-bold text-slate-900">{{ $habitacion->tipo->nombre }}</h3>
-                                    <p class="text-xs text-slate-500">Piso {{ $habitacion->piso }} &middot; hasta {{ $habitacion->tipo->capacidad }} personas</p>
+                                    <h3 class="text-lg font-bold text-slate-900">{{ $habitacion->tipoHabitacion->nombre }}</h3>
+                                    <p class="text-xs text-slate-500">Piso {{ $habitacion->piso }} &middot; hasta {{ $habitacion->tipoHabitacion->capacidad }} personas</p>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-xl font-bold text-amber-600">${{ number_format((float) $habitacion->tipo->precio_base, 2) }}</span>
+                                    <span class="text-xl font-bold text-amber-600">${{ number_format((float) $habitacion->tipoHabitacion->precio_base, 2) }}</span>
                                     <p class="text-[10px] text-slate-400 uppercase">por noche</p>
                                 </div>
                             </div>
-                            <p class="text-sm text-slate-600 mb-4 line-clamp-3">{{ $habitacion->tipo->descripcion }}</p>
+                            <p class="text-sm text-slate-600 mb-4 line-clamp-3">{{ $habitacion->tipoHabitacion->descripcion }}</p>
                             <div class="mt-auto flex items-center justify-between gap-3">
                                 <div class="text-sm text-slate-500">
                                     <span class="font-semibold text-slate-700">${{ number_format($total, 2) }}</span>
@@ -136,9 +136,9 @@
                                         <button type="button"
                                             onclick="abrirModalCuenta(
                                                 'form-reservar-{{ $habitacion->id }}',
-                                                '{{ $habitacion->tipo->nombre }}',
+                                                '{{ $habitacion->tipoHabitacion->nombre }}',
                                                 'Hab. #{{ $habitacion->numero_habitacion }}',
-                                                '{{ number_format((float) $habitacion->tipo->precio_base, 2) }}'
+                                                '{{ number_format((float) $habitacion->tipoHabitacion->precio_base, 2) }}'
                                             )"
                                             class="bg-amber-500 hover:bg-amber-600 w-full text-white text-sm font-medium py-2.5 px-5 rounded-lg transition shadow-md">
                                             Reservar ahora

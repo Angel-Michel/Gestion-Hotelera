@@ -48,13 +48,13 @@
             <!-- Detalle de la habitación -->
             <div class="md:col-span-3 bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
                 <div class="relative h-48 bg-slate-200">
-                    <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80" alt="{{ $habitacion->tipo->nombre }}" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80" alt="{{ $habitacion->tipoHabitacion->nombre }}" class="w-full h-full object-cover">
                     <div class="absolute top-4 left-4 bg-white text-slate-700 text-xs font-bold px-3 py-1 rounded-md shadow-sm">Habitación #{{ $habitacion->numero_habitacion }}</div>
                 </div>
                 <div class="p-6">
-                    <h2 class="text-xl font-bold text-slate-900 mb-1">{{ $habitacion->tipo->nombre }}</h2>
-                    <p class="text-sm text-slate-500 mb-4">Piso {{ $habitacion->piso }} &middot; hasta {{ $habitacion->tipo->capacidad }} personas</p>
-                    <p class="text-sm text-slate-600 leading-relaxed">{{ $habitacion->tipo->descripcion }}</p>
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">{{ $habitacion->tipoHabitacion->nombre }}</h2>
+                    <p class="text-sm text-slate-500 mb-4">Piso {{ $habitacion->piso }} &middot; hasta {{ $habitacion->tipoHabitacion->capacidad }} personas</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">{{ $habitacion->tipoHabitacion->descripcion }}</p>
 
                     <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
                         <div class="rounded-xl bg-slate-50 border border-slate-100 p-4">

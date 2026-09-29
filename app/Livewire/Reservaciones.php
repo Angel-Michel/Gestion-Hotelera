@@ -39,7 +39,7 @@ class Reservaciones extends Component
         $datos = [
             'reservas' => Reserva::with(['cliente', 'habitaciones'])->latest()->get(),
             'clientes' => Cliente::orderBy('nombre')->get(),
-            'habitaciones' => Habitacion::with('tipo')->orderBy('numero_habitacion')->get(),
+            'habitaciones' => Habitacion::with('tipoHabitacion')->orderBy('numero_habitacion')->get(),
             'estados' => ['Pendiente', 'Confirmada', 'Cancelada', 'Finalizada'],
         ];
 
@@ -116,13 +116,13 @@ class Reservaciones extends Component
         $reserva->habitacionesAsignadas()->delete();
 
         foreach ($this->habitacion_ids as $habitacionId) {
-            $habitacion = Habitacion::with('tipo')->find($habitacionId);
+            $habitacion = Habitacion::with('tipoHabitacion')->find($habitacionId);
 
             if ($habitacion) {
                 ReservaHabitacion::create([
                     'reserva_id' => $reserva->id,
                     'habitacion_id' => $habitacion->id,
-                    'precio_por_noche' => $habitacion->tipo?->precio_base ?? 0,
+                    'precio_por_noche' => $habitacion->tipoHabitacion?->precio_base ?? 0,
                 ]);
             }
         }

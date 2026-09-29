@@ -70,12 +70,12 @@ class Habitaciones extends Component
 
     public function render(): View
     {
-        $habitaciones = Habitacion::with('tipo')
+        $habitaciones = Habitacion::with('tipoHabitacion')
             ->when($this->search !== '', function ($query): void {
                 $termino = '%'.trim($this->search).'%';
                 $query->where(function ($sub) use ($termino): void {
                     $sub->where('numero_habitacion', 'like', $termino)
-                        ->orWhereHas('tipo', fn ($tipo) => $tipo->where('nombre', 'like', $termino));
+                        ->orWhereHas('tipoHabitacion', fn ($tipo) => $tipo->where('nombre', 'like', $termino));
                 });
             })
             ->when($this->filtroEstado !== 'todos', function ($query): void {
@@ -164,16 +164,16 @@ class Habitaciones extends Component
 
     public function editar(int $id): void
     {
-        $habitacion = Habitacion::with('tipo')->findOrFail($id);
+        $habitacion = Habitacion::with('tipoHabitacion')->findOrFail($id);
 
         $this->habitacionId = $habitacion->id;
         $this->numero_habitacion = $habitacion->numero_habitacion;
         $this->tipo_habitacion_id = (string) $habitacion->tipo_habitacion_id;
         $this->estado = $habitacion->estado;
         $this->piso = (string) $habitacion->piso;
-        $this->capacidad = (string) ($habitacion->tipo?->capacidad ?? '');
-        $this->precio_por_noche = number_format((float) ($habitacion->tipo?->precio_base ?? 0), 2, '.', '');
-        $this->descripcion = $habitacion->tipo?->descripcion ?? '';
+        $this->capacidad = (string) ($habitacion->tipoHabitacion?->capacidad ?? '');
+        $this->precio_por_noche = number_format((float) ($habitacion->tipoHabitacion?->precio_base ?? 0), 2, '.', '');
+        $this->descripcion = $habitacion->tipoHabitacion?->descripcion ?? '';
         $this->foto_url = $this->imagenPara($habitacion);
         $this->resetValidation();
         $this->reset('mensajeExito');

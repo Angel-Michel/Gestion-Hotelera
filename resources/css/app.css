@@ -43,6 +43,10 @@
     --animate-fade-in: fade-in 0.45s ease-out both;
     --animate-fade-in-up: fade-in-up 0.55s ease-out both;
 
+    /* Modal de habitacion: entrada con escala y rebote sutil */
+    --animate-modal-card-in: modal-card-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-float-slow: float-slow 3s ease-in-out infinite;
+
     @keyframes fade-in {
         from {
             opacity: 0;
@@ -62,6 +66,35 @@
         to {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    /* Escala 95 -> 100 con un leve rebote al superar el 100% */
+    @keyframes modal-card-in {
+        0% {
+            opacity: 0;
+            transform: scale(0.95) translateY(8px);
+        }
+
+        70% {
+            opacity: 1;
+            transform: scale(1.012) translateY(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    /* Flotacion continua para el icono de la zona de fotografia */
+    @keyframes float-slow {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-6px);
         }
     }
 }
@@ -169,6 +202,22 @@ dialog[open] [data-flux-modal-content] {
     dialog[open] [data-flux-modal-content] {
         transform: scale(0.95);
     }
+}
+
+/* ==========================================================
+   NovaStay: modal de alta/edicion de habitacion
+   El dialogo se usa como contenedor transparente; el cristal, la
+   tarjeta blanca y las animaciones viven en form-modal.blade.php
+   ========================================================== */
+.novastay-habitacion-modal {
+    box-shadow: none;
+}
+
+.novastay-habitacion-modal::backdrop {
+    background-color: rgb(15 23 42 / 0.6);
+    backdrop-filter: blur(4px) saturate(150%);
+    -webkit-backdrop-filter: blur(4px) saturate(150%);
+    transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1) allow-discrete;
 }
 
 /* ==========================================================

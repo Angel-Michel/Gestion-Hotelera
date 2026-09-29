@@ -17,8 +17,8 @@
             @forelse ($habitaciones as $habitacion)
                 <flux:table.row :key="$habitacion->id">
                     <flux:table.cell variant="strong" class="!text-slate-900 !font-medium">Hab. {{ $habitacion->numero_habitacion }}</flux:table.cell>
-                    <flux:table.cell>{{ $habitacion->tipo?->nombre ?? '—' }}</flux:table.cell>
-                    <flux:table.cell>${{ number_format($habitacion->tipo?->precio_base ?? 0, 2) }}</flux:table.cell>
+                    <flux:table.cell>{{ $habitacion->tipoHabitacion?->nombre ?? '—' }}</flux:table.cell>
+                    <flux:table.cell>${{ number_format($habitacion->tipoHabitacion?->precio_base ?? 0, 2) }}</flux:table.cell>
                     <flux:table.cell align="center">{{ $habitacion->piso }}</flux:table.cell>
                     <flux:table.cell>
                         <x-estado-badge :estado="$habitacion->estado" />

@@ -28,10 +28,10 @@ class RoomSearchController extends Controller
                 ->where('check_out', '>', $checkIn);
         })->pluck('habitacion_id');
 
-        $habitaciones = Habitacion::with('tipo')
+        $habitaciones = Habitacion::with('tipoHabitacion')
             ->where('estado', 'Disponible')
             ->when($guests, fn ($query) => $query->whereHas(
-                'tipo',
+                'tipoHabitacion',
                 fn ($tipo) => $tipo->where('capacidad', '>=', $guests)
             ))
             ->when($reservadas->isNotEmpty(), fn ($query) => $query->whereNotIn('id', $reservadas))

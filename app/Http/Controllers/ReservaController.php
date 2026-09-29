@@ -44,11 +44,11 @@ class ReservaController extends Controller
 
         abort_unless($datos, 404);
 
-        $habitacion = Habitacion::with('tipo')->findOrFail($datos['habitacion_id']);
+        $habitacion = Habitacion::with('tipoHabitacion')->findOrFail($datos['habitacion_id']);
         $checkIn = Carbon::parse($datos['check_in']);
         $checkOut = Carbon::parse($datos['check_out']);
         $noches = $checkIn->diffInDays($checkOut);
-        $precioPorNoche = (float) $habitacion->tipo->precio_base;
+        $precioPorNoche = (float) $habitacion->tipoHabitacion->precio_base;
         $total = round($precioPorNoche * $noches, 2);
 
         return view('reserva.confirmar', compact(
@@ -71,11 +71,11 @@ class ReservaController extends Controller
             'habitacion_id' => ['required', 'exists:habitaciones,id'],
         ]);
 
-        $habitacion = Habitacion::with('tipo')->findOrFail($datos['habitacion_id']);
+        $habitacion = Habitacion::with('tipoHabitacion')->findOrFail($datos['habitacion_id']);
         $checkIn = Carbon::parse($datos['check_in']);
         $checkOut = Carbon::parse($datos['check_out']);
         $noches = $checkIn->diffInDays($checkOut);
-        $precioPorNoche = (float) $habitacion->tipo->precio_base;
+        $precioPorNoche = (float) $habitacion->tipoHabitacion->precio_base;
         $montoTotal = round($precioPorNoche * $noches, 2);
 
         abort_unless($this->habitacionDisponible($habitacion->id, $checkIn, $checkOut), 409);
