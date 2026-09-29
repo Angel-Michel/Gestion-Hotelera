@@ -386,6 +386,94 @@ test('los labels de campo obligatorio llevan el asterisco rojo', function () {
         ->and($html)->toContain('>Fotografía<');
 });
 
+test('los desplegables del modal reemplazan los select nativos por un menu redondeado', function () {
+    Livewire::withoutLazyLoading();
+
+    ($this->crearTipo)('Estándar', 899.00, 2);
+
+    $html = Livewire::actingAs($this->admin)->test(FormModal::class)->html();
+
+    // Solo quedan los <select> que alimentan a `wire:model`, y ninguno es visible.
+    expect(substr_count($html, '<select'))->toBe(2)
+        ->and($html)->toContain('class="sr-only"')
+        ->not->toContain('appearance-none')
+        // El control visible es un boton con semantica de listbox.
+        ->toContain('aria-haspopup="listbox"')
+        ->toContain('role="listbox"')
+        ->toContain('role="option"')
+        // `id` y etiqueta apuntan al boton real, no al select invisible.
+        ->toContain('id="tipo_habitacion_id"')
+        ->toContain('id="estado"')
+        // Menu flotante: esquinas redondeadas, borde sutil y sombra elegante.
+        ->toContain('rounded-xl border border-slate-200/80 bg-white p-1.5 shadow-xl shadow-slate-950/5')
+        // Transiciones de entrada y salida.
+        ->toContain('x-transition:enter')
+        ->toContain('x-transition:leave')
+        // Hover neutro y realce amber en la opcion elegida.
+        ->toContain('hover:bg-slate-100')
+        ->toContain('bg-amber-50');
+});
+
+test('el icono del desplegable no se encima con el texto de la opcion', function () {
+    Livewire::withoutLazyLoading();
+
+    $html = Livewire::actingAs($this->admin)->test(FormModal::class)->html();
+
+    // Los dos desplegables llevan icono a la izquierda, asi que el boton reserva
+    // `pl-10` y el texto empieza despues del icono.
+    expect(substr_count($html, 'focus:ring-amber-500 pl-10'))->toBe(2)
+        // Los cinco campos de texto con icono conservan su `pl-11` y el icono a
+        // `left-3.5`, que es el origen del hueco reservado.
+        ->and(substr_count($html, 'pl-11 pr-3.5'))->toBe(5)
+        ->and($html)->toContain('absolute left-3.5 top-1/2 size-5');
+});
+
+test('el tipo y el estado del modal siguen enlazados al estado de Livewire', function () {
+    Livewire::withoutLazyLoading();
+
+    $estandar = ($this->crearTipo)('Estándar', 899.00, 2);
+    $deluxe = ($this->crearTipo)('Deluxe', 1299.00, 4);
+
+    $componente = Livewire::actingAs($this->admin)->test(FormModal::class);
+
+    // El <select> oculto sigue siendo el que lleva el enlace con el componente.
+    $componente
+        ->assertSeeHtml('wire:model="tipo_habitacion_id"')
+        ->assertSeeHtml('wire:model="estado"')
+        // Sin seleccion previa, el placeholder aparece como opcion real.
+        ->assertSee('Selecciona un tipo...')
+        ->set('tipo_habitacion_id', (string) $deluxe->id)
+        ->set('estado', 'Limpieza')
+        // El boton recibe el valor y la etiqueta de la opcion elegida.
+        ->assertSee('Deluxe — $1,299.00')
+        ->assertSee('Limpieza')
+        // Volver a vacio repone el placeholder.
+        ->set('tipo_habitacion_id', '')
+        ->assertSee('Selecciona un tipo...')
+        // El catalogo completo sigue offerciendose como opciones del menu.
+        ->assertSee('Estándar — $899.00');
+});
+
+test('el desplegable de estados del inventario sigue mandando el filtro al contenedor', function () {
+    $html = Livewire::actingAs($this->admin)
+        ->test(Filtros::class, [
+            'totalHabitaciones' => 0,
+            'tarjetas' => app(HabitacionesIndex::class)->tarjetasEstado(),
+            'opcionesEstado' => HabitacionesIndex::OPCIONES_ESTADO,
+        ])
+        ->html();
+
+    // El enlace con el contenedor viaja en el <select> oculto; el componente lo
+    // despacha con un evento `change` al elegir una opcion.
+    expect($html)->toContain('wire:change="$parent.filtrarPor($event.target.value)"')
+        ->toContain('class="sr-only"')
+        ->toContain('aria-haspopup="listbox"')
+        ->toContain('role="listbox"')
+        // Icono de embudo a la izquierda y su `pl-10`.
+        ->toContain('focus:ring-amber-500 pl-10')
+        ->and($html)->not->toContain('appearance-none');
+});
+
 test('las tarjetas KPI usan la rejilla y el contrato visual acordado', function () {
     $tipo = ($this->crearTipo)('Estándar', 899.00, 2);
     ($this->crearHabitacion)('101', $tipo);

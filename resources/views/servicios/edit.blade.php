@@ -1,7 +1,8 @@
 {{-- ======================================================
-     VISTA: EDITAR SERVICIO
+     VISTA: EDICIÓN DE SERVICIO
+
+     Modal de edición. `FormModal::render()` elige esta vista
+     cuando hay un servicio cargado en el formulario.
      ====================================================== --}}
 
-<div class="mx-auto max-w-2xl">
-    @include('servicios.partials.form')
-</div>
+@include('servicios.partials.form', ['modo' => 'editar'])

@@ -287,10 +287,14 @@ class Empleados extends Component
 
     /**
      * Clases del input del formulario con su estado de validación visual.
+     *
+     * El relleno derecho reserva espacio para el indicador de campo
+     * válido (check-circle) que se superpone al borde cuando el valor
+     * es correcto, evitando que el texto quede debajo del icono.
      */
     public function claseInput(string $campo): string
     {
-        $base = 'block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset transition-all duration-300 ease-out placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-inset dark:bg-zinc-900 dark:text-white';
+        $base = 'block w-full rounded-xl border-0 bg-white py-2.5 pl-3.5 pr-11 text-sm text-slate-900 shadow-sm ring-1 ring-inset transition-all duration-300 ease-out placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-inset dark:bg-zinc-900 dark:text-white';
 
         return $this->getErrorBag()->has($campo)
             ? $base.' !ring-red-400 focus:!ring-red-500'

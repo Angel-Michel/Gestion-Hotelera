@@ -40,7 +40,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </div>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="font-medium text-center text-sm text-green-600">
+        <div
+            x-data="{ visible: true }"
+            x-init="setTimeout(() => visible = false, 5000)"
+            x-show="visible"
+            x-transition.duration.300ms
+            class="font-medium text-center text-sm text-green-600"
+        >
             {{ __('A new verification link has been sent to the email address you provided during registration.') }}
         </div>
     @endif

@@ -1,7 +1,8 @@
 {{-- ======================================================
-     VISTA: CREAR SERVICIO
+     VISTA: ALTA DE SERVICIO
+
+     Modal de alta. Comparte el formulario con la edición; solo
+     cambia el rótulo del modo que recibe el parcial.
      ====================================================== --}}
 
-<div class="mx-auto max-w-2xl">
-    @include('servicios.partials.form')
-</div>
+@include('servicios.partials.form', ['modo' => 'crear'])

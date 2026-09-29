@@ -2,9 +2,15 @@
     'selected' => '',
     'placeholder' => null,
     'options' => [],
+    'variant' => 'solid',
 ])
 
 @php
+    /*
+     | Normaliza cualquier forma de opciones a pares {value, label}: mapas
+     | clave => etiqueta, listas de objetos o de arrays con las mismas claves
+     | que usan los selects que este componente reemplaza.
+     */
     $opciones = [];
 
     foreach ($options as $clave => $opcion) {
@@ -24,6 +30,33 @@
             'label' => (string) $etiqueta,
         ];
     }
+
+    /*
+     | `solid` conserva el panel blanco de los módulos que ya lo usaban. `soft`
+     | replica el campo del sistema (fondo sutil que reacciona al hover y anillo
+     | ámbar al enfocar) para que el desplegable conviva con los inputs y
+     | textareas de un mismo formulario sin parecer un control ajeno.
+     */
+    $varianteClase = match ($variant) {
+        'soft' => 'bg-slate-50 ring-slate-200 hover:bg-slate-100 hover:ring-slate-300 focus:bg-white dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:bg-zinc-800 dark:hover:ring-zinc-600 dark:focus:bg-zinc-900',
+        default => 'bg-white ring-slate-300 hover:ring-slate-400 dark:bg-zinc-900 dark:ring-zinc-700 dark:hover:ring-zinc-600',
+    };
+
+    /*
+     | El icono vive en el interior del botón, así que el texto debe empezar
+     | después de él: `pl-10` deja aire suficiente para un icono de 1.25rem
+     | anclado a `left-3.5`.
+     */
+    $iconoEspacio = isset($leadingIcon) ? 'pl-10' : 'pl-3.5';
+
+    /*
+     | El control visible es el botón: `id` y `aria-label` viajan ahí para que el
+     | <label for> enfoque algo real. El resto de atributos (wire:model, name,
+     | required) se quedan en el <select> oculto, que es quien alimenta al estado
+     | de Livewire y al formulario.
+     */
+    $atributosBoton = $attributes->only(['id', 'aria-label']);
+    $atributosSelect = $attributes->except(['class', 'required', 'id', 'aria-label']);
 @endphp
 
 <div
@@ -71,7 +104,21 @@
     @click.outside="open = false"
     class="relative"
 >
-    <select {{ $attributes->except(['class']) }} class="sr-only" tabindex="-1" aria-hidden="true">
+    {{--
+        El <select> nativo permanece oculto para conservar el enlace con
+        `wire:model`, los `name` del formulario y la lectura de valores. Como no
+        es enfocable, `required` se traduce a `aria-required`: dejarlo en el
+        select bloquearía el envío del formulario con un control inválido que el
+        navegador no puede enfocar. La obligatoriedad la aplica la validación del
+        servidor y se muestra con `flux:error`.
+    --}}
+    <select
+        {{ $atributosSelect }}
+        @if ($attributes->has('required')) aria-required="true" @endif
+        class="sr-only"
+        tabindex="-1"
+        aria-hidden="true"
+    >
         @if ($placeholder !== null)
             <option value="">{{ $placeholder }}</option>
         @endif
@@ -82,10 +129,11 @@
 
     <button
         type="button"
+        {{ $atributosBoton }}
         @click="toggle()"
         :aria-expanded="open ? 'true' : 'false'"
         aria-haspopup="listbox"
-        class="relative flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border-0 bg-white py-2.5 shadow-sm ring-1 ring-inset ring-slate-300 transition-all duration-300 ease-out hover:ring-slate-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:hover:ring-zinc-600 {{ isset($leadingIcon) ? 'pl-10' : 'pl-3.5' }} pr-9"
+        class="relative flex w-full min-w-0 cursor-pointer items-center justify-between gap-3 rounded-xl border-0 py-2.5 pr-9 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 {{ $iconoEspacio }} {{ $varianteClase }} {{ $attributes->get('class') }}"
     >
         @isset($leadingIcon)
             <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 dark:text-slate-500">

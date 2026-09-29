@@ -8,11 +8,18 @@
 
 @php
     /*
-     | Campos: sin bordes duros, fondo sutil que reacciona al hover y anillo
-     | de enfoque en el color de la marca. El icono usa `peer` para teñirse
-     | cuando el campo toma el foco.
+     | Base compartida de los campos: sin bordes duros, fondo sutil que reacciona
+     | al hover y anillo de enfoque en el color de la marca. El icono usa `peer`
+     | para teñirse cuando el campo toma el foco.
      */
-    $campo = 'w-full rounded-xl border-0 border-transparent bg-slate-50 py-2.5 pl-11 pr-3.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 transition-all duration-200 ease-out placeholder:text-slate-400 hover:bg-slate-100 hover:ring-slate-300 focus:border-transparent focus:bg-white focus:ring-2 focus:ring-inset focus:ring-amber-500 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:hover:bg-zinc-800 dark:hover:ring-zinc-600 dark:focus:bg-zinc-900 dark:focus:ring-amber-500';
+    $campoBase = 'w-full rounded-xl border-0 border-transparent bg-slate-50 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 transition-all duration-200 ease-out placeholder:text-slate-400 hover:bg-slate-100 hover:ring-slate-300 focus:border-transparent focus:bg-white focus:ring-2 focus:ring-inset focus:ring-amber-500 dark:bg-zinc-900 dark:text-white dark:ring-zinc-700 dark:hover:bg-zinc-800 dark:hover:ring-zinc-600 dark:focus:bg-zinc-900 dark:focus:ring-amber-500';
+
+    /*
+     | Relleno izquierdo de los campos con icono: el icono mide 1.25rem y está
+     | anclado a `left-3.5` (0.875rem), así que ocupa hasta 2.125rem. `pl-11`
+     | (2.75rem) reserva ese hueco y deja el texto limpio, sin encima del icono.
+     */
+    $campo = $campoBase.' pl-11 pr-3.5';
 
     $icono = 'pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-slate-400 transition-colors duration-200 peer-focus:text-amber-500 dark:text-slate-500 dark:peer-focus:text-amber-400';
 
@@ -23,6 +30,17 @@
      | capacidad y precio por noche.
      */
     $obligatorio = '<span class="text-red-500 font-extrabold text-sm ml-0.5">*</span>';
+
+    /*
+     | Catálogos del desplegable. `variant="soft"` hace que el botón replique el
+     | campo del sistema y el componente calcula su propio `pl-10`, ya que el
+     | icono vive dentro del botón en lugar de ser un hermano del control.
+     */
+    $tiposOpciones = $this->tipos
+        ->mapWithKeys(fn ($tipo) => [$tipo->id => $tipo->nombre.' — $'.number_format($tipo->precio_base, 2)])
+        ->all();
+
+    $estadosOpciones = array_combine(\App\Models\Habitacion::ESTADOS, \App\Models\Habitacion::ESTADOS);
 @endphp
 
 <form wire:submit="guardar" class="w-full">
@@ -84,16 +102,20 @@
 
                 <div>
                     <label for="tipo_habitacion_id" class="{{ $etiqueta }}">Tipo {!! $obligatorio !!}</label>
-                    <div class="relative">
-                        <select id="tipo_habitacion_id" wire:model="tipo_habitacion_id" required class="{{ $campo }} peer appearance-none pr-9">
-                            <option value="">Selecciona un tipo...</option>
-                            @foreach ($this->tipos as $tipo)
-                                <option value="{{ $tipo->id }}">{{ $tipo->nombre }} — ${{ number_format($tipo->precio_base, 2) }}</option>
-                            @endforeach
-                        </select>
-                        <flux:icon.home-modern class="{{ $icono }}" />
-                        <flux:icon.chevron-down class="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                    </div>
+                    <x-dropdown
+                        id="tipo_habitacion_id"
+                        wire:model="tipo_habitacion_id"
+                        variant="soft"
+                        required
+                        :selected="$tipo_habitacion_id"
+                        placeholder="Selecciona un tipo..."
+                        :options="$tiposOpciones"
+                        class="w-full"
+                    >
+                        <x-slot:leadingIcon>
+                            <flux:icon.home-modern class="size-5" />
+                        </x-slot:leadingIcon>
+                    </x-dropdown>
                     <flux:error name="tipo_habitacion_id" class="mt-1.5" />
                 </div>
 
@@ -115,15 +137,18 @@
 
                 <div>
                     <label for="estado" class="{{ $etiqueta }}">Estado inicial {!! $obligatorio !!}</label>
-                    <div class="relative">
-                        <select id="estado" wire:model="estado" class="{{ $campo }} peer appearance-none pr-9">
-                            @foreach (\App\Models\Habitacion::ESTADOS as $opcionEstado)
-                                <option value="{{ $opcionEstado }}">{{ $opcionEstado }}</option>
-                            @endforeach
-                        </select>
-                        <flux:icon.signal class="{{ $icono }}" />
-                        <flux:icon.chevron-down class="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                    </div>
+                    <x-dropdown
+                        id="estado"
+                        wire:model="estado"
+                        variant="soft"
+                        :selected="$estado"
+                        :options="$estadosOpciones"
+                        class="w-full"
+                    >
+                        <x-slot:leadingIcon>
+                            <flux:icon.signal class="size-5" />
+                        </x-slot:leadingIcon>
+                    </x-dropdown>
                     <flux:error name="estado" class="mt-1.5" />
                 </div>
 

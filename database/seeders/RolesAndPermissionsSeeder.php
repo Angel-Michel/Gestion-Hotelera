@@ -57,6 +57,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'servicios.crear',
             'servicios.editar',
             'servicios.eliminar',
+            'servicios.cargos',
 
             // Gastos
             'gastos.ver',
@@ -177,6 +178,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'gastos.crear',
             'gastos.editar',
             'gastos.eliminar',
+
+            // Servicios
+            'servicios.ver',
+            'servicios.crear',
+            'servicios.editar',
+            'servicios.cargos',
         ]);
 
         /*
@@ -205,6 +212,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'limpieza.ver',
             'limpieza.crear',
             'limpieza.editar',
+
+            // Servicios: recepcionista ve el catálogo y carga consumos al folio
+            'servicios.ver',
+            'servicios.crear',
+            'servicios.editar',
+            'servicios.cargos',
         ]);
 
         /*

@@ -1,4 +1,3 @@
-```blade
 <x-layouts.app>
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
 
@@ -32,22 +31,6 @@
                 </a>
             @endcan
         </div>
-
-        {{-- Mensaje de éxito --}}
-        @if (session('success'))
-            <div
-                style="
-                    padding: 12px 16px;
-                    background: #dcfce7;
-                    color: #166534;
-                    border: 1px solid #bbf7d0;
-                    border-radius: 8px;
-                    font-size: 14px;
-                "
-            >
-                {{ session('success') }}
-            </div>
-        @endif
 
         {{-- Tabla de usuarios --}}
         <div
@@ -265,4 +248,3 @@
 
     </div>
 </x-layouts.app>
-```

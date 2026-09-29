@@ -9,6 +9,13 @@
     <body class="min-h-screen bg-slate-100 text-slate-700 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
 
         {{-- ==========================================================
+             NOTIFICACIONES FLOTANTES
+             Mensajes flash de sesión; se ocultan solos a los 5 s.
+             ========================================================== --}}
+
+        <x-flash-messages />
+
+        {{-- ==========================================================
              MENÚ LATERAL
              Fondo claro (blanco) con acentos ámbar en modo Light.
              ========================================================== --}}
@@ -187,7 +194,7 @@
                     @can('servicios.ver')
 
                         <flux:navlist.item
-                            icon="wrench-screwdriver"
+                            icon="gift"
                             :href="route('servicios')"
                             :current="request()->routeIs('servicios')"
                             wire:navigate

@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -52,6 +53,17 @@ class User extends Authenticatable // implements MustVerifyEmail
             'activo' => 'boolean',
             'ultimo_acceso' => 'datetime',
         ];
+    }
+
+    /**
+     * Ficha de empleado asociada a la cuenta. Es la que identifica al personal
+     * responsable de los cargos que registra en el hotel.
+     *
+     * @return HasOne<Empleado, $this>
+     */
+    public function empleado(): HasOne
+    {
+        return $this->hasOne(Empleado::class, 'id_usuario');
     }
 
     /**
