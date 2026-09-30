@@ -59,28 +59,15 @@ class EstadoCuentaController extends Controller
      */
     private function datosEstadoCuenta(Reserva $reserva): array
     {
-        $noches = $reserva->check_in->diffInDays($reserva->check_out);
+        $noches = $reserva->totalNoches();
         $asignaciones = $reserva->habitacionesAsignadas()->with('habitacion.tipoHabitacion')->get();
 
-        $tarifa = (float) $asignaciones->reduce(
-            fn (float $carry, $asignacion) => $carry + ((float) $asignacion->precio_por_noche * $noches),
-            0.0
-        );
-
-        if ($tarifa <= 0) {
-            $tarifa = (float) $reserva->monto_total;
-        }
-
+        $tarifa = $reserva->tarifaHabitaciones();
         $gastosExtra = $reserva->serviciosAsignados()->with('servicio')->get();
-
-        $subtotalExtras = round(
-            (float) $gastosExtra->sum(fn ($gasto) => (float) $gasto->subtotal),
-            2
-        );
-
-        $totalConsumos = round($tarifa + $subtotalExtras, 2);
-        $pagado = round((float) $reserva->pagos()->sum('monto'), 2);
-        $pendiente = round(max(0.0, $totalConsumos - $pagado), 2);
+        $subtotalExtras = $reserva->subtotalServicios();
+        $totalConsumos = $reserva->totalConsumos();
+        $pagado = $reserva->totalPagado();
+        $pendiente = $reserva->saldoPendiente();
 
         return compact(
             'noches',

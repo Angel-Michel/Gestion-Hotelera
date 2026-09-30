@@ -20,6 +20,8 @@ class Empleados extends Component
 {
     use WithPagination;
 
+    public string $pagina = 'index';
+
     public bool $mostrarModal = false;
 
     public ?int $empleadoId = null;
@@ -98,10 +100,16 @@ class Empleados extends Component
             ->orderBy('nombre')
             ->paginate(10);
 
-        return view('empleados.index', [
+        $datos = [
             'empleados' => $empleados,
             'turnos' => self::TURNOS,
-        ]);
+        ];
+
+        return match ($this->pagina) {
+            'crear' => view('empleados.create', $datos),
+            'editar' => view('empleados.edit', $datos),
+            default => view('empleados.index', $datos),
+        };
     }
 
     /**
@@ -279,10 +287,14 @@ class Empleados extends Component
 
     /**
      * Clases del input del formulario con su estado de validación visual.
+     *
+     * El relleno derecho reserva espacio para el indicador de campo
+     * válido (check-circle) que se superpone al borde cuando el valor
+     * es correcto, evitando que el texto quede debajo del icono.
      */
     public function claseInput(string $campo): string
     {
-        $base = 'block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset transition-all duration-300 ease-out placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-inset dark:bg-zinc-900 dark:text-white';
+        $base = 'block w-full rounded-xl border-0 bg-white py-2.5 pl-3.5 pr-11 text-sm text-slate-900 shadow-sm ring-1 ring-inset transition-all duration-300 ease-out placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-inset dark:bg-zinc-900 dark:text-white';
 
         return $this->getErrorBag()->has($campo)
             ? $base.' !ring-red-400 focus:!ring-red-500'
@@ -307,7 +319,7 @@ class Empleados extends Component
         $this->turno = 'Mañana';
         $this->resetValidation();
         $this->reset('mensajeExito', 'mensajeError');
-        $this->mostrarModal = true;
+        $this->pagina = 'crear';
     }
 
     public function editar(int $id): void
@@ -328,12 +340,12 @@ class Empleados extends Component
         $this->contrasena = '';
         $this->resetValidation();
         $this->reset('mensajeExito');
-        $this->mostrarModal = true;
+        $this->pagina = 'editar';
     }
 
     public function cerrarModal(): void
     {
-        $this->mostrarModal = false;
+        $this->pagina = 'index';
         $this->reset([
             'empleadoId',
             'nombre',

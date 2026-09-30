@@ -14,6 +14,21 @@ class Reserva extends Model
 
     protected $table = 'reservas';
 
+    /**
+     * Estados admitidos por la columna `estado` de la tabla `reservas`.
+     *
+     * @var list<string>
+     */
+    public const ESTADOS = ['Pendiente', 'Confirmada', 'Cancelada', 'Finalizada'];
+
+    /**
+     * Reservaciones cuyo huésped ya está en el hotel. Solo sobre ellas se admiten
+     * consumos: un servicio se presta a una habitación ocupada.
+     *
+     * @var list<string>
+     */
+    public const ESTADOS_ACTIVOS = ['Confirmada'];
+
     protected $fillable = [
         'cliente_id',
         'user_id',
@@ -22,6 +37,74 @@ class Reserva extends Model
         'estado',
         'monto_total',
     ];
+
+    /**
+     * La reservación admite cargos de servicios adicionales.
+     */
+    public function estaActiva(): bool
+    {
+        return in_array($this->estado, self::ESTADOS_ACTIVOS, true);
+    }
+
+    /**
+     * Noches ocupadas entre la llegada y la salida.
+     */
+    public function totalNoches(): float
+    {
+        return (float) $this->check_in->diffInDays($this->check_out);
+    }
+
+    /**
+     * Importe de las habitaciones por las noches ocupadas. Cuando la reservación
+     * no trae desglose por habitación se recurre al total que se cotizó al
+     * confirmar.
+     */
+    public function tarifaHabitaciones(): float
+    {
+        $noches = $this->totalNoches();
+
+        $tarifa = (float) $this->habitacionesAsignadas()
+            ->get()
+            ->reduce(
+                fn (float $carry, $asignacion) => $carry + ((float) $asignacion->precio_por_noche * $noches),
+                0.0
+            );
+
+        return $tarifa > 0 ? round($tarifa, 2) : round((float) $this->monto_total, 2);
+    }
+
+    /**
+     * Suma de los cargos por consumos extras registrados en el folio.
+     */
+    public function subtotalServicios(): float
+    {
+        return round((float) $this->serviciosAsignados()->sum('subtotal'), 2);
+    }
+
+    /**
+     * Importe ya abonado por el huésped.
+     */
+    public function totalPagado(): float
+    {
+        return round((float) $this->pagos()->sum('monto'), 2);
+    }
+
+    /**
+     * Total que la reservación sumará al cerrar: tarifa de habitación más
+     * consumos extras. Es la cifra que el estado de cuenta presenta al huésped.
+     */
+    public function totalConsumos(): float
+    {
+        return round($this->tarifaHabitaciones() + $this->subtotalServicios(), 2);
+    }
+
+    /**
+     * Saldo que queda por cobrar al cerrar la reservación.
+     */
+    public function saldoPendiente(): float
+    {
+        return round(max(0.0, $this->totalConsumos() - $this->totalPagado()), 2);
+    }
 
     /**
      * @return array<string, string>

@@ -143,8 +143,8 @@ test('the hotel tables exist with their required columns', function () {
         ->and(Schema::hasColumns('reservas', ['id', 'cliente_id', 'user_id', 'check_in', 'check_out', 'estado', 'monto_total']))->toBeTrue()
         ->and(Schema::hasColumns('reserva_habitacion', ['id', 'reserva_id', 'habitacion_id', 'precio_por_noche']))->toBeTrue()
         ->and(Schema::hasColumns('pagos', ['id', 'reserva_id', 'monto', 'metodo_pago', 'fecha_pago', 'notas']))->toBeTrue()
-        ->and(Schema::hasColumns('servicios', ['id', 'nombre', 'precio']))->toBeTrue()
-        ->and(Schema::hasColumns('reserva_servicio', ['id', 'reserva_id', 'servicio_id', 'cantidad', 'subtotal']))->toBeTrue()
+        ->and(Schema::hasColumns('servicios', ['id', 'nombre', 'descripcion', 'categoria', 'precio']))->toBeTrue()
+        ->and(Schema::hasColumns('reserva_servicio', ['id', 'reserva_id', 'servicio_id', 'cantidad', 'precio_aplicado', 'empleado_id', 'subtotal']))->toBeTrue()
         ->and(Schema::hasColumns('limpieza', ['id', 'habitacion_id', 'user_id', 'estado', 'notas']))->toBeTrue()
         ->and(Schema::hasColumns('gastos', ['id', 'concepto', 'monto', 'categoria', 'fecha_gasto']))->toBeTrue()
         ->and(Schema::hasColumns('temporadas', ['id', 'nombre', 'fecha_inicio', 'fecha_fin', 'multiplicador_precio']))->toBeTrue();

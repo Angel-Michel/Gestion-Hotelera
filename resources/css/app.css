@@ -221,6 +221,22 @@ dialog[open] [data-flux-modal-content] {
 }
 
 /* ==========================================================
+   NovaStay: modales del modulo de servicios
+   Mismo cristal que el de habitaciones, compartido por el
+   formulario del catalogo y el de cargos al folio
+   ========================================================== */
+.novastay-servicio-modal {
+    box-shadow: none;
+}
+
+.novastay-servicio-modal::backdrop {
+    background-color: rgb(15 23 42 / 0.6);
+    backdrop-filter: blur(4px) saturate(150%);
+    -webkit-backdrop-filter: blur(4px) saturate(150%);
+    transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1) allow-discrete;
+}
+
+/* ==========================================================
    NovaStay: menús desplegables (popovers) con fade + deslizamiento
    ========================================================== */
 ui-menu[popover] {

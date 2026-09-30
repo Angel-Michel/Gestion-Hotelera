@@ -1,3 +1,13 @@
+{{-- ======================================================
+     PANTALLA DEL MÓDULO DE SERVICIOS
+
+     El contenedor no lleva booleanos de visibilidad: el <dialog>
+     del catálogo lo abre el propio formulario al terminar de
+     cargar los datos, y el de cargos Flux desde el navegador
+     con `modal-show`. Ningún morph del contenedor puede cerrarlos
+     por accident porque viven bajo `wire:ignore`.
+     ====================================================== --}}
+
 <div>
     {{-- Alerta de latencia cero: Alpine escucha el evento y se pinta sin esperar
          a que Livewire re-renderice el bloque. --}}
