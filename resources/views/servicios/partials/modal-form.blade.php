@@ -12,14 +12,34 @@
         <div class="space-y-4">
             <flux:field>
                 <flux:label>Nombre</flux:label>
-                <flux:input wire:model="nombre" placeholder="Ejemplo: Desayuno buffet" required />
+                <flux:select wire:model="nombre" placeholder="Selecciona un servicio..." required>
+                    @foreach ($nombresServicio as $nombreOpcion)
+                        <flux:select.option value="{{ $nombreOpcion }}">{{ $nombreOpcion }}</flux:select.option>
+                    @endforeach
+                </flux:select>
                 <flux:error name="nombre" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Categoría</flux:label>
+                <flux:select wire:model="categoria_id" placeholder="Selecciona una categoría..." required>
+                    @foreach ($categoriasModal as $categoria)
+                        <flux:select.option value="{{ $categoria->id }}">{{ $categoria->nombre }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+                <flux:error name="categoria_id" />
             </flux:field>
 
             <flux:field>
                 <flux:label>Precio</flux:label>
                 <flux:input type="number" step="0.01" min="0" wire:model="precio" required />
                 <flux:error name="precio" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Descripción</flux:label>
+                <flux:textarea wire:model="descripcion" rows="3" placeholder="Ejemplo: Incluye café, juice y panadería caliente." />
+                <flux:error name="descripcion" />
             </flux:field>
         </div>
 

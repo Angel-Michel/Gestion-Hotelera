@@ -2,16 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Servicio extends Model
 {
+    use HasFactory;
+
     protected $table = 'servicios';
 
     protected $fillable = [
         'nombre',
+        'descripcion',
+        'categoria_id',
         'precio',
+        'activo',
     ];
 
     /**
@@ -21,6 +28,7 @@ class Servicio extends Model
     {
         return [
             'precio' => 'decimal:2',
+            'activo' => 'boolean',
         ];
     }
 
@@ -30,5 +38,13 @@ class Servicio extends Model
     public function reservasServicio(): HasMany
     {
         return $this->hasMany(ReservaServicio::class, 'servicio_id');
+    }
+
+    /**
+     * @return BelongsTo<Categoria, $this>
+     */
+    public function categoria(): BelongsTo
+    {
+        return $this->belongsTo(Categoria::class, 'categoria_id');
     }
 }

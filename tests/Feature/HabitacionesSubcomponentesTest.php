@@ -355,7 +355,7 @@ test('el formulario no pide al servidor con cada tecla y bloquea el doble clic',
 
     // Los campos de texto van diferidos: sin .live ni .blur, no hay peticiones
     // por pulsación de tecla.
-    foreach (['numero_habitacion', 'capacidad', 'precio_por_noche', 'descripcion'] as $campo) {
+    foreach (['numero_habitacion', 'descripcion'] as $campo) {
         expect($html)->toContain('wire:model="'.$campo.'"');
     }
 
@@ -374,16 +374,28 @@ test('los labels de campo obligatorio llevan el asterisco rojo', function () {
 
     $asterisco = '<span class="text-red-500 font-extrabold text-sm ml-0.5">*</span>';
 
-    expect(substr_count($html, $asterisco))->toBe(6)
+    expect(substr_count($html, $asterisco))->toBe(4)
         ->and($html)->toContain('Número '.$asterisco)
         ->and($html)->toContain('Tipo '.$asterisco)
         ->and($html)->toContain('Piso '.$asterisco)
         ->and($html)->toContain('Estado inicial '.$asterisco)
-        ->and($html)->toContain('Capacidad '.$asterisco)
-        ->and($html)->toContain('Precio '.$asterisco)
         // Sin asterisco: siguen siendo opcionales.
         ->and($html)->toContain('>Descripción<')
         ->and($html)->toContain('>Fotografía<');
+});
+
+test('el formulario no pide capacidad ni precio porque se heredan del tipo de habitación', function () {
+    Livewire::withoutLazyLoading();
+
+    $html = Livewire::actingAs($this->admin)->test(FormModal::class)->html();
+
+    expect($html)->not->toContain('wire:model="capacidad"')
+        ->and($html)->not->toContain('wire:model="precio_por_noche"')
+        ->and($html)->not->toContain('for="capacidad"')
+        ->and($html)->not->toContain('for="precio_por_noche"')
+        // La rejilla queda en dos columnas y la descripción las ocupa enteras.
+        ->and($html)->toContain('grid gap-5 sm:grid-cols-2')
+        ->and($html)->toContain('sm:col-span-2');
 });
 
 test('las tarjetas KPI usan la rejilla y el contrato visual acordado', function () {
@@ -592,14 +604,12 @@ test('el formulario del modal carga los datos de la habitación en edición', fu
         ->assertSet('tipo_habitacion_id', (string) $tipo->id)
         ->assertSet('estado', 'Ocupada')
         ->assertSet('piso', '3')
-        ->assertSet('capacidad', '2')
-        ->assertSet('precio_por_noche', '899.00')
         ->assertSet('descripcion', 'Habitación clásica con vistas.')
         ->assertSee('Editar habitación')
         ->assertSee('Estándar — $899.00');
 });
 
-test('el formulario deriva capacidad, precio y descripción del tipo seleccionado', function () {
+test('el formulario deriva la descripción del tipo seleccionado sin pedir capacidad ni precio', function () {
     Livewire::withoutLazyLoading();
 
     $tipo = ($this->crearTipo)('Estándar', 899.00, 2, 'Habitación clásica con vistas.');
@@ -610,13 +620,13 @@ test('el formulario deriva capacidad, precio y descripción del tipo seleccionad
         ->set('tipo_habitacion_id', (string) $tipo->id);
 
     $componente
-        ->assertSet('capacidad', '2')
-        ->assertSet('precio_por_noche', '899.00')
         ->assertSet('descripcion', 'Habitación clásica con vistas.')
         ->assertSet('estado', 'Disponible')
         ->assertSet('piso', '1')
         ->assertSet('foto', null)
-        ->assertSet('fotoGuardada', null);
+        ->assertSet('fotoGuardada', null)
+        ->assertNotSet('capacidad', '2')
+        ->assertNotSet('precio_por_noche', '899.00');
 });
 
 test('el formulario convierte la fotografía subida a WebP y guarda solo su ruta', function () {

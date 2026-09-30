@@ -19,8 +19,7 @@
     $etiqueta = 'mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 transition-colors duration-200 dark:text-slate-400';
 
     /*
-     | Marca visual de campo obligatorio. La llevan numero, tipo, piso, estado,
-     | capacidad y precio por noche.
+     | Marca visual de campo obligatorio. La llevan numero, tipo, piso y estado.
      */
     $obligatorio = '<span class="text-red-500 font-extrabold text-sm ml-0.5">*</span>';
 @endphp
@@ -125,39 +124,6 @@
                         <flux:icon.chevron-down class="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                     </div>
                     <flux:error name="estado" class="mt-1.5" />
-                </div>
-
-                <div>
-                    <label for="capacidad" class="{{ $etiqueta }}">Capacidad {!! $obligatorio !!}</label>
-                    <div class="relative">
-                        <input
-                            id="capacidad"
-                            type="number"
-                            min="1"
-                            wire:model="capacidad"
-                            placeholder="Del tipo..."
-                            class="{{ $campo }} peer"
-                        />
-                        <flux:icon.users class="{{ $icono }}" />
-                    </div>
-                    <flux:error name="capacidad" class="mt-1.5" />
-                </div>
-
-                <div>
-                    <label for="precio_por_noche" class="{{ $etiqueta }}">Precio {!! $obligatorio !!}</label>
-                    <div class="relative">
-                        <input
-                            id="precio_por_noche"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            wire:model="precio_por_noche"
-                            placeholder="0.00"
-                            class="{{ $campo }} peer"
-                        />
-                        <flux:icon.banknotes class="{{ $icono }}" />
-                    </div>
-                    <flux:error name="precio_por_noche" class="mt-1.5" />
                 </div>
 
                 <div class="sm:col-span-2">
