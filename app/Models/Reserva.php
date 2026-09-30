@@ -22,6 +22,12 @@ class Reserva extends Model
     public const ESTADOS = ['Pendiente', 'Confirmada', 'Cancelada', 'Finalizada'];
 
     /**
+     * Estado en el que la reservación ya cerró y sus consumos extras pasaron a
+     * ser facturados.
+     */
+    public const ESTADO_FINALIZADA = 'Finalizada';
+
+    /**
      * Reservaciones cuyo huésped ya está en el hotel. Solo sobre ellas se admiten
      * consumos: un servicio se presta a una habitación ocupada.
      *

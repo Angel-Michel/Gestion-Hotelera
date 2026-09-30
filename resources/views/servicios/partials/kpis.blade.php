@@ -1,5 +1,8 @@
 {{-- ======================================================
      KPIs (Métricas Superiores)
+
+     Las cifras llegan en el array $kpis desde el contenedor y
+     describen el hotel completo, no el recorte que se esté viendo.
      ====================================================== --}}
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

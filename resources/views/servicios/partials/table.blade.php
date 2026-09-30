@@ -37,7 +37,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap align-top">
                             <span class="inline-flex items-center px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-semibold">
-                                {{ $servicio->categoria?->nombre ?? 'Sin categoría' }}
+                                {{ $servicio->clasificacion?->nombre ?? 'Sin categoría' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap align-top text-slate-700 font-medium">

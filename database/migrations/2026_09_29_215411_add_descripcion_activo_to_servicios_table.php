@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('servicios', function (Blueprint $table) {
-            $table->text('descripcion')->nullable()->after('nombre');
             $table->boolean('activo')->default(true)->after('precio');
         });
     }

@@ -14,25 +14,23 @@ class Servicio extends Model
     protected $table = 'servicios';
 
     /**
-     * Áreas del hotel a las que se clasifica un servicio. El orden es el que
-     * usan los desplegables del formulario y las tarjetas de filtro.
+     * Catálogo cerrado de servicios que el hotel presta. El alta y la edición
+     * eligen de esta lista en lugar de escribir un nombre libre, de modo que el
+     * mismo concepto no se registre dos veces con dos grafías. El orden es el
+     * que usa el desplegable del formulario.
+     *
+     * Un servicio ya dado de alta con otro nombre se conserva: al editarlo,
+     * `nombreFueraDeCatalogo` lo mantiene como opción y la validación lo acepta.
      *
      * @var list<string>
      */
-    public const CATEGORIAS = [
-        'Minibar',
-        'Restaurante',
-        'Room Service',
+    public const CATALOGO = [
+        'Servicio a la habitación',
+        'Desayuno buffet',
         'Lavandería',
-        'Spa y Bienestar',
-        'Transporte',
-        'Otros',
+        'Spa y masajes',
+        'Traslado al aeropuerto',
     ];
-
-    /**
-     * Categoría con la que se rellena el alta cuando no se elige otra.
-     */
-    public const CATEGORIA_POR_DEFECTO = 'Minibar';
 
     protected $fillable = [
         'nombre',
@@ -63,6 +61,16 @@ class Servicio extends Model
     }
 
     /**
+     * El nombre del servicio pertenece al catálogo cerrado del hotel. Un nombre
+     * fuera de él es heredado: se conserva al editar, pero no se admite en el
+     * alta.
+     */
+    public function estaEnCatalogo(): bool
+    {
+        return in_array($this->nombre, self::CATALOGO, true);
+    }
+
+    /**
      * @return HasMany<ReservaServicio, $this>
      */
     public function reservasServicio(): HasMany
@@ -71,9 +79,16 @@ class Servicio extends Model
     }
 
     /**
+     * Categoría del catálogo en la que se clasifica el servicio.
+     *
+     * No se llama `categoria` a propósito: la tabla conserva la columna de
+     * texto `categoria` de una versión anterior y Eloquent resuelve primero los
+     * atributos, de modo que una relación homónima quedaría tapada y
+     * `$servicio->categoria` devolvería siempre el valor de la columna.
+     *
      * @return BelongsTo<Categoria, $this>
      */
-    public function categoria(): BelongsTo
+    public function clasificacion(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');
     }
