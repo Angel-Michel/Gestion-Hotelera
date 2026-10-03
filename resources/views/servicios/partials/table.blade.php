@@ -58,7 +58,7 @@
                             </p>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap align-top">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-800">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
                                 {{ $servicio->clasificacion?->nombre ?? 'Sin categoría' }}
                             </span>
                         </td>
