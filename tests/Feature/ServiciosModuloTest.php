@@ -319,6 +319,39 @@ test('el modal rechaza un nombre fuera del catálogo', function () {
     expect(Servicio::where('nombre', 'Desayunno bufett')->exists())->toBeFalse();
 });
 
+test('el modal acepta dos servicios con el mismo nombre', function () {
+    $categoria = categoriaDe('Alimentación');
+
+    foreach ([320.00, 340.00] as $precio) {
+        Livewire::actingAs($this->admin)
+            ->test(Servicios::class)
+            ->call('crear')
+            ->set('nombre', 'Desayuno buffet')
+            ->set('categoria_id', $categoria->id)
+            ->set('precio', number_format($precio, 2, '.', ''))
+            ->call('guardar')
+            ->assertHasNoErrors();
+    }
+
+    $servicios = Servicio::where('nombre', 'Desayuno buffet')->get();
+
+    expect($servicios)->toHaveCount(2)
+        ->and($servicios->pluck('precio')->map(fn ($precio) => (float) $precio)->all())->toEqualCanonicalizing([320.00, 340.00]);
+});
+
+test('editar un servicio conservando su nombre no dispara el error de duplicado', function () {
+    $servicio = Servicio::factory()->create(['nombre' => 'Lavandería', 'precio' => 180.00]);
+
+    Livewire::actingAs($this->admin)
+        ->test(Servicios::class)
+        ->call('editar', $servicio->id)
+        ->set('precio', '195.00')
+        ->call('guardar')
+        ->assertHasNoErrors();
+
+    expect((float) $servicio->fresh()->precio)->toBe(195.00);
+});
+
 test('editar un servicio con nombre fuera del catálogo lo conserva como opción', function () {
     $servicio = Servicio::factory()->create(['nombre' => 'Traslado privado', 'precio' => 450.00]);
 
